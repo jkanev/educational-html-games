@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+    <!-- 
+    Simple html game to teach grasping the size of a set by sight
+    Copyright (C) 2016 Jacob Kanev
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    For a copy of the GNU General Public License see <http://www.gnu.org/licenses/>.
+    -->
+    
+    <head>
+    
+        <title>Grasp the Size of a Set by Sight</title>
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+        <style>
+        
+            html, body {
+                background-color: #eef;
+                width: 95%;
+                height: 95%;
+            }
+            
+            input {
+                position: relative;
+                width: 8%;
+                left: 0%;
+                height: 90%;
+                top: 5%;
+                font-size: 1.5em;
+                display: none;
+                border:2px solid #CCCCCC;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                padding: 10px 10px 10px 10px;
+                display: none;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #4A4A4A;
+                background-color: #F7F5F6;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#F7F5F6), to(#DDDDDD));
+                background-image: -webkit-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -moz-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -ms-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -o-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#F7F5F6, endColorstr=#DDDDDD);
+                white-space: normal;
+                vertical-align: top;
+            }
+
+            input:hover{
+                border:1px solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#BDBBBC));
+                background-image: -webkit-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -moz-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -ms-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -o-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: linear-gradient(to bottom, #E0E0E0, #BDBBBC);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#E0E0E0, endColorstr=#BDBBBC);
+            }
+            
+            input:active{
+                border:1px solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#BDBBBC), to(#E0E0E0));
+                background-image: -webkit-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -moz-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -ms-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -o-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: linear-gradient(to bottom, #BDBBBC, #E0E0E0);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#BDBBBC, endColorstr=#E0E0E0);
+            }
+            
+            div {
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #202020;
+            }
+            
+            div.canvas {
+                position: absolute; left:0; right:0;padding:0; width:100%; height:100%;
+            }
+            
+            div.message {
+                position: absolute; left:0; right:0; border:0; padding:0; width:100%; height:100%; 
+                border:2px solid #CCCCCC;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #4A4A4A;
+                background-color: #F7F5F6;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#F7F5F6), to(#DDDDDD));
+                background-image: -webkit-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -moz-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -ms-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -o-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#F7F5F6, endColorstr=#DDDDDD);
+                white-space: normal;
+                vertical-align: top;
+            }
+            
+            div.result {
+                position: relative; float: left; padding: 0.5em; height: 200%; margin: 0.1em;;
+                display: none;
+                -webkit-border-radius: 10px;
+                -moz-border-radius: 10px;
+                border-radius: 10px;
+            }
+            
+            span.bubble {
+                position: absolute;
+                left:100px;
+                top:10px; 
+                font-size: 4em;
+                text-shadow: 0.2em 1em 1em rgba(10,10,10,1);
+            }
+            
+        </style>
+        
+        <script type="text/javascript">
+            <!--
+            
+            //______________________________
+            // global variables (I know, bad style; I'll create classes the next iteration)
+            var _styles = [];
+            var _positions = [];
+            var _borders = [50,0,50,0];
+            var _motion = null;     // timeout for frames
+            var _countdown = null;    // timeout for answers
+            var _timeout = 500;     // timeout for answer in milliseconds per object
+            var _amount = 0;
+            var _characters = ['&#9632;','&#9650;','&#9654;','&#9660;','&#9670;','&#9679;'];
+            var _colours = ['#a00;','#0a0;','#00a;','#066;','#606;','#660;','#333;'];
+            var _totalScore = 0;
+            var _totalPossible = 0;
+            var _runs = 20;
+            var _runsLeft = 20;
+            var _stopLocked = false;
+            
+            
+            //______________________________
+            // starts the game, goes to full screen, relabels the start button
+            function startGame(runs, timeout)
+            {
+                _runs = runs;
+                _runsLeft = runs;
+                _timeout = timeout;
+                _totalScore = 0;
+                _totalPossible = 0;
+                for (i=1; i<5; i++) {
+                    document.getElementById('startButton'+i).style.display = 'none';
+                }
+                document.getElementById('stopButton').style.display = 'inline';
+                for (i=0; i<22; i++) {
+                    document.getElementById('res'+i).style.display = "none";
+                }
+                for (i=1; i<10; i++) {
+                    document.getElementById('button'+i).style.display = 'inline';
+                }
+                goFullScreen();
+                setTimeout(nextExample, 1000); // wait for one second, the full screen cmd takes a while
+            }
+            
+            
+            //______________________________
+            // finishes the game, exits full screen, relabels the start button
+            function stopGame()
+            {
+                clearTimeout(_countdown);
+                for (i=1; i<5; i++) {
+                    document.getElementById('startButton'+i).style.display = 'inline';
+                }
+                document.getElementById('stopButton').style.display = 'none';
+                clearTimeout(_motion);
+                for (i=1; i<10; i++) {
+                    document.getElementById('button'+i).style.display = 'none';
+                }
+                // score = fraction of runs * fraction of achievable points * 100
+                // score = Math.round( ((_runs-_runsLeft-1) / _runs) * (_totalScore / _totalPossible) * 100 ).toString();
+                byeString = "Du hast " + _totalScore.toString() + " Punkt";
+                if (_totalScore!=1) {
+                    byeString += "e";
+                }
+                byeString += ".<br/>Bis zum n&auml;chsten Mal.";
+                activate('message', 'canvas', '#ddd', 'messageText', byeString );
+                setTimeout(quitFullScreen, 3000);
+            }
+            
+            
+            //______________________________
+            // function starts a new example
+            // initialises all arrays with a random n and randomly starts the motion (either linear or brownian)
+            function nextExample()
+            {
+                // initialise objects and positions
+                activate('canvas','message');
+                _borders[1] = document.getElementById('canvas').offsetWidth - 70;
+                _borders[3] = document.getElementById('canvas').offsetHeight - 70;
+                _amount = Math.floor(Math.random() * 9) + 1;
+                var htmlString = "";
+                _positions = [];
+                _styles = [];
+                newX=100; newY=100;
+                character = _characters[ Math.floor(Math.random()*6) ];
+                colour = _colours[ Math.floor(Math.random()*7) ];
+                for (i=0; i<_amount; i++) {
+                    htmlString += "<span id='item"+i+"' class='bubble' style='color:"+colour+";'>"+character+"</span>\n";
+                    _positions.push( [0, 0, Math.random()*4-2, Math.random()*4-2] );
+                }
+                for (i=0; i<_amount; i++) {
+                    do {
+                        newX = Math.random() * (_borders[1] - _borders[0]) + _borders[0];
+                        newY = Math.random() * (_borders[3] - _borders[2]) + _borders[2];;
+                    } while (!isPositionAllowed(i, newX, newY))
+                    _positions[i][0] = newX;
+                    _positions[i][1] = newY
+                }
+                document.getElementById('canvas').innerHTML = htmlString;
+                
+                // collect object _styles
+                for (i=0; i<_amount; i++) {
+                    _styles.push(document.getElementById('item'+i).style);
+                }
+                
+                // if there are more runs to do, remove stop lock and start next run
+                _stopLocked = false;
+                _runsLeft--;
+                if (_runsLeft >= 0) {
+                    if (Math.random()>0.5) {
+                        moveBrownian();
+                    } else {
+                        moveLinear();
+                    }
+                    _countdown = setTimeout(function() { stop(0); },  400 + _timeout + _timeout * _amount);
+                    
+                // otherwise quit
+                } else {
+                    stopGame();
+                }
+            }
+            
+            
+            //______________________________
+            // function applies the current coordinates to screen
+            function setPosition()
+            {
+                for (i=0; i<_amount; i++) {
+                    _styles[i].left = _positions[i][0] + 'px';
+                    _styles[i].top = _positions[i][1] + 'px';
+                }
+            }
+            
+            
+            //______________________________
+            // function checks whether position x, y is a collision or not.
+            // first parameter i is the object number that is ignored in the check
+            function isPositionAllowed(i, newX, newY)
+            {
+                allowed = true;
+                for (j=0; j<_amount; j++) {
+                    if (i!=j) {
+                        distance = Math.sqrt( Math.pow(newX - _positions[j][0], 2) + Math.pow(newY - _positions[j][1], 2) );
+                        allowed &= distance > 20;
+                    }
+                }
+                allowed &= (newX > _borders[0]) && (newX < _borders[1]) && (newY > _borders[2]) && (newY < _borders[3]);
+                return allowed;
+            }
+            
+            
+            //______________________________
+            // function creates new coordinates for the next point in a 2D brownian motion
+            // call setPosition()
+            function moveBrownian()
+            {
+                for (i=0; i<_amount; i++) {
+                
+                    // test at most 20 new positions per particle for collisions
+                    move = false;
+                    newX = 0;
+                    newY = 0;
+                    for (m=0; m<20 && !move; m++) {                    
+                        newX = _positions[i][0] + Math.random()*10-5;
+                        newY = _positions[i][1] + Math.random()*10-5;
+                        move = isPositionAllowed(i, newX, newY);
+                    }
+                    
+                    // set new coordinates if no collisions occur
+                    if (move) {
+                        _positions[i][0] = newX;
+                        _positions[i][1] = newY;
+                    }
+                }
+                
+                // apply coordinates
+                setPosition();
+                _motion = setTimeout(moveBrownian, 10);
+            }
+            
+            
+            //______________________________
+            // function calculates coordinates for a linear motion
+            // calls setPosition()
+            function moveLinear()
+            {
+                for (i=0; i<_amount; i++) {
+                
+                    // test at most 20 new positions per particle for collisions
+                    move = false;
+                    newX = 0;
+                    newY = 0;
+                    for (m=0; m<20 && !move; m++) {                    
+                        newX = _positions[i][0] + _positions[i][2];
+                        newY = _positions[i][1] + _positions[i][3];
+                        move = isPositionAllowed(i, newX, newY);
+                        if (!move) {
+                            _positions[i][2] = Math.random()*4-2;
+                            _positions[i][3] = Math.random()*4-2;
+                        }
+                    }
+                    
+                    // set new coordinates if no collisions occur
+                    if (move) {
+                        _positions[i][0] = newX;
+                        _positions[i][1] = newY;
+                    }
+                }
+                
+                // apply coordinates
+                setPosition();
+                _motion = setTimeout(moveLinear, 10);
+            }
+            
+            
+            //______________________________
+            // function activates and deactivates div boxes in the body
+            function activate(show, hide, colour, textObject, text)
+            {
+                document.getElementById(show).style.display = 'block';
+                document.getElementById(hide).style.display = 'none';
+                if (colour) {
+                    document.getElementById(show).style.backgroundColor = colour;
+                }
+                if (textObject && text) {
+                    document.getElementById(textObject).innerHTML = text;
+                }
+            }
+            
+            
+            //______________________________
+            // function stops the current motion,
+            // activates a div box according to whether n is the current amount of objects or not,
+            // and calls nextExample() after a time-out of 1.5 seconds
+            function stop(n)
+            {
+                if (!_stopLocked) {
+                
+                    // set lock to prevent two stop functions running, clear timeouts, write result
+                    _stopLocked = true;
+                    clearTimeout(_motion);
+                    clearTimeout(_countdown);
+                    resultElement = document.getElementById('res' + (_runs - _runsLeft - 1).toString());
+                    resultElement.style.display = 'inline';
+                    
+                    // write main message
+                    _totalPossible += _amount;
+                    if (n==0) {
+                        activate('message', 'canvas', '#bbb', 'messageText', "Zu sp&auml;t. Es waren " + _amount.toString() + '.' );
+                        resultElement.innerHTML = _amount.toString() + "<br/>zu sp&auml;t";
+                        resultElement.style.backgroundColor = '#ccc';
+                    } else if (n==_amount) {
+                        if (_amount==1) {
+                            activate('message', 'canvas', '#bcb', 'messageText', "Richtig! " + _amount.toString() + " Punkt.");
+                        } else {
+                            activate('message', 'canvas', '#bcb', 'messageText', "Richtig! " + _amount.toString() + " Punkte.");
+                        }
+                        _totalScore += _amount;
+                        resultElement.innerHTML = _amount.toString() + "<br/>richtig";
+                        resultElement.style.backgroundColor = '#cdc';
+                    }
+                    else {
+                        activate('message', 'canvas', '#cbb', 'messageText', n.toString() + " ist falsch. Es waren " + _amount.toString() + '.' );
+                        resultElement.innerHTML = _amount.toString() + "<br/>falsch";
+                        resultElement.style.backgroundColor = '#ddcccc';
+                    }
+                    
+                    // start next run per timout
+                    _motion = setTimeout(nextExample, 1500);
+                }
+            }
+            
+            
+            //______________________________
+            // go to full screen
+            function goFullScreen()
+            {
+                if (document.documentElement.requestFullScreen) {  
+                    document.documentElement.requestFullScreen();  
+                } else if (document.documentElement.mozRequestFullScreen) {  
+                    document.documentElement.mozRequestFullScreen();  
+                } else if (document.documentElement.webkitRequestFullScreen) {  
+                    document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
+                } else if (document.documentElement.msRequestFullScreen) {  
+                    document.documentElement.msRequestFullScreen();  
+                }
+            }
+            
+            
+            //______________________________
+            // stop full screen
+            function quitFullScreen()
+            {
+                if (document.cancelFullScreen) {  
+                    document.cancelFullScreen();  
+                } else if (document.mozCancelFullScreen) {  
+                    document.mozCancelFullScreen();  
+                } else if (document.webkitCancelFullScreen) {  
+                    document.webkitCancelFullScreen();  
+                } else if (document.msCancelFullScreen) {  
+                    document.msCancelFullScreen();  
+                } 
+            }
+            
+            //-->
+        </script>
+
+    </head>
+    
+    <body>
+    
+    <div style="position: relative; width:100%; left:5%; height:80%; top:4%; bottom:0; margin:0; padding:0;">
+            <div id="canvas" class="canvas">
+            </div>
+            <div id="message" class="message">
+                <div id="messageText" style="position:relative; width:90%; left:5%; top:5%; font-size: 2em;">
+                    Erfassen von Mengengr&ouml;&szlig;en. <br/>
+                    Wer schafft 100 Punkte? <br/><br/>
+                    Wieviele Gegenst&auml;nde siehst Du? <br/>
+                    Dr&uuml;cke einen der Kn&ouml;pfe <i>1 - 9</i>.<br/>
+                    F&uuml;r jede richtige Antwort bekommst Du Punkte. <br/>
+                    Mit <i>Stopp</i> beendest Du das Spiel vorzeitig.
+                </div>
+                <div style="position:relative; width:90%; left:5%; top:20%;">
+                    <div id="res0" class="result"></div>
+                    <div id="res1" class="result"></div>
+                    <div id="res2" class="result"></div>
+                    <div id="res3" class="result"></div>
+                    <div id="res4" class="result"></div>
+                    <div id="res5" class="result"></div>
+                    <div id="res6" class="result"></div>
+                    <div id="res7" class="result"></div>
+                    <div id="res8" class="result"></div>
+                    <div id="res9" class="result"></div>
+                    <div id="res10" class="result"></div>
+                    <div id="res11" class="result"></div>
+                    <div id="res12" class="result"></div>
+                    <div id="res13" class="result"></div>
+                    <div id="res14" class="result"></div>
+                    <div id="res15" class="result"></div>
+                    <div id="res16" class="result"></div>
+                    <div id="res17" class="result"></div>
+                    <div id="res18" class="result"></div>
+                    <div id="res19" class="result"></div>
+                    <div id="res20" class="result"></div>
+                    <div id="res21" class="result"></div>
+                    <div id="res22" class="result"></div>
+                </div>
+            </div>
+        </div>
+        <div style="position: relative; width:100%; left:5%; height:20%;top:6%; bottom:0; margin:0; padding:0;">
+            <input type="button" id="startButton1" value="5 Runden, langsam" onmouseup="startGame(5,10000);"  style="width:21%; display: inline;"/>
+            <input type="button" id="startButton2" value="11 Runden, mittel" onmouseup="startGame(11,1300);"  style="width:21%; left: 5%; display: inline;"/>
+            <input type="button" id="startButton3" value="17 Runden, schnell" onmouseup="startGame(17,500);"  style="width:21%; left: 10%; display: inline;"/>
+            <input type="button" id="startButton4" value="23 Runden, sehr schnell" onmouseup="startGame(23,400);"  style="width:21%; left: 15%; display: inline;"/>
+            <input type="button" id="stopButton" value="Stopp" onmouseup="stopGame();"  style="width:16%;"/>
+            <input id="button1" type="button" value="1" onmouseup="stop(1);"   style="left:2%;"/>
+            <input id="button2" type="button" value="2" onmouseup="stop(2);"   style="left:3%;"/>
+            <input id="button3" type="button" value="3" onmouseup="stop(3);"   style="left:4%;"/>
+            <input id="button4" type="button" value="4" onmouseup="stop(4);"   style="left:5%;"/>
+            <input id="button5" type="button" value="5" onmouseup="stop(5);"   style="left:6%;"/>
+            <input id="button6" type="button" value="6" onmouseup="stop(6);"   style="left:7%;"/>
+            <input id="button7" type="button" value="7" onmouseup="stop(7);"   style="left:8%;"/>
+            <input id="button8" type="button" value="8" onmouseup="stop(8);"   style="left:9%;"/>
+            <input id="button9" type="button" value="9" onmouseup="stop(9);"   style="left:10%;"/>
+        </div>
+
+    </body>
+
+</html>
