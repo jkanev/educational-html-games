@@ -128,8 +128,12 @@
             }
             
             div.result {
-                position: relative; float: left; padding: 0.5em; height: 20%; margin: 0.1em;
+                position: relative; float: left; padding: 0.5em; margin: 0.1em;
                 display: none;
+                border:2px solid #CCCCCC;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
                 -webkit-border-radius: 10px;
                 -moz-border-radius: 10px;
                 border-radius: 10px;
@@ -5251,12 +5255,12 @@ g4ODw4Z/AD0wPfazN2hJAAAAAElFTkSuQmCC") no-repeat center center fixed;
                         }
                         _totalScore += _amount;
                         resultElement.innerHTML = _amount.toString() + "<br/>richtig";
-                        resultElement.style.backgroundColor = '#cdc';
+                        resultElement.style.backgroundColor = '#cec';
                     }
                     else {
                         activate('message', 'canvas', '#cbb', 'messageText', n.toString() + " ist falsch. Es waren " + _amount.toString() + '.' );
                         resultElement.innerHTML = _amount.toString() + "<br/>falsch";
-                        resultElement.style.backgroundColor = '#ddcccc';
+                        resultElement.style.backgroundColor = '#ecc';
                     }
                     
                     // enable animal
