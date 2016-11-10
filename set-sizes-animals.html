@@ -8606,8 +8606,6 @@ g4ODw4Z/AD0wPfazN2hJAAAAAElFTkSuQmCC") no-repeat center center fixed;
             {
                 _runs = runs;
                 _runsLeft = runs;
-//                _totalScore = 0;
-//                _totalPossible = 0;
                 _animal = animal;
                 
                 for (i=1; i<4; i++) {
@@ -8702,7 +8700,7 @@ g4ODw4Z/AD0wPfazN2hJAAAAAElFTkSuQmCC") no-repeat center center fixed;
             
             //______________________________
             // function activates and deactivates div boxes in the body
-            function activate(show, hide, colour=false, textObject=false, text=false)
+            function activate(show, hide, colour, textObject, text)
             {
                 document.getElementById(show).style.display = 'block';
                 document.getElementById(hide).style.display = 'none';
