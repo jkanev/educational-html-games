@@ -35,6 +35,55 @@
                 overflow: hidden;
             }
             
+            button {
+                position: relative;
+                float: left;
+                border: 1px solid #CCCCCC;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 10px;
+                -moz-border-radius: 10px;
+                border-radius: 10px;
+                padding: 10px 10px 10px 10px;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #4A4A4A;
+                background-color: #F7F5F6;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#F7F5F6), to(#DDDDDD));
+                background-image: -webkit-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -moz-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -ms-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -o-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#F7F5F6, endColorstr=#DDDDDD);
+                white-space: normal;
+                font-size: 2em;
+            }
+            
+            button:hover{
+                border:1px solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#BDBBBC));
+                background-image: -webkit-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -moz-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -ms-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -o-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: linear-gradient(to bottom, #E0E0E0, #BDBBBC);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#E0E0E0, endColorstr=#BDBBBC);
+            }            
+            
+            button:active{
+                border:1px solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#BDBBBC), to(#E0E0E0));
+                background-image: -webkit-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -moz-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -ms-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -o-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: linear-gradient(to bottom, #BDBBBC, #E0E0E0);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#BDBBBC, endColorstr=#E0E0E0);
+            }
+            
             div.dots {
                 background-color: #eaeaea;
                 width: 100%;
@@ -84,9 +133,9 @@
                 position: relative;
                 float: left;
                 border: 1px solid #CCCCCC;
-                width: 8vw;
+                width: 10.7vw;
                 margin: 0.3vw;
-                height: 13.1vh;
+                height: 13vh;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
                 -moz-box-shadow: #FEFFFF 0px 2px 2px ;
                 box-shadow: #FEFFFF 0px 2px 2px ;
@@ -194,8 +243,13 @@
         <script type="text/javascript">
             <!--
             
+            
             // global gameHistory object
-            var gameHistory = null;
+            var _gameHistory = null;
+            var _globalLock = false;
+            var _quitFullScreen = false;
+            
+            
             
             //______________________________
             // class for a single memory card
@@ -212,7 +266,7 @@
                 this.faceId = meaning.toString() + "_" + type + "_face";     // the respective div id, e.g. "3_english_face"
                 this.cardId = meaning.toString() + "_" + type + "_card";     // the respective div id for the card, e.g. "3_english_card"
                 
-                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" onClick=\"top.gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
+                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" onClick=\"_gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
                     +     "<div class=\"" + this.type + "\" id=\"" + this.faceId + "\">"
                     +         this.string
                     +     "</div>"
@@ -226,7 +280,7 @@
             function coverCard(id)
             {
                 faceId = id + "_face";
-                document.getElementById(this.faceId).style.display = "none";
+                document.getElementById(faceId).style.display = "none";
             };
             
             
@@ -236,7 +290,7 @@
             function uncoverCard(id)
             {
                 faceId = id + "_face";
-                document.getElementById(this.faceId).style.display = "block";
+                document.getElementById(faceId).style.display = "block";
             };
             
             
@@ -245,8 +299,18 @@
             // remove the card from the table
             function removeCard(id)
             {
-                faceId = id + "_card";
-                document.getElementById(this.faceId).style.visibility = "hidden";
+                cardId = id + "_card";
+                document.getElementById(cardId).style.visibility = "hidden";
+            };
+            
+            
+            
+            //______________________________
+            // highlight a card
+            function highlightCard(id)
+            {
+                faceId = id + "_face";
+                document.getElementById(faceId).style.backgroundColor = "#fe9";
             };
             
             
@@ -262,25 +326,49 @@
             // a card has been clicked -- make a move
             GameHistory.prototype.move = function(meaning, type)
             {
-                // uncover card
-                id = meaning.toString() + "_" + type;
-                uncoverCard(id);
-                
-                // push to memory
-                this.openCards.push([id, meaning]);
-                
-                // cover latest card that's still open
-                if (this.openCards.length > 3)
-                    coverCard( this.openCards.shift()[0] );
+                if (!_globalLock) {
+                    // assemble id
+                    id = meaning.toString() + "_" + type;
                     
-                // if three identical cards are open, remove them
-                if (this.openCards.length === 3) {
-                    if (this.openCards[0][1] === this.openCards[1][1] && this.openCards[1][1] === this.openCards[2][1]) {
-                        for (var i=0; i<3; i++)
-                            removeCard( this.openCards.shift()[0] );
+                    // see whether card is already open (clicked accidentally)
+                    var alreadyOpen = false;
+                    for (var i=0; i<this.openCards.length; i++)
+                        if (id === this.openCards[i][0])
+                            alreadyOpen = true;
+                    
+                    // if not -
+                    if (!alreadyOpen) {
+                        
+                        // lock GUI
+                        _globalLock = true;
+                        
+                        // uncover card
+                        uncoverCard(id);
+                        
+                        // push card to memory
+                        this.openCards.push([id, meaning]);
+                        
+                        // cover latest card that's still open
+                        if (this.openCards.length > 3)
+                            coverCard( this.openCards.shift()[0] );
+                            
+                        // if three identical cards are open, remove them
+                        if (this.openCards.length === 3) {
+                            if (this.openCards[0][1] === this.openCards[1][1] && this.openCards[1][1] === this.openCards[2][1]) {
+                            
+                                // remove cards and release lock
+                                for (var i=0; i<3; i++) {
+                                    var id = this.openCards.shift()[0];
+                                    highlightCard(id);
+                                    setTimeout( removeCard.bind(null, id), 1000 );
+                                }
+                                setTimeout( function(){_globalLock=false;}, 1000 );
+                            } else _globalLock = false;
+                        } else _globalLock = false;
                     }
                 }
             };
+            
             
             
             //______________________________
@@ -300,30 +388,65 @@
             // and put them face down on the table
             function newGame()
             {
-                gameHistory = null;
-                gameHistory = new GameHistory();
+                _gameHistory = null;
+                _gameHistory = new GameHistory();
                 
+                // create array with 5 false and 16 true values at random order
+                function Select(value) {
+                    this.random = Math.random();
+                    this.value = value;
+                }
+                selections = [];
+                for (var i=0; i<5; i++)
+                    selections.push( new Select(false) );
+                for (var i=0; i<16; i++)
+                    selections.push( new Select(true) );
+                selections.sort(function(a, b) { return a.random - b.random; });
+                
+                // add 16 of 21 available cards
                 var cards = [];
-                addToArray(cards, 0, "0", "&nbsp;", "Zero");
-                addToArray(cards, 1, "1", "&#8231;", "One");
-                addToArray(cards, 2, "2", "&#8231;&#8231;", "Two");
-                addToArray(cards, 3, "3", "&#8278;", "Three");
-                addToArray(cards, 4, "4", "&#8280;", "Four");
-                addToArray(cards, 5, "5", "&#8281;", "Five");
-                addToArray(cards, 6, "6", "&#8281;&nbsp;&nbsp;&#8231;", "Six");
-                addToArray(cards, 7, "7", "&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seven");
-                addToArray(cards, 8, "8", "&#8281;&nbsp;&nbsp;&#8278;", "Eight");
-                addToArray(cards, 9, "9", "&#8281;&nbsp;&nbsp;&#8280;", "Nine");
-                addToArray(cards, 10, "10", "&#8281;&nbsp;&#8281;", "Ten");
-                addToArray(cards, 11, "11", "&#8281;&nbsp;&#8281;<br/>&#8231;", "Eleven");
-                addToArray(cards, 12, "12", "&#8281;&nbsp;&#8281;<br/>&#8231;&#8231;", "Twelve");
-                addToArray(cards, 13, "13", "&#8281;&nbsp;&#8281;<br/>&#8278;", "Thirteen");
-                addToArray(cards, 14, "14", "&#8281;&nbsp;&#8281;<br/>&#8280;", "Fourteen");
-                addToArray(cards, 15, "15", "&#8281;&nbsp;&#8281;<br/>&#8281;", "Fifteen");
-                addToArray(cards, 16, "16", "&#8281;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;", "Sixteen");
-                addToArray(cards, 17, "17", "&#8281;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seventeen");
-                addToArray(cards, 18, "18", "&#8281;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8278;", "Eighteen");
-                addToArray(cards, 19, "19", "&#8281;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8280;", "Nineteen");
+                if (selections[0].value)
+                    addToArray(cards, 0, "0", "&nbsp;", "Zero");
+                if (selections[1].value)
+                    addToArray(cards, 1, "1", "&#8231;", "One");
+                if (selections[2].value)
+                    addToArray(cards, 2, "2", "&#8231;&#8231;", "Two");
+                if (selections[3].value)
+                    addToArray(cards, 3, "3", "&#8756;", "Three");
+                if (selections[4].value)
+                    addToArray(cards, 4, "4", "&#8280;", "Four");
+                if (selections[5].value)
+                    addToArray(cards, 5, "5", "&#8281;", "Five");
+                if (selections[6].value)
+                    addToArray(cards, 6, "6", "&#8281;&nbsp;&nbsp;&#8231;", "Six");
+                if (selections[7].value)
+                    addToArray(cards, 7, "7", "&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seven");
+                if (selections[8].value)
+                    addToArray(cards, 8, "8", "&#8281;&nbsp;&nbsp;&#8756;", "Eight");
+                if (selections[9].value)
+                    addToArray(cards, 9, "9", "&#8281;&nbsp;&nbsp;&#8280;", "Nine");
+                if (selections[10].value)
+                    addToArray(cards, 10, "10", "&#8281;&nbsp;&nbsp;&#8281;", "Ten");
+                if (selections[11].value)
+                    addToArray(cards, 11, "11", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8231;", "Eleven");
+                if (selections[12].value)
+                    addToArray(cards, 12, "12", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8231;&#8231;", "Twelve");
+                if (selections[13].value)
+                    addToArray(cards, 13, "13", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8756;", "Thirteen");
+                if (selections[14].value)
+                    addToArray(cards, 14, "14", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8280;", "Fourteen");
+                if (selections[15].value)
+                    addToArray(cards, 15, "15", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;", "Fifteen");
+                if (selections[16].value)
+                    addToArray(cards, 16, "16", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;", "Sixteen");
+                if (selections[17].value)
+                    addToArray(cards, 17, "17", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seventeen");
+                if (selections[18].value)
+                    addToArray(cards, 18, "18", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8756;", "Eighteen");
+                if (selections[19].value)
+                    addToArray(cards, 19, "19", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8280;", "Nineteen");
+                if (selections[20].value)
+                    addToArray(cards, 20, "20", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8281;", "Twenty");
                 
                 // shuffle cards and assign tags
                 cards.sort( function(a, b) { return a.random - b.random; } );
@@ -377,6 +500,16 @@
                 _quitFullScreen = false;
             }
             
+            
+            
+            //______________________________
+            // start the session
+            function startSession() {
+                goFullScreen();
+                document.getElementById('message').style.display = 'none';
+                newGame();
+            }
+            
             //-->
         </script>
 
@@ -385,9 +518,13 @@
         <div style="position: relative; width:100%; left:0%; height:100%; top:0%; bottom:0; margin:0; padding:0;">
             <div id="table" class="table">
             </div>
-            <div id="message" class="message" style="display: none;">
+            <div id="message" class="message">
                 <div id="messageText" style="position:relative; width:90%; height:90%; left:5%; top:5%; font-size: 2em;">
-                    -- instructions --
+                    This game is still under development.<br/><br/>
+                    Find triplets of the same number.
+                    Press Start to start a new game, press ESC to leave fullscreen mode, press F5 to refresh.
+                    <br/><br/><br/>
+                    <button onClick="startSession()">Start</button>
                 </div>
             </div>
         </div>
