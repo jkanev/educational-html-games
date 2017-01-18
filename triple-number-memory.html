@@ -57,7 +57,7 @@
                 background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
                 filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#F7F5F6, endColorstr=#DDDDDD);
                 white-space: normal;
-                font-size: 2em;
+                font-size: 1.2em;
             }
             
             button:hover{
@@ -92,8 +92,8 @@
                 -moz-border-radius: 15px;
                 border-radius: 15px;
                 text-align: center;
-                font-size: 6vh;
-                line-height: 6vh;
+                font-size: 6vmin;
+                line-height: 6vmin;
                 vertical-align: middle;
                 color: #a00;
                 display: none;
@@ -107,8 +107,8 @@
                 -moz-border-radius: 15px;
                 border-radius: 15px;
                 text-align: center;
-                font-size: 3vh;
-                line-height: 10vh;
+                font-size: 3vmin;
+                line-height: 10vmin;
                 vertical-align: middle;
                 color: #060;
                 display: none;
@@ -122,8 +122,8 @@
                 -moz-border-radius: 15px;
                 border-radius: 15px;
                 text-align: center;
-                font-size: 4vh;
-                line-height: 12vh;
+                font-size: 4vmin;
+                line-height: 12vmin;
                 vertical-align: middle;
                 color: #00a;
                 display: none;
@@ -133,7 +133,7 @@
                 position: relative;
                 float: left;
                 border: 1px solid #CCCCCC;
-                width: 10vw;
+                width: 11vw;
                 margin: 0.3vw;
                 height: 13vh;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
@@ -142,7 +142,7 @@
                 -webkit-border-radius: 20px;
                 -moz-border-radius: 20px;
                 border-radius: 20px;
-                padding: 10px 10px 10px 10px;
+                padding: 0.355vw;
                 text-shadow: 0px 2px 2px rgba(255,255,255,1);
                 color: #4A4A4A;
                 background-color: #F7F5F6;
@@ -522,10 +522,11 @@
             <div id="message" class="message">
                 <div id="messageText" style="position:relative; width:90%; height:90%; left:5%; top:5%; font-size: 2em;">
                     This game is still under development.<br/><br/>
-                    Find triplets of the same number.
-                    Press Start to start a new game, press ESC to leave fullscreen mode, press F5 to refresh.
+                    A game of Memory. There are numbers on the cards, aim is to remember and find matching triplets of cards, showing the same number ("3", "&#8756;" and "Three" belong to the same triplet). Players play in turns, each player uncovers three cards by clicking on them. After three clicks it's the next player's turn.<br/>
+                    Note: The latest three cards always stay face up, even when it's the next player's turn; triplets can be completed on the first, second, or third click of your turn..<br/><br/>
+                    Press <b>Start Game</b> to start a new game, press <i>ESC</i> to leave full screen mode, press <i>F5</i> to refresh.
                     <br/><br/><br/>
-                    <button onClick="startSession()">Start</button>
+                    <button onClick="startSession()">Start Game</button>
                 </div>
             </div>
         </div>
