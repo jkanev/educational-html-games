@@ -172,7 +172,7 @@
             }
             
             div.card:hover{
-                border:0.1vw solid #ADADAD;
+                border: 0.1vw solid #ADADAD;
                 background-color: #E0E0E0;
                 background-image: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#BDBBBC));
                 background-image: -webkit-linear-gradient(top, #E0E0E0, #BDBBBC);
@@ -184,7 +184,7 @@
             }            
             
             div.card:active{
-                border:1px solid #ADADAD;
+                border: 0.1vw solid #ADADAD;
                 background-color: #E0E0E0;
                 background-image: -webkit-gradient(linear, left top, left bottom, from(#BDBBBC), to(#E0E0E0));
                 background-image: -webkit-linear-gradient(top, #BDBBBC, #E0E0E0);
@@ -214,12 +214,6 @@
                 font-size: 2em;
                 display: none;
                 border: 1px solid #CCCCCC;
-                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
-                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
-                box-shadow: #FEFFFF 0px 2px 2px ;
-                -webkit-border-radius: 20px;
-                -moz-border-radius: 20px;
-                border-radius: 20px;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
                 -moz-box-shadow: #FEFFFF 0px 2px 2px ;
                 box-shadow: #FEFFFF 0px 2px 2px ;
@@ -268,12 +262,6 @@
                 border: 0.1px solid #CCCCCC;
                 margin: 1vw;
                 padding: 1vw;
-                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
-                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
-                box-shadow: #FEFFFF 0px 2px 2px ;
-                -webkit-border-radius: 20px;
-                -moz-border-radius: 20px;
-                border-radius: 20px;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
                 -moz-box-shadow: #FEFFFF 0px 2px 2px ;
                 box-shadow: #FEFFFF 0px 2px 2px ;
@@ -391,7 +379,7 @@
                 this.faceId = meaning.toString() + "_" + type + "_face";     // the respective div id, e.g. "3_english_face"
                 this.cardId = meaning.toString() + "_" + type + "_card";     // the respective div id for the card, e.g. "3_english_card"
                 
-                width = Math.floor(87.0 / cols); // round, since Chrome on a tablet cannot do vw fractions (e.g. 4.1vw and 4.9vw looks the same).
+                width = Math.floor(86.0 / cols); // round, since Chrome on a tablet cannot do vw fractions (e.g. 4.1vw and 4.9vw looks the same).
                 left = (100.0 - cols*(width + 1.4)) / 2.0; // add the rounding error as left margin. 0.1 border + 0.3 margin + 0.3 padding * 2.
                 height = Math.floor(84.0 / rows);
                 top = (100.0 - rows*(height + 1.4)) / 2.0
