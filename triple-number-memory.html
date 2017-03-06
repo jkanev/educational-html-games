@@ -36,6 +36,9 @@
             }
             
             button {
+                display: inline;
+                margin: 1vw;
+                padding: 1vw;
                 position: relative;
                 float: left;
                 border: 1px solid #CCCCCC;
@@ -133,9 +136,7 @@
                 position: relative;
                 float: left;
                 border: 1px solid #CCCCCC;
-                width: 11vw;
                 margin: 0.3vw;
-                height: 13vh;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
                 -moz-box-shadow: #FEFFFF 0px 2px 2px ;
                 box-shadow: #FEFFFF 0px 2px 2px ;
@@ -239,6 +240,60 @@
                 text-shadow: 0.2em 1em 1em rgba(10,10,10,1);
             }
             
+            input.text {
+                font-family: verdana, arial, sansserif;
+                font-size: 1.1em;
+                position: relative;
+                float: left;
+                border: 0.1px solid #CCCCCC;
+                margin: 1vw;
+                padding: 1vw;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #000000;
+                background-color: #F7F5F6;
+            }
+
+            div.player {
+                font-size: 2.5em;
+                position: absolute;
+                left:33vw;
+                width:33vw;
+                top:33vh;
+                height: 33vh;
+                display: none;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: 0px 0px 50px  #505050;
+                -webkit-border-radius: 30px;
+                -moz-border-radius: 30px;
+                border-radius: 30px;
+                padding: 2.5em;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+            }
+            
+            div.message {
+                position:absolute;
+                width:77%;
+                height:100%;
+                left:1%;
+                top:1%;
+                padding: 10%;
+                font-size: 2em;
+                display: none;
+            }
+            
             </style>
         
         <script type="text/javascript">
@@ -249,6 +304,54 @@
             var _gameHistory = null;
             var _globalLock = false;
             var _quitFullScreen = false;
+            var _language = "en";
+            
+            
+            
+            //______________________________
+            // Class representing a single player.
+            // Used to count points, colours and names.
+            function Player(name, colour, id)
+            {
+                this.name = name;
+                this.colour = colour;
+                this.id = id;
+                this.points = 0;
+                this.pointString = "";
+                document.getElementById(this.id).style.backgroundColor = this.colour;
+            }
+            
+            
+            //______________________________
+            // Announce who is next
+            Player.prototype.next = function()
+            {
+                // show message
+                document.getElementById(this.id).innerHTML = "Next turn: " + this.name;
+                document.getElementById(this.id).style.display = "block";
+                
+                // start time out for hiding message
+                setTimeout( function(id) { document.getElementById(id).style.display = "none"; }.bind(0, this.id), 700 );
+            }
+            
+            
+            
+            Player.prototype.addPoint = function()
+            {
+                // show message
+                this.points += 1;
+                this.pointString += " &#9733;";
+                message = this.name + ": " + this.points.toString();
+                if (_language == "en")
+                    message += " points.<br/><br/><br/>" + this.pointString;
+                if (_language == "de")
+                    message += " Punkte.<br/><br/><br/>" + this.pointString;
+                document.getElementById(this.id).innerHTML = message;
+                document.getElementById(this.id).style.display = "block";
+                
+                // start time out for hiding message
+                setTimeout( function(id) { document.getElementById(id).style.display = "none"; }.bind(0, this.id), 700 );
+            }
             
             
             
@@ -258,7 +361,7 @@
             // and the inside one representing the face. The face div has a class according to the 
             // type: <div class="card"><div class="digits">23</div></div>
             // both divs have distinct IDs
-            function Card(meaning, type, string)
+            function Card(meaning, type, string, rows, cols)
             {
                 this.meaning = meaning; // the actual number that's on the card
                 this.type = type;     // whether the card has digits, dots, english, ..., on it
@@ -267,7 +370,9 @@
                 this.faceId = meaning.toString() + "_" + type + "_face";     // the respective div id, e.g. "3_english_face"
                 this.cardId = meaning.toString() + "_" + type + "_card";     // the respective div id for the card, e.g. "3_english_card"
                 
-                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" onClick=\"_gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
+                width = Math.round(100.0 / cols - 2).toString();
+                height = Math.round(100.0 / rows - 3).toString();
+                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width + "vw; height:" + height + "vh;\" onClick=\"_gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
                     +     "<div class=\"" + this.type + "\" id=\"" + this.faceId + "\">"
                     +         this.string
                     +     "</div>"
@@ -318,10 +423,17 @@
             
             //______________________________
             // gameHistory object, tracks open cards, removes cards and assigns points
-            function GameHistory()
+            // players: array with players
+            function GameHistory(players, moves)
             {
                 this.openCards = [];
+                this.players = players;
+                this.currentPlayer = 0;
+                this.playerMove = 0;
+                this.movesLeft = moves;
             }
+            
+            
             
             //______________________________
             // a card has been clicked -- make a move
@@ -342,6 +454,7 @@
                         
                         // lock GUI
                         _globalLock = true;
+                        nextTimeOut = 0;
                         
                         // uncover card
                         uncoverCard(id);
@@ -356,16 +469,56 @@
                         // if three identical cards are open, remove them
                         if (this.openCards.length === 3) {
                             if (this.openCards[0][1] === this.openCards[1][1] && this.openCards[1][1] === this.openCards[2][1]) {
-                            
-                                // remove cards and release lock
+                                
+                                // remove cards and increase value for timeout
                                 for (var i=0; i<3; i++) {
                                     var id = this.openCards.shift()[0];
                                     highlightCard(id);
-                                    setTimeout( removeCard.bind(null, id), 1000 );
+                                    setTimeout( removeCard.bind(null, id), 700 );
                                 }
-                                setTimeout( function(){_globalLock=false;}, 1000 );
-                            } else _globalLock = false;
-                        } else _globalLock = false;
+                                this.movesLeft -= 1;
+                                
+                                // add point to current player's score
+                                if (this.players.length > 0) {
+                                    nextTimeOut += 700;
+                                    setTimeout( function(object, player){ object.players[ player ].addPoint(); }.bind(0, this, this.currentPlayer), nextTimeOut );
+                                }
+                            }
+                        }
+                        
+                        // if game is over, show resuts
+                        if (this.movesLeft == 0) {
+                            resultsTable = "<table>"
+                            for (var i=0; i<this.players.length; i++) {
+                                player = this.players[i];
+                                resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + player.name
+                                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + player.points
+                                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + player.pointString
+                                + "&nbsp;&nbsp;&nbsp;</td></tr>";
+                            }
+                            resultsTable += "</table>";
+                            document.getElementById('results_' + _language).innerHTML = resultsTable;
+                            nextTimeOut += 700;
+                            setTimeout( function(){ proceed('start_' + _language, 'finish_' + _language); proceed('table', 'message'); quitFullScreen(); }, nextTimeOut );
+                        }
+                        
+                        // otherwise, advance move to next player
+                        else {
+                            if (this.players.length > 1) {
+                                this.playerMove += 1;
+                                if (this.playerMove==3) {
+                                    this.playerMove = 0;
+                                    this.currentPlayer += 1;
+                                    if (this.currentPlayer >= this.players.length) {
+                                        this.currentPlayer = 0;
+                                    }
+                                    nextTimeOut += 700;
+                                    setTimeout( function(object, player){object.players[ player ].next(); }.bind(0, this, this.currentPlayer), nextTimeOut);
+                                }
+                            }
+                        }
+                            
+                        setTimeout( function(){_globalLock=false;}, nextTimeOut );
                     }
                 }
             };
@@ -374,11 +527,14 @@
             
             //______________________________
             // helper function for creating cards
-            function addToArray(array, meaning, digits, dots, english)
+            function addToArray(array, meaning, digits, dots, english, german, rows, cols)
             {
-                array.push( new Card(meaning, "digits", digits) );
-                array.push( new Card(meaning, "dots", dots) );
-                array.push( new Card(meaning, "english", english) );
+                array.push( new Card(meaning, "digits", digits, rows, cols) );
+                array.push( new Card(meaning, "dots", dots, rows, cols) );
+                if (_language == "en")
+                    array.push( new Card(meaning, "english", english, rows, cols) );
+                if (_language == "de")
+                    array.push( new Card(meaning, "german", german, rows, cols) );
             }
             
             
@@ -387,10 +543,21 @@
             // start a new game --
             // create a new gameHistory, create new cards, shuffle them
             // and put them face down on the table
-            function newGame()
+            function newGame(rows, cols, language)
             {
+                // get players and create history
+                players = [];
+                for (var i=1; i<5; i++) {
+                    name = document.getElementById("name" + i.toString()).value.trim();
+                    if( name != "") {
+                        id = "player"+i.toString();
+                        colour = document.getElementById("name" + i.toString()).style.backgroundColor;
+                        players.push(new Player(name, colour, id) );
+                    }
+                }
+                _language = language;
                 _gameHistory = null;
-                _gameHistory = new GameHistory();
+                _gameHistory = new GameHistory(players, rows*cols/3);
                 
                 // create array with 5 false and 16 true values at random order
                 function Select(value) {
@@ -398,70 +565,71 @@
                     this.value = value;
                 }
                 selections = [];
-                for (var i=0; i<5; i++)
+                for (var i=0; i<21-rows*cols/3; i++)
                     selections.push( new Select(false) );
-                for (var i=0; i<16; i++)
+                for (var i=0; i<rows*cols/3; i++)
                     selections.push( new Select(true) );
                 selections.sort(function(a, b) { return a.random - b.random; });
                 
-                // add 16 of 21 available cards
+                // add rows*cols/3 of 21 available cards
                 var cards = [];
                 if (selections[0].value)
-                    addToArray(cards, 0, "0", "&nbsp;", "Zero");
+                    addToArray(cards, 0, "0", "&nbsp;", "Zero", "Null", rows, cols);
                 if (selections[1].value)
-                    addToArray(cards, 1, "1", "&#8231;", "One");
+                    addToArray(cards, 1, "1", "&#8231;", "One", "Eins", rows, cols);
                 if (selections[2].value)
-                    addToArray(cards, 2, "2", "&#8231;&#8231;", "Two");
+                    addToArray(cards, 2, "2", "&#8231;&#8231;", "Two", "Zwei", rows, cols);
                 if (selections[3].value)
-                    addToArray(cards, 3, "3", "&#8756;", "Three");
+                    addToArray(cards, 3, "3", "&#8756;", "Three", "Drei", rows, cols);
                 if (selections[4].value)
-                    addToArray(cards, 4, "4", "&#8280;", "Four");
+                    addToArray(cards, 4, "4", "&#8280;", "Four", "Vier", rows, cols);
                 if (selections[5].value)
-                    addToArray(cards, 5, "5", "&#8281;", "Five");
+                    addToArray(cards, 5, "5", "&#8281;", "Five", "Fünf", rows, cols);
                 if (selections[6].value)
-                    addToArray(cards, 6, "6", "&#8281;&nbsp;&nbsp;&#8231;", "Six");
+                    addToArray(cards, 6, "6", "&#8281;&nbsp;&nbsp;&#8231;", "Six", "Sechs", rows, cols);
                 if (selections[7].value)
-                    addToArray(cards, 7, "7", "&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seven");
+                    addToArray(cards, 7, "7", "&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seven", "Sieben", rows, cols);
                 if (selections[8].value)
-                    addToArray(cards, 8, "8", "&#8281;&nbsp;&nbsp;&#8756;", "Eight");
+                    addToArray(cards, 8, "8", "&#8281;&nbsp;&nbsp;&#8756;", "Eight", "Acht", rows, cols);
                 if (selections[9].value)
-                    addToArray(cards, 9, "9", "&#8281;&nbsp;&nbsp;&#8280;", "Nine");
+                    addToArray(cards, 9, "9", "&#8281;&nbsp;&nbsp;&#8280;", "Nine", "Neun", rows, cols);
                 if (selections[10].value)
-                    addToArray(cards, 10, "10", "&#8281;&nbsp;&nbsp;&#8281;", "Ten");
+                    addToArray(cards, 10, "10", "&#8281;&nbsp;&nbsp;&#8281;", "Ten", "Zehn", rows, cols);
                 if (selections[11].value)
-                    addToArray(cards, 11, "11", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8231;", "Eleven");
+                    addToArray(cards, 11, "11", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8231;", "Eleven", "Elf", rows, cols);
                 if (selections[12].value)
-                    addToArray(cards, 12, "12", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8231;&#8231;", "Twelve");
+                    addToArray(cards, 12, "12", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8231;&#8231;", "Twelve", "Zw&ouml;lf", rows, cols);
                 if (selections[13].value)
-                    addToArray(cards, 13, "13", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8756;", "Thirteen");
+                    addToArray(cards, 13, "13", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8756;", "Thirteen", "Dreizehn", rows, cols);
                 if (selections[14].value)
-                    addToArray(cards, 14, "14", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8280;", "Fourteen");
+                    addToArray(cards, 14, "14", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8280;", "Fourteen", "Vierzehn", rows, cols);
                 if (selections[15].value)
-                    addToArray(cards, 15, "15", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;", "Fifteen");
+                    addToArray(cards, 15, "15", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;", "Fifteen", "F&uuml;nfzehn", rows, cols);
                 if (selections[16].value)
-                    addToArray(cards, 16, "16", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;", "Sixteen");
+                    addToArray(cards, 16, "16", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;", "Sixteen", "Sechzehn", rows, cols);
                 if (selections[17].value)
-                    addToArray(cards, 17, "17", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seventeen");
+                    addToArray(cards, 17, "17", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seventeen", "Siebzehn", rows, cols);
                 if (selections[18].value)
-                    addToArray(cards, 18, "18", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8756;", "Eighteen");
+                    addToArray(cards, 18, "18", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8756;", "Eighteen", "Achzehn", rows, cols);
                 if (selections[19].value)
-                    addToArray(cards, 19, "19", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8280;", "Nineteen");
+                    addToArray(cards, 19, "19", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8280;", "Nineteen", "Neunzehn", rows, cols);
                 if (selections[20].value)
-                    addToArray(cards, 20, "20", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8281;", "Twenty");
+                    addToArray(cards, 20, "20", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8281;", "Twenty", "Zwanzig", rows, cols);
                 
                 // shuffle cards and assign tags
-                cards.sort( function(a, b) { return a.random - b.random; } );
+//                cards.sort( function(a, b) { return a.random - b.random; } );
                 for (var n=0; n<cards.length; n++)
                     cards[n].tag = "card_" + n.toString();
-                
-                // go full screen
-//                goFullScreen();
                 
                 // put the cards on the table
                 var cardString = "";
                 for (var n=0; n<cards.length; n++)
                     cardString += cards[n].html;
                 document.getElementById("table").innerHTML = cardString;
+                
+                // announce first player
+                _globalLock = true;
+                setTimeout( function(){_gameHistory.players[ _gameHistory.currentPlayer ].next(); _globalLock = false; }, 1000 );
             }
             
             //______________________________
@@ -505,10 +673,20 @@
             
             //______________________________
             // start the session
-            function startSession() {
+            function startSession(rows, cols, language) {
                 goFullScreen();
                 document.getElementById('message').style.display = 'none';
-                newGame();
+                newGame(rows, cols, language);
+            }
+            
+            
+            
+            //______________________________
+            // hides the first id and shows the second
+            function proceed(hide, show)
+            {
+                document.getElementById(hide).style.display = "none";
+                document.getElementById(show).style.display = "block";
             }
             
             //-->
@@ -519,16 +697,82 @@
         <div style="position: relative; width:100%; left:0%; height:100%; top:0%; bottom:0; margin:0; padding:0;">
             <div id="table" class="table">
             </div>
-            <div id="message" class="message">
-                <div id="messageText" style="position:relative; width:90%; height:90%; left:5%; top:5%; font-size: 2em;">
-                    This game is still under development.<br/><br/>
-                    A game of Memory. There are numbers on the cards, aim is to remember and find matching triplets of cards, showing the same number ("3", "&#8756;" and "Three" belong to the same triplet). Players play in turns, each player uncovers three cards by clicking on them. After three clicks it's the next player's turn.<br/>
-                    Note: The latest three cards always stay face up, even when it's the next player's turn; triplets can be completed on the first, second, or third click of your turn..<br/><br/>
-                    Press <b>Start Game</b> to start a new game, press <i>ESC</i> to leave full screen mode, press <i>F5</i> to refresh.
-                    <br/><br/><br/>
-                    <button onClick="startSession()">Start Game</button>
+            <div id="message">
+                <div id="language" class="message" style="display:block;">
+                        <button onClick="proceed('language', 'intro_en');" style="clear:left;">English</button>
+                        <button onClick="proceed('language', 'intro_de');" style="clear:left;">Deutsch</button>
+                </div>
+                <div id="intro_en" class="message">
+                    A game of Memory. <br> Remember and find matching triplets of cards showing the same number, like <span style="color: #f00000;"><b><i>3</i></b></span> and <span style="color: #f00000;"><b><i>&#8756;</i></b></span> and <span style="color: #f00000;"><b><i>Three</i></b></span>. Players play in turns, each player uncovers three cards by clicking on them. After three clicks it's the next player's turn.
+                    <br/>
+                    <button onClick="proceed('intro_en', 'names_en');" style="clear:left;">Next</button>
+                    <br/>
+                </div>
+                <div id="names_en" class="message">
+                    Enter up to four players:
+                    <br/>
+                    <input id="name1" type="text" class="text" style="clear:left; background-color: #ffe080"></input>
+                    <input id="name2" type="text" class="text" style="clear:left; background-color: #b0ffe0"></input>
+                    <input id="name3" type="text" class="text" style="clear:left; background-color: #e0b0ff"></input>
+                    <input id="name4" type="text" class="text" style="clear:left; background-color: #e0ff80"></input>
+                    <br/>
+                    <button onClick="proceed('names_en', 'start_en');" style="clear:left;">Next</button>
+                    <br/>
+                </div>
+                <div id="start_en" class="message">
+                    And choose your game size to start:
+                    <br/>
+                    <button onClick="startSession(7,9,'en')" style="clear:left;">Huge</button>
+                    <button onClick="startSession(6,8,'en')" style="clear:left;">Big</button>
+                    <button onClick="startSession(5,6,'en')" style="clear:left;">Medium</button>
+                    <button onClick="startSession(4,6,'en')" style="clear:left;">Small</button>
+                    <button onClick="startSession(3,5,'en')" style="clear:left;">Tiny</button>  
+                </div>
+                <div id="finish_en" class="message">
+                    <br/><br/>
+                    <span id="results_en"></span>
+                    <br/><br/>
+                    <button onClick="proceed('finish_en', 'names_en');" style="clear:left;">New Game</button>
+                    <br/>
+                </div>
+                <div id="intro_de" class="message">
+                    A game of Gedachtnis. <br> Remember and find matching triplets of cards showing the same number, like <span style="color: #f00000;"><b><i>3</i></b></span> and <span style="color: #f00000;"><b><i>&#8756;</i></b></span> and <span style="color: #f00000;"><b><i>Three</i></b></span>. Players play in turns, each player uncovers three cards by clicking on them. After three clicks it's the next player's turn.
+                    <br/>
+                    <button onClick="proceed('intro_de', 'names_de');" style="clear:left;">Next</button>
+                    <br/>
+                </div>
+                <div id="names_de" class="message">
+                    Tragt bis zu vier Spieler ein:
+                    <br/>
+                    <input id="name1" type="text" class="text" style="clear:left; background-color: #ffe080"></input>
+                    <input id="name2" type="text" class="text" style="clear:left; background-color: #b0ffe0"></input>
+                    <input id="name3" type="text" class="text" style="clear:left; background-color: #e0b0ff"></input>
+                    <input id="name4" type="text" class="text" style="clear:left; background-color: #e0ff80"></input>
+                    <br/>
+                    <button onClick="proceed('names_de', 'start_de');" style="clear:left;">Next</button>
+                    <br/>
+                </div>
+                <div id="start_de" class="message">
+                    Eine Spielgr&oum;&szlig;e w&auml;hlen:
+                    <br/>
+                    <button onClick="startSession(7,9,'de')" style="clear:left;">Huge</button>
+                    <button onClick="startSession(6,8,'de')" style="clear:left;">Big</button>
+                    <button onClick="startSession(5,6,'de')" style="clear:left;">Medium</button>
+                    <button onClick="startSession(4,6,'de')" style="clear:left;">Small</button>
+                    <button onClick="startSession(3,5,'de')" style="clear:left;">Tiny</button>  
+                </div>
+                <div id="finish_de" class="message">
+                    <br/><br/>
+                    <span id="results_de"></span>
+                    <br/><br/>
+                    <button onClick="proceed('finish_de', 'names_de');" style="clear:left;">New Game</button>
+                    <br/>
                 </div>
             </div>
+            <div id="player1" class="player"></div>
+            <div id="player2" class="player"></div>
+            <div id="player3" class="player"></div>
+            <div id="player4" class="player"></div>
         </div>
     </body>
 </html>
