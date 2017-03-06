@@ -508,27 +508,18 @@
                                 // add point to current player's score
                                 if (this.players.length > 1) {
                                     nextTimeOut += 700;
-                                    setTimeout( function(object, player){ object.currentPlayer.addPoint(); }.bind(0, this), nextTimeOut );
+                                    setTimeout( function(object){ object.currentPlayer.addPoint(); }.bind(0, this), nextTimeOut );
                                 }
                             }
                         }
                         
-                        // if game is over, show resuts
                         if (this.players.length == 1)
                             this.currentPlayer.points += 1;
+                        
+                        // if game is over, show results
                         if (this.movesLeft == 0) {
-                            resultsTable = "<table>"
-                            for (var i=0; i<this.players.length; i++) {
-                                player = this.players[i];
-                                resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + player.name
-                                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + player.points
-                                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + player.pointString
-                                + "&nbsp;&nbsp;&nbsp;</td></tr>";
-                            }
-                            resultsTable += "</table>";
-                            document.getElementById('results_' + _language).innerHTML = resultsTable;
                             nextTimeOut += 700;
-                            setTimeout( function(){ proceed('start_' + _language, 'finish_' + _language); quitFullScreen(); }, nextTimeOut );
+                            setTimeout( function(){ finishGame(); proceed('start_' + _language, 'finish_' + _language); quitFullScreen(); }, nextTimeOut );
                         }
                         
                         // otherwise, advance move to next player
@@ -647,7 +638,7 @@
                     addToArray(cards, 20, "20", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8281;", "Twenty", "Zwanzig", rows, cols);
                 
                 // shuffle cards and assign tags
-                cards.sort( function(a, b) { return a.random - b.random; } );
+//                cards.sort( function(a, b) { return a.random - b.random; } );
                 for (var n=0; n<cards.length; n++)
                     cards[n].tag = "card_" + n.toString();
                 
@@ -663,6 +654,28 @@
                     setTimeout( function(){_gameHistory.currentPlayer.next(); _globalLock = false; }, 1000 );
                 }
             }
+            
+            
+            
+            //______________________________
+            // start a new game --
+            // create a new gameHistory, create new cards, shuffle them
+            // and put them face down on the table
+            function finishGame(rows, cols)
+            {
+                resultsTable = "<table>"
+                for (var i=0; i<_gameHistory.players.length; i++) {
+                    player = _gameHistory.players[i];
+                    resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + player.name
+                    + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + player.points
+                    + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + player.pointString
+                    + "&nbsp;&nbsp;&nbsp;</td></tr>";
+                }
+                resultsTable += "</table>";
+                document.getElementById('results_' + _language).innerHTML = resultsTable;
+                nextTimeOut += 700;
+            }
+            
             
             //______________________________
             // go to full screen
