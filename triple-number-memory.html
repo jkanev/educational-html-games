@@ -39,8 +39,6 @@
                 display: inline;
                 margin: 1vw;
                 padding: 1vw;
-                position: relative;
-                float: left;
                 border: 1px solid #CCCCCC;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
                 -moz-box-shadow: #FEFFFF 0px 2px 2px ;
@@ -117,6 +115,21 @@
                 display: none;
             }
             
+            div.german {
+                background-color: #eaeaea;
+                width: 100%;
+                height: 100%;
+                -webkit-border-radius: 15px;
+                -moz-border-radius: 15px;
+                border-radius: 15px;
+                text-align: center;
+                font-size: 3vmin;
+                line-height: 10vmin;
+                vertical-align: middle;
+                color: #060;
+                display: none;
+            }
+            
             div.digits {
                 background-color: #eaeaea;
                 width: 100%;
@@ -135,7 +148,7 @@
             div.card {
                 position: relative;
                 float: left;
-                border: 1px solid #CCCCCC;
+                border: 0.1vw solid #CCCCCC;
                 margin: 0.3vw;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
                 -moz-box-shadow: #FEFFFF 0px 2px 2px ;
@@ -188,11 +201,18 @@
             }
             
             div.table {
-                position: absolute; left:0; right:0;padding:0; width:100vw; height:100vh;
+                position: absolute; left:0; right:0;padding:0; width:100vw; height:100vh; text-align: justify;
             }
             
             div.message {
-                position: absolute; left:0; right:0; border:0; padding:0; width:100%; height:100%; 
+                position: relative;
+                width:78%;
+                height:57%;
+                left:1%;
+                top:1%;
+                padding: 10%;
+                font-size: 2em;
+                display: none;
                 border: 1px solid #CCCCCC;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
                 -moz-box-shadow: #FEFFFF 0px 2px 2px ;
@@ -267,11 +287,12 @@
 
             div.player {
                 font-size: 2.5em;
+                padding: 5vw;
                 position: absolute;
                 left:33vw;
-                width:33vw;
-                top:33vh;
-                height: 33vh;
+                width:20vw;
+                top:15vh;
+                height: 20vh;
                 display: none;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
                 -moz-box-shadow: #FEFFFF 0px 2px 2px ;
@@ -279,19 +300,13 @@
                 -webkit-border-radius: 30px;
                 -moz-border-radius: 30px;
                 border-radius: 30px;
-                padding: 2.5em;
                 text-shadow: 0px 2px 2px rgba(255,255,255,1);
             }
             
-            div.message {
-                position:absolute;
-                width:77%;
-                height:100%;
-                left:1%;
-                top:1%;
-                padding: 10%;
-                font-size: 2em;
-                display: none;
+            span.stars {
+                text-shadow: 0px 0px 1px #400;
+                color: #fb0;
+                font-size: 1.5em;
             }
             
             </style>
@@ -318,16 +333,20 @@
                 this.id = id;
                 this.points = 0;
                 this.pointString = "";
+                this.nextPlayer = 0;
                 document.getElementById(this.id).style.backgroundColor = this.colour;
             }
             
             
             //______________________________
-            // Announce who is next
+            // Proceed to next player and announce
             Player.prototype.next = function()
             {
                 // show message
-                document.getElementById(this.id).innerHTML = "Next turn: " + this.name;
+                if (_language == "en")
+                    document.getElementById(this.id).innerHTML = "Next turn: " + this.name;
+                if (_language == "de")
+                    document.getElementById(this.id).innerHTML = "N&auml;chster Zug: " + this.name;
                 document.getElementById(this.id).style.display = "block";
                 
                 // start time out for hiding message
@@ -336,11 +355,13 @@
             
             
             
+            //______________________________
+            // Adds a point to the player's score and displays a message with the new score
             Player.prototype.addPoint = function()
             {
                 // show message
                 this.points += 1;
-                this.pointString += " &#9733;";
+                this.pointString += " <span class='stars'>&#9733;</span>";
                 message = this.name + ": " + this.points.toString();
                 if (_language == "en")
                     message += " points.<br/><br/><br/>" + this.pointString;
@@ -370,9 +391,11 @@
                 this.faceId = meaning.toString() + "_" + type + "_face";     // the respective div id, e.g. "3_english_face"
                 this.cardId = meaning.toString() + "_" + type + "_card";     // the respective div id for the card, e.g. "3_english_card"
                 
-                width = Math.round(100.0 / cols - 2).toString();
-                height = Math.round(100.0 / rows - 3).toString();
-                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width + "vw; height:" + height + "vh;\" onClick=\"_gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
+                width = Math.floor(87.0 / cols); // round, since Chrome on a tablet cannot do vw fractions (e.g. 4.1vw and 4.9vw looks the same).
+                left = (100.0 - cols*(width + 1.4)) / 2.0; // add the rounding error as left margin. 0.1 border + 0.3 margin + 0.3 padding * 2.
+                height = Math.floor(84.0 / rows);
+                top = (100.0 - rows*(height + 1.4)) / 2.0
+                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width.toString() + "vw; height:" + height.toString() + "vh; left:" + left.toString() + "vw; top:" + top.toString() + "vh;\" onClick=\"_gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
                     +     "<div class=\"" + this.type + "\" id=\"" + this.faceId + "\">"
                     +         this.string
                     +     "</div>"
@@ -413,10 +436,10 @@
             
             //______________________________
             // highlight a card
-            function highlightCard(id)
+            function highlightCard(id, colour)
             {
                 faceId = id + "_face";
-                document.getElementById(faceId).style.backgroundColor = "#fe9";
+                document.getElementById(faceId).style.backgroundColor = colour;
             };
             
             
@@ -428,7 +451,23 @@
             {
                 this.openCards = [];
                 this.players = players;
-                this.currentPlayer = 0;
+                
+                // assigne next players
+                for (var i=0; i<this.players.length; i++) {
+                    if (i<this.players.length-1)
+                        this.players[i].nextPlayer = this.players[i+1];
+                    else
+                        this.players[i].nextPlayer = this.players[0];
+                }
+                this.currentPlayer = this.players[0];
+                
+                // adjust point string if there's only one player
+                if (this.players.length == 1) {
+                    if (_language == "en")
+                        this.currentPlayer.pointString = "moves.";
+                    if (_language == "de")
+                        this.currentPlayer.pointString = "Z&uuml;ge.";
+                }
                 this.playerMove = 0;
                 this.movesLeft = moves;
             }
@@ -473,20 +512,22 @@
                                 // remove cards and increase value for timeout
                                 for (var i=0; i<3; i++) {
                                     var id = this.openCards.shift()[0];
-                                    highlightCard(id);
+                                    highlightCard(id, this.currentPlayer.colour);
                                     setTimeout( removeCard.bind(null, id), 700 );
                                 }
                                 this.movesLeft -= 1;
                                 
                                 // add point to current player's score
-                                if (this.players.length > 0) {
+                                if (this.players.length > 1) {
                                     nextTimeOut += 700;
-                                    setTimeout( function(object, player){ object.players[ player ].addPoint(); }.bind(0, this, this.currentPlayer), nextTimeOut );
+                                    setTimeout( function(object, player){ object.currentPlayer.addPoint(); }.bind(0, this), nextTimeOut );
                                 }
                             }
                         }
                         
                         // if game is over, show resuts
+                        if (this.players.length == 1)
+                            this.currentPlayer.points += 1;
                         if (this.movesLeft == 0) {
                             resultsTable = "<table>"
                             for (var i=0; i<this.players.length; i++) {
@@ -499,7 +540,7 @@
                             resultsTable += "</table>";
                             document.getElementById('results_' + _language).innerHTML = resultsTable;
                             nextTimeOut += 700;
-                            setTimeout( function(){ proceed('start_' + _language, 'finish_' + _language); proceed('table', 'message'); quitFullScreen(); }, nextTimeOut );
+                            setTimeout( function(){ proceed('start_' + _language, 'finish_' + _language); quitFullScreen(); }, nextTimeOut );
                         }
                         
                         // otherwise, advance move to next player
@@ -508,12 +549,8 @@
                                 this.playerMove += 1;
                                 if (this.playerMove==3) {
                                     this.playerMove = 0;
-                                    this.currentPlayer += 1;
-                                    if (this.currentPlayer >= this.players.length) {
-                                        this.currentPlayer = 0;
-                                    }
                                     nextTimeOut += 700;
-                                    setTimeout( function(object, player){object.players[ player ].next(); }.bind(0, this, this.currentPlayer), nextTimeOut);
+                                    setTimeout( function(object){object.currentPlayer = object.currentPlayer.nextPlayer; object.currentPlayer.next(); }.bind(0, this), nextTimeOut);
                                 }
                             }
                         }
@@ -543,19 +580,23 @@
             // start a new game --
             // create a new gameHistory, create new cards, shuffle them
             // and put them face down on the table
-            function newGame(rows, cols, language)
+            function newGame(rows, cols)
             {
                 // get players and create history
                 players = [];
                 for (var i=1; i<5; i++) {
-                    name = document.getElementById("name" + i.toString()).value.trim();
+                    name = document.getElementById("name" + i.toString() + "_" + _language).value.trim();
                     if( name != "") {
                         id = "player"+i.toString();
-                        colour = document.getElementById("name" + i.toString()).style.backgroundColor;
+                        colour = document.getElementById("name" + i.toString() + "_" + _language).style.backgroundColor;
                         players.push(new Player(name, colour, id) );
                     }
                 }
-                _language = language;
+                if (players.length==0)
+                    if (_lange = "de")
+                        players = [ new Player("Gel&ouml;st in", document.getElementById("name1_de").style.backgroundColor, "player1") ];
+                    if (_lange = "de")
+                        players = [ new Player("Solved in", document.getElementById("name1_en").style.backgroundColor, "player1") ];
                 _gameHistory = null;
                 _gameHistory = new GameHistory(players, rows*cols/3);
                 
@@ -584,7 +625,7 @@
                 if (selections[4].value)
                     addToArray(cards, 4, "4", "&#8280;", "Four", "Vier", rows, cols);
                 if (selections[5].value)
-                    addToArray(cards, 5, "5", "&#8281;", "Five", "Fünf", rows, cols);
+                    addToArray(cards, 5, "5", "&#8281;", "Five", "F&uuml;nf", rows, cols);
                 if (selections[6].value)
                     addToArray(cards, 6, "6", "&#8281;&nbsp;&nbsp;&#8231;", "Six", "Sechs", rows, cols);
                 if (selections[7].value)
@@ -617,7 +658,7 @@
                     addToArray(cards, 20, "20", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8281;", "Twenty", "Zwanzig", rows, cols);
                 
                 // shuffle cards and assign tags
-//                cards.sort( function(a, b) { return a.random - b.random; } );
+                cards.sort( function(a, b) { return a.random - b.random; } );
                 for (var n=0; n<cards.length; n++)
                     cards[n].tag = "card_" + n.toString();
                 
@@ -628,8 +669,10 @@
                 document.getElementById("table").innerHTML = cardString;
                 
                 // announce first player
-                _globalLock = true;
-                setTimeout( function(){_gameHistory.players[ _gameHistory.currentPlayer ].next(); _globalLock = false; }, 1000 );
+                if (_gameHistory.players.length>1) {
+                    _globalLock = true;
+                    setTimeout( function(){_gameHistory.currentPlayer.next(); _globalLock = false; }, 1000 );
+                }
             }
             
             //______________________________
@@ -674,8 +717,8 @@
             //______________________________
             // start the session
             function startSession(rows, cols, language) {
+                _language = language;
                 goFullScreen();
-                document.getElementById('message').style.display = 'none';
                 newGame(rows, cols, language);
             }
             
@@ -695,80 +738,104 @@
     </head>
     <body>
         <div style="position: relative; width:100%; left:0%; height:100%; top:0%; bottom:0; margin:0; padding:0;">
+            
+            <!-- Card table -->
             <div id="table" class="table">
             </div>
-            <div id="message">
-                <div id="language" class="message" style="display:block;">
-                        <button onClick="proceed('language', 'intro_en');" style="clear:left;">English</button>
-                        <button onClick="proceed('language', 'intro_de');" style="clear:left;">Deutsch</button>
-                </div>
-                <div id="intro_en" class="message">
-                    A game of Memory. <br> Remember and find matching triplets of cards showing the same number, like <span style="color: #f00000;"><b><i>3</i></b></span> and <span style="color: #f00000;"><b><i>&#8756;</i></b></span> and <span style="color: #f00000;"><b><i>Three</i></b></span>. Players play in turns, each player uncovers three cards by clicking on them. After three clicks it's the next player's turn.
-                    <br/>
-                    <button onClick="proceed('intro_en', 'names_en');" style="clear:left;">Next</button>
-                    <br/>
-                </div>
-                <div id="names_en" class="message">
-                    Enter up to four players:
-                    <br/>
-                    <input id="name1" type="text" class="text" style="clear:left; background-color: #ffe080"></input>
-                    <input id="name2" type="text" class="text" style="clear:left; background-color: #b0ffe0"></input>
-                    <input id="name3" type="text" class="text" style="clear:left; background-color: #e0b0ff"></input>
-                    <input id="name4" type="text" class="text" style="clear:left; background-color: #e0ff80"></input>
-                    <br/>
-                    <button onClick="proceed('names_en', 'start_en');" style="clear:left;">Next</button>
-                    <br/>
-                </div>
-                <div id="start_en" class="message">
-                    And choose your game size to start:
-                    <br/>
-                    <button onClick="startSession(7,9,'en')" style="clear:left;">Huge</button>
-                    <button onClick="startSession(6,8,'en')" style="clear:left;">Big</button>
-                    <button onClick="startSession(5,6,'en')" style="clear:left;">Medium</button>
-                    <button onClick="startSession(4,6,'en')" style="clear:left;">Small</button>
-                    <button onClick="startSession(3,5,'en')" style="clear:left;">Tiny</button>  
-                </div>
-                <div id="finish_en" class="message">
-                    <br/><br/>
-                    <span id="results_en"></span>
-                    <br/><br/>
-                    <button onClick="proceed('finish_en', 'names_en');" style="clear:left;">New Game</button>
-                    <br/>
-                </div>
-                <div id="intro_de" class="message">
-                    A game of Gedachtnis. <br> Remember and find matching triplets of cards showing the same number, like <span style="color: #f00000;"><b><i>3</i></b></span> and <span style="color: #f00000;"><b><i>&#8756;</i></b></span> and <span style="color: #f00000;"><b><i>Three</i></b></span>. Players play in turns, each player uncovers three cards by clicking on them. After three clicks it's the next player's turn.
-                    <br/>
-                    <button onClick="proceed('intro_de', 'names_de');" style="clear:left;">Next</button>
-                    <br/>
-                </div>
-                <div id="names_de" class="message">
-                    Tragt bis zu vier Spieler ein:
-                    <br/>
-                    <input id="name1" type="text" class="text" style="clear:left; background-color: #ffe080"></input>
-                    <input id="name2" type="text" class="text" style="clear:left; background-color: #b0ffe0"></input>
-                    <input id="name3" type="text" class="text" style="clear:left; background-color: #e0b0ff"></input>
-                    <input id="name4" type="text" class="text" style="clear:left; background-color: #e0ff80"></input>
-                    <br/>
-                    <button onClick="proceed('names_de', 'start_de');" style="clear:left;">Next</button>
-                    <br/>
-                </div>
-                <div id="start_de" class="message">
-                    Eine Spielgr&oum;&szlig;e w&auml;hlen:
-                    <br/>
-                    <button onClick="startSession(7,9,'de')" style="clear:left;">Huge</button>
-                    <button onClick="startSession(6,8,'de')" style="clear:left;">Big</button>
-                    <button onClick="startSession(5,6,'de')" style="clear:left;">Medium</button>
-                    <button onClick="startSession(4,6,'de')" style="clear:left;">Small</button>
-                    <button onClick="startSession(3,5,'de')" style="clear:left;">Tiny</button>  
-                </div>
-                <div id="finish_de" class="message">
-                    <br/><br/>
-                    <span id="results_de"></span>
-                    <br/><br/>
-                    <button onClick="proceed('finish_de', 'names_de');" style="clear:left;">New Game</button>
-                    <br/>
+            
+            <!-- Language chose -->
+            <div id="language" class="message" style="display:block;">
+                    <button onClick="proceed('language', 'intro_en');" style="clear:left;">English</button>
+                    <button onClick="proceed('language', 'intro_de');" style="clear:left;">Deutsch</button>
+            </div>
+            
+            <!-- English workflow -->
+            <div id="intro_en" class="message">
+                <b>Triple Number Memory</b> <br>
+                Remember and find matching triplets of cards showing the same number, like <span style="color: #f00000;"><b><i>3</i></b></span> and <span style="color: #f00000;"><b><i>&#8756;</i></b></span> and <span style="color: #f00000;"><b><i>Three</i></b></span>. Players play in turns, each player uncovers three new cards by clicking on them. After three clicks it's the next player's turn.
+                <br/><br/>
+                <div>
+                    <button onClick="proceed('intro_en', 'names_en');">Next</button> or <button onClick="proceed('intro_en', 'language');">Go Back</button>
                 </div>
             </div>
+            <div id="names_en" class="message">
+                Enter up to four players
+                <br/>
+                <input id="name1_en" type="text" class="text" style="clear:left; background-color: #fff090"></input>
+                <input id="name2_en" type="text" class="text" style="clear:left; background-color: #b0fff0"></input>
+                <input id="name3_en" type="text" class="text" style="clear:left; background-color: #f0c0ff"></input>
+                <input id="name4_en" type="text" class="text" style="clear:left; background-color: #e0ffa0"></input>
+                <br/><br/>
+                <div>
+                    <button onClick="proceed('names_en', 'start_en');">Next</button> or <button onClick="proceed('names_en', 'intro_en');">Go Back</button>
+                </div>
+            </div>
+            <div id="start_en" class="message">
+                Choose your game size and start
+                <br/>
+                <button onClick="startSession(7,9,'en'); proceed('start_en', 'table');" style="clear:left;">Huge</button>
+                <button onClick="startSession(6,8,'en'); proceed('start_en', 'table');" style="clear:left;">Big</button>
+                <button onClick="startSession(5,6,'en'); proceed('start_en', 'table');" style="clear:left;">Medium</button>
+                <button onClick="startSession(4,6,'en'); proceed('start_en', 'table');" style="clear:left;">Small</button>
+                <button onClick="startSession(3,5,'en'); proceed('start_en', 'table');" style="clear:left;">Tiny</button>  
+                <br/><br/>
+                <div>
+                    Or <button onClick="proceed('start_en', 'names_en');">Go Back</button>
+                </div>
+            </div>
+            <div id="finish_en" class="message">
+                Final Results
+                <br/><br/>
+                <span id="results_en"></span>
+                <br/><br/>
+                <button onClick="proceed('finish_en', 'names_en');" style="clear:left;">New Game</button>
+                <br/>
+            </div>
+            
+            <!-- German workflow -->
+            <div id="intro_de" class="message">
+                <b>Dreifach-Zahlen-Memory</b> <br>
+                Finde alle Karten, die die gleiche Zahl zeigen. Immer drei Karten geh&ouml;ren zusammen, wie zum Beispield <span style="color: #f00000;"><b><i>3</i></b></span> und <span style="color: #f00000;"><b><i>&#8756;</i></b></span> und <span style="color: #f00000;"><b><i>Drei</i></b></span>. Spieler spielen der Reihe nach, jeder Spieler deckt drei neue Karten auf, danach ist der n&auml;chste Spieler an der Reihe.
+                <br/><br/>
+                <div>
+                    <button onClick="proceed('intro_de', 'names_de');">Weiter</button> oder <button onClick="proceed('intro_de', 'language');">Zur&uuml;ck</button>
+                </div>
+            </div>
+            <div id="names_de" class="message">
+                Tragt bis zu vier Spieler ein
+                <br/>
+                <input id="name1_de" type="text" class="text" style="clear:left; background-color: #fff090"></input>
+                <input id="name2_de" type="text" class="text" style="clear:left; background-color: #b0fff0"></input>
+                <input id="name3_de" type="text" class="text" style="clear:left; background-color: #f0c0ff"></input>
+                <input id="name4_de" type="text" class="text" style="clear:left; background-color: #e0ffa0"></input>
+                <br/><br/>
+                <div>
+                    <button onClick="proceed('names_de', 'start_de');">Weiter</button> oder <button onClick="proceed('names_de', 'intro_de');">Zur&uuml;ck</button>
+                </div>
+            </div>
+            <div id="start_de" class="message">
+                W&auml;hlt eine Spielgr&ouml;&szlig;e
+                <br/>
+                <button onClick="startSession(7,9,'de'); proceed('start_de', 'table');" style="clear:left;">Riesig</button>
+                <button onClick="startSession(6,8,'de'); proceed('start_de', 'table');" style="clear:left;">Gro&szlig;</button>
+                <button onClick="startSession(5,6,'de'); proceed('start_de', 'table');" style="clear:left;">Mittel</button>
+                <button onClick="startSession(4,6,'de'); proceed('start_de', 'table');" style="clear:left;">Klein</button>
+                <button onClick="startSession(3,5,'de'); proceed('start_de', 'table');" style="clear:left;">Winzig</button>  
+                <br/><br/>
+                <div>
+                    Oder <button onClick="proceed('start_de', 'names_de');">Zur&uuml;ck</button>
+                </div>
+            </div>
+            <div id="finish_de" class="message">
+                Ergebnis
+                <br/><br/>
+                <span id="results_de"></span>
+                <br/><br/>
+                <button onClick="proceed('finish_de', 'names_de');" style="clear:left;">Neues Spiel</button>
+                <br/>
+            </div>
+            
+            <!-- Player message boxes -->
             <div id="player1" class="player"></div>
             <div id="player2" class="player"></div>
             <div id="player3" class="player"></div>
