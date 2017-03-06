@@ -327,7 +327,7 @@
             
             
             //______________________________
-            // Proceed to next player and announce
+            // Proceed to next player, announce, and remove lock
             Player.prototype.next = function()
             {
                 // show message
@@ -338,13 +338,13 @@
                 document.getElementById(this.id).style.display = "block";
                 
                 // start time out for hiding message
-                setTimeout( function(id) { document.getElementById(id).style.display = "none"; }.bind(0, this.id), 700 );
+                setTimeout( function(id) { document.getElementById(id).style.display = "none"; _globalLock = false;  }.bind(0, this.id), 700 );
             }
             
             
             
             //______________________________
-            // Adds a point to the player's score and displays a message with the new score
+            // Adds a point to the player's score,  displays a message with the new score and releases the lock
             Player.prototype.addPoint = function()
             {
                 // show message
@@ -359,7 +359,7 @@
                 document.getElementById(this.id).style.display = "block";
                 
                 // start time out for hiding message
-                setTimeout( function(id) { document.getElementById(id).style.display = "none"; }.bind(0, this.id), 700 );
+                setTimeout( function(id) { document.getElementById(id).style.display = "none";  _globalLock = false;}.bind(0, this.id), 700 );
             }
             
             
@@ -498,20 +498,23 @@
                             if (this.openCards[0][1] === this.openCards[1][1] && this.openCards[1][1] === this.openCards[2][1]) {
                                 
                                 // remove cards and increase value for timeout
+                                nextTimeOut += 700;
                                 for (var i=0; i<3; i++) {
                                     var id = this.openCards.shift()[0];
                                     highlightCard(id, this.currentPlayer.colour);
-                                    setTimeout( removeCard.bind(null, id), 700 );
+                                    setTimeout( removeCard.bind(null, id), nextTimeOut );
                                 }
                                 this.movesLeft -= 1;
                                 
                                 // add point to current player's score
                                 if (this.players.length > 1) {
                                     nextTimeOut += 700;
-                                    setTimeout( function(object){ object.currentPlayer.addPoint(); }.bind(0, this), nextTimeOut );
+                                    setTimeout( function(){ _gameHistory.currentPlayer.addPoint(); }, nextTimeOut );
                                 }
                             }
                         }
+                        else
+                            setTimeout( function(){_globalLock=false;}, nextTimeOut );
                         
                         if (this.players.length == 1)
                             this.currentPlayer.points += 1;
@@ -529,12 +532,14 @@
                                 if (this.playerMove==3) {
                                     this.playerMove = 0;
                                     nextTimeOut += 700;
-                                    setTimeout( function(object){object.currentPlayer = object.currentPlayer.nextPlayer; object.currentPlayer.next(); }.bind(0, this), nextTimeOut);
+                                    setTimeout( function(){_gameHistory.currentPlayer = _gameHistory.currentPlayer.nextPlayer; _gameHistory.currentPlayer.next(); }, nextTimeOut);
                                 }
+                                else
+                                    setTimeout( function(){_globalLock=false;}, nextTimeOut );
                             }
+                            else
+                                setTimeout( function(){_globalLock=false;}, nextTimeOut );
                         }
-                            
-                        setTimeout( function(){_globalLock=false;}, nextTimeOut );
                     }
                 }
             };
@@ -651,7 +656,7 @@
                 // announce first player
                 if (_gameHistory.players.length>1) {
                     _globalLock = true;
-                    setTimeout( function(){_gameHistory.currentPlayer.next(); _globalLock = false; }, 1000 );
+                    setTimeout( function(){_gameHistory.currentPlayer.next(); }, 1000 );
                 }
             }
             
