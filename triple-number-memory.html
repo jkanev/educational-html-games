@@ -638,7 +638,7 @@
                     addToArray(cards, 20, "20", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8281;", "Twenty", "Zwanzig", rows, cols);
                 
                 // shuffle cards and assign tags
-//                cards.sort( function(a, b) { return a.random - b.random; } );
+                cards.sort( function(a, b) { return a.random - b.random; } );
                 for (var n=0; n<cards.length; n++)
                     cards[n].tag = "card_" + n.toString();
                 
