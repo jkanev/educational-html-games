@@ -381,9 +381,9 @@
                 
                 width = Math.floor(86.0 / cols); // round, since Chrome on a tablet cannot do vw fractions (e.g. 4.1vw and 4.9vw looks the same).
                 left = (100.0 - cols*(width + 1.4)) / 2.0; // add the rounding error as left margin. 0.1 border + 0.3 margin + 0.3 padding * 2.
-                height = Math.floor(84.0 / rows);
-                top = (100.0 - rows*(height + 1.4)) / 2.0
-                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width.toString() + "vw; height:" + height.toString() + "vh; left:" + left.toString() + "vw; top:" + top.toString() + "vh;\" onClick=\"_gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
+                height = Math.floor(78.0 / rows);
+                topValue = (100.0 - rows*(height + 2.4)) / 2.0;
+                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width.toString() + "vw; height:" + height.toString() + "vh; left:" + left.toString() + "vw; top:" + topValue.toString() + "vh;\" onClick=\"_gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
                     +     "<div class=\"" + this.type + "\" id=\"" + this.faceId + "\">"
                     +         this.string
                     +     "</div>"
@@ -579,7 +579,7 @@
                 if (players.length==0) {
                     if (_language = "de")
                         players = [ new Player("Gel&ouml;st in", document.getElementById("name1_de").style.backgroundColor, "player1") ];
-                    if (_language = "de")
+                    if (_language = "en")
                         players = [ new Player("Solved in", document.getElementById("name1_en").style.backgroundColor, "player1") ];
                 }
                 _gameHistory = null;
