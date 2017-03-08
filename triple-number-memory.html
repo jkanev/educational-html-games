@@ -21,7 +21,7 @@
     <head>
         <title>Triple Number Memory</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>
             
             html, body {
@@ -86,6 +86,7 @@
             }
             
             div.dots {
+                font-weight: bold;
                 background-color: #eaeaea;
                 width: 100%;
                 height: 100%;
@@ -379,12 +380,14 @@
                 this.faceId = meaning.toString() + "_" + type + "_face";     // the respective div id, e.g. "3_english_face"
                 this.cardId = meaning.toString() + "_" + type + "_card";     // the respective div id for the card, e.g. "3_english_card"
                 
-                width = Math.floor(86.0 / cols); // round, since Chrome on a tablet cannot do vw fractions (e.g. 4.1vw and 4.9vw looks the same).
+                width = Math.floor(89.0 / cols); // round, since Chrome on a tablet cannot do vw fractions (e.g. 4.1vw and 4.9vw looks the same).
                 left = (100.0 - cols*(width + 1.4)) / 2.0; // add the rounding error as left margin. 0.1 border + 0.3 margin + 0.3 padding * 2.
-                height = Math.floor(78.0 / rows);
+                height = Math.floor(80.0 / rows);
                 topValue = (100.0 - rows*(height + 2.4)) / 2.0;
+                fontSize = type=="dots" ? 30 / cols : 15 / cols;
+                lineHeight =  type=="dots" ? 47 / cols : 80 / cols;
                 this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width.toString() + "vw; height:" + height.toString() + "vh; left:" + left.toString() + "vw; top:" + topValue.toString() + "vh;\" onClick=\"_gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
-                    +     "<div class=\"" + this.type + "\" id=\"" + this.faceId + "\">"
+                    +     "<div class=\"" + this.type + "\" id=\"" + this.faceId + "\" style=\"font-size:" + fontSize.toString() + "vw; line-height:" + lineHeight.toString() + "vh;\">"
                     +         this.string
                     +     "</div>"
                     + "</div>";
@@ -612,35 +615,35 @@
                 if (selections[5].value)
                     addToArray(cards, 5, "5", "&#8281;", "Five", "F&uuml;nf", rows, cols);
                 if (selections[6].value)
-                    addToArray(cards, 6, "6", "&#8281;&nbsp;&nbsp;&#8231;", "Six", "Sechs", rows, cols);
+                    addToArray(cards, 6, "6", "<span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8231;", "Six", "Sechs", rows, cols);
                 if (selections[7].value)
-                    addToArray(cards, 7, "7", "&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seven", "Sieben", rows, cols);
+                    addToArray(cards, 7, "7", "<span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8231;&#8231;", "Seven", "Sieben", rows, cols);
                 if (selections[8].value)
-                    addToArray(cards, 8, "8", "&#8281;&nbsp;&nbsp;&#8756;", "Eight", "Acht", rows, cols);
+                    addToArray(cards, 8, "8", "<span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8756;", "Eight", "Acht", rows, cols);
                 if (selections[9].value)
-                    addToArray(cards, 9, "9", "&#8281;&nbsp;&nbsp;&#8280;", "Nine", "Neun", rows, cols);
+                    addToArray(cards, 9, "9", "<span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8280;", "Nine", "Neun", rows, cols);
                 if (selections[10].value)
-                    addToArray(cards, 10, "10", "&#8281;&nbsp;&nbsp;&#8281;", "Ten", "Zehn", rows, cols);
+                    addToArray(cards, 10, "10", "<span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8281;", "Ten", "Zehn", rows, cols);
                 if (selections[11].value)
-                    addToArray(cards, 11, "11", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8231;", "Eleven", "Elf", rows, cols);
+                    addToArray(cards, 11, "11", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/>&#8231;", "Eleven", "Elf", rows, cols);
                 if (selections[12].value)
-                    addToArray(cards, 12, "12", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8231;&#8231;", "Twelve", "Zw&ouml;lf", rows, cols);
+                    addToArray(cards, 12, "12", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/>&#8231;&#8231;", "Twelve", "Zw&ouml;lf", rows, cols);
                 if (selections[13].value)
-                    addToArray(cards, 13, "13", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8756;", "Thirteen", "Dreizehn", rows, cols);
+                    addToArray(cards, 13, "13", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/>&#8756;", "Thirteen", "Dreizehn", rows, cols);
                 if (selections[14].value)
-                    addToArray(cards, 14, "14", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8280;", "Fourteen", "Vierzehn", rows, cols);
+                    addToArray(cards, 14, "14", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/>&#8280;", "Fourteen", "Vierzehn", rows, cols);
                 if (selections[15].value)
-                    addToArray(cards, 15, "15", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;", "Fifteen", "F&uuml;nfzehn", rows, cols);
+                    addToArray(cards, 15, "15", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/>&#8281;", "Fifteen", "F&uuml;nfzehn", rows, cols);
                 if (selections[16].value)
-                    addToArray(cards, 16, "16", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;", "Sixteen", "Sechzehn", rows, cols);
+                    addToArray(cards, 16, "16", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/><span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8231;", "Sixteen", "Sechzehn", rows, cols);
                 if (selections[17].value)
-                    addToArray(cards, 17, "17", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8231;&#8231;", "Seventeen", "Siebzehn", rows, cols);
+                    addToArray(cards, 17, "17", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/><span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8231;&#8231;", "Seventeen", "Siebzehn", rows, cols);
                 if (selections[18].value)
-                    addToArray(cards, 18, "18", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8756;", "Eighteen", "Achzehn", rows, cols);
+                    addToArray(cards, 18, "18", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/><span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8756;", "Eighteen", "Achzehn", rows, cols);
                 if (selections[19].value)
-                    addToArray(cards, 19, "19", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8280;", "Nineteen", "Neunzehn", rows, cols);
+                    addToArray(cards, 19, "19", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/><span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8280;", "Nineteen", "Neunzehn", rows, cols);
                 if (selections[20].value)
-                    addToArray(cards, 20, "20", "&#8281;&nbsp;&nbsp;&#8281;<br/>&#8281;&nbsp;&nbsp;&#8281;", "Twenty", "Zwanzig", rows, cols);
+                    addToArray(cards, 20, "20", "<span style='color:#888;'>&#8281;&nbsp;&nbsp;&#8281;</span><br/><span style='color:#000;'>&#8281;</span>&nbsp;&nbsp;&#8281;", "Twenty", "Zwanzig", rows, cols);
                 
                 // shuffle cards and assign tags
                 cards.sort( function(a, b) { return a.random - b.random; } );
