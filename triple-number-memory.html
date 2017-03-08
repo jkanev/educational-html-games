@@ -580,9 +580,9 @@
                     }
                 }
                 if (players.length==0) {
-                    if (_language = "de")
+                    if (_language == "de")
                         players = [ new Player("Gel&ouml;st in", document.getElementById("name1_de").style.backgroundColor, "player1") ];
-                    if (_language = "en")
+                    if (_language == "en")
                         players = [ new Player("Solved in", document.getElementById("name1_en").style.backgroundColor, "player1") ];
                 }
                 _gameHistory = null;
@@ -729,7 +729,7 @@
             function startSession(rows, cols, language) {
                 _language = language;
                 goFullScreen();
-                newGame(rows, cols, language);
+                newGame(rows, cols);
             }
             
             
