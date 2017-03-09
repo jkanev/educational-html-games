@@ -58,7 +58,7 @@
                 background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
                 filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#F7F5F6, endColorstr=#DDDDDD);
                 white-space: normal;
-                font-size: 1.2em;
+                font-size: 3vmin;
             }
             
             button:hover{
@@ -94,8 +94,6 @@
                 -moz-border-radius: 15px;
                 border-radius: 15px;
                 text-align: center;
-                font-size: 6vmin;
-                line-height: 6vmin;
                 vertical-align: middle;
                 color: #a00;
                 display: none;
@@ -109,8 +107,6 @@
                 -moz-border-radius: 15px;
                 border-radius: 15px;
                 text-align: center;
-                font-size: 3vmin;
-                line-height: 10vmin;
                 vertical-align: middle;
                 color: #060;
                 display: none;
@@ -124,8 +120,6 @@
                 -moz-border-radius: 15px;
                 border-radius: 15px;
                 text-align: center;
-                font-size: 3vmin;
-                line-height: 10vmin;
                 vertical-align: middle;
                 color: #060;
                 display: none;
@@ -139,8 +133,6 @@
                 -moz-border-radius: 15px;
                 border-radius: 15px;
                 text-align: center;
-                font-size: 4vmin;
-                line-height: 12vmin;
                 vertical-align: middle;
                 color: #00a;
                 display: none;
@@ -212,7 +204,7 @@
                 left:1%;
                 top:1%;
                 padding: 10vh 10vw 10vh 10vw;
-                font-size: 2em;
+                font-size: 3vmin;
                 display: none;
                 border: 1px solid #CCCCCC;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
@@ -247,17 +239,9 @@
                 border-radius: 10px;
             }
             
-            span.bubble {
-                position: absolute;
-                left:100px;
-                top:10px; 
-                font-size: 4em;
-                text-shadow: 0.2em 1em 1em rgba(10,10,10,1);
-            }
-            
             input.text {
                 font-family: verdana, arial, sansserif;
-                font-size: 1.1em;
+                font-size: 3vmin;
                 position: relative;
                 float: left;
                 border: 0.1px solid #CCCCCC;
@@ -275,12 +259,12 @@
             }
 
             div.player {
-                font-size: 2.5em;
+                font-size: 3vmin;
                 padding: 5vw;
                 position: absolute;
                 left:33vw;
                 width:20vw;
-                top:15vh;
+                top:13vmin;
                 height: 20vh;
                 display: none;
                 -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
@@ -295,7 +279,7 @@
             span.stars {
                 text-shadow: 0px 0px 1px #400;
                 color: #fb0;
-                font-size: 1.5em;
+                font-size: 5vmin;
             }
             
             </style>
@@ -380,12 +364,23 @@
                 this.faceId = meaning.toString() + "_" + type + "_face";     // the respective div id, e.g. "3_english_face"
                 this.cardId = meaning.toString() + "_" + type + "_card";     // the respective div id for the card, e.g. "3_english_card"
                 
-                width = Math.floor(89.0 / cols); // round, since Chrome on a tablet cannot do vw fractions (e.g. 4.1vw and 4.9vw looks the same).
-                left = (100.0 - cols*(width + 1.4)) / 2.0; // add the rounding error as left margin. 0.1 border + 0.3 margin + 0.3 padding * 2.
+                // determine sizes for width, left, top and height
+                width = Math.floor(89.0 / cols); 
+                left = (100.0 - cols*(width + 1.4)) / 2.0; 
                 height = Math.floor(80.0 / rows);
                 topValue = (100.0 - rows*(height + 2.4)) / 2.0;
                 fontSize = type=="dots" ? 30 / cols : 15 / cols;
                 lineHeight =  type=="dots" ? 47 / cols : 80 / cols;
+                
+                // hack for bug in Chrome on Android
+                if (navigator.userAgent.indexOf("Chrome") > -1 && navigator.userAgent.indexOf("Android") > -1) {
+                    factor = 0.86;
+                    height *= factor;
+                    topValue *= factor;
+                    fontSize *= factor;
+                    lineHeight *= factor;
+                }
+
                 this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width.toString() + "vw; height:" + height.toString() + "vh; left:" + left.toString() + "vw; top:" + topValue.toString() + "vh;\" onClick=\"_gameHistory.move(" + this.meaning.toString() + ", '" + this.type + "');\">"
                     +     "<div class=\"" + this.type + "\" id=\"" + this.faceId + "\" style=\"font-size:" + fontSize.toString() + "vw; line-height:" + lineHeight.toString() + "vh;\">"
                     +         this.string
