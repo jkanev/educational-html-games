@@ -2,8 +2,10 @@
 <!DOCTYPE html>
 <html>
     <!-- 
-    Simple html game to teach grasping the size of a set by sight
-    Copyright (C) 2016 Jacob Kanev
+    Simple html memory game to teach the concept of numbers.
+    Remember the place of cards that show the same number in different representations.
+    
+    Copyright (C) 2017 Jacob Kanev
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -465,6 +467,7 @@
             GameHistory.prototype.move = function(meaning, type)
             {
                 if (!_globalLock) {
+                    
                     // assemble id
                     id = meaning.toString() + "_" + type;
                     
@@ -652,6 +655,7 @@
                 document.getElementById("table").innerHTML = cardString;
                 
                 // announce first player
+                _globalLock = false;
                 if (_gameHistory.players.length>1) {
                     _globalLock = true;
                     setTimeout( function(){_gameHistory.currentPlayer.next(); }, 1000 );
