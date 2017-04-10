@@ -329,6 +329,8 @@
                     this.cards.push(new Card(i, rows, cols, this.id));
                     cardString += this.cards[i].html;
                 }
+                this.openCards = max;
+                this.hasPassed = false;
                 document.getElementById("table_" + this.id).innerHTML = cardString;
                 document.getElementById(this.id).style.backgroundColor = this.colour;
             }
@@ -352,7 +354,7 @@
                 document.getElementById(this.id).style.display = "block";
                 
                 // start time out for hiding message
-                setTimeout( function(id) { document.getElementById(id).style.display = "none";  _globalLock = false;}.bind(0, this.id), 700 );
+                setTimeout( function(id) { document.getElementById(id).style.display = "none";  _globalLock = false;}.bind(0, this.id), 1200 );
             };
             
             
@@ -361,25 +363,35 @@
             Player.prototype.clearUp = function()
             {
                 for (i=0; i<this.cards.length; i++) {
-                    if (this.cards[i].state === 'suggested')
+                    if (this.cards[i].state === 'suggested') {
                         this.cards[i].remove();
+                        this.openCards--;
+                    }
                 }
             };
             
             
+          
             //______________________________
             // Displays help for the player (what to do next)
             Player.prototype.hint = function(text)
             {
-                document.getElementById("hint_" + this.id).innerHTML = text;
+                document.getElementById("hint_" + this.id).innerHTML = this.name + "<br/>" + this.pointString + "<br/>" + text;
             };
             
             
+            //______________________________
+            // Query whether player has any open cards left
+            Player.prototype.isFinished = function()
+            {
+                return this.openCards == 0;
+            }
             
             //______________________________
             // Pass - remove all highlights and confirm
             Player.prototype.pass = function()
             {
+                this.hasPassed = true;
                 for (var i=0; i<this.cards.length; i++) {
                     this.cards[i].suggest(false);
                 }
@@ -428,10 +440,12 @@
                         }
                         break;
                     case 'solution':
+                        this.hasPassed = false;
                         this.hint("Choose a number for " + this.nextPlayer.name + ".");
                         var open = 0;
+                        var max = Math.round(this.cards.length / 4);
                         for (var i=this.cards.length-1; i>-1; i--) {
-                            if (this.cards[i].state === "open" && open < 5) {
+                            if (this.cards[i].state === "open" && open < max) {
                                 this.cards[i].enable();
                                 open++;
                             } else
@@ -571,6 +585,8 @@
                 this.currentPlayer.confirm(this.nextMove);
                 this.player1.clearUp();
                 this.player2.clearUp();
+                if (this.player1.isFinished() || this.player2.isFinished())
+                    this.finishGame();
             };
             
             
@@ -584,7 +600,10 @@
                 this.nextMove = "solution";
                 this.currentPlayer.pass();
                 this.currentPlayer.confirm(this.nextMove);
+                this.currentPlayer.hasPassed = true;
                 this.updateGui();
+                if (this.player1.hasPassed && this.player2.hasPassed)
+                    this.finishGame();
             }
             
             
@@ -625,17 +644,40 @@
             // a card has been clicked -- make a move
             GameHistory.prototype.updateGui = function()
             {
+                // assemble and write equation
                 part1 = this.part1!==false ? this.part1 : "&nbsp;&nbsp;";
                 part2 = this.part2!==false ? this.part2 : "&nbsp;&nbsp;";
                 solution = this.solution!==false ? this.solution : "&nbsp;&nbsp;";
                 document.getElementById("equation").innerHTML = "<span class='red'>"+part1+"</span>" +  " + " + "<span class='green'>"+part2+"</span>" + " = " + "<span class='blue'>"+solution+"</span>";
-                part1String = "";
-                for (var i=0; i<part1; i++) part1String += "&#8226;";
-                part2String = "";
-                for (var i=0; i<part2; i++) part2String += "&#8226;";
-                solutionString = "";
-                for (var i=0; i<solution; i++) solutionString += "&#8226;";
-                document.getElementById("helper").innerHTML = "<span class='red'>"+part1String+"</span><span class='green'>"+part2String+"</span><br/><span class='blue'>"+solutionString+"</span>";
+                
+                // assemble part1 and part2 dots
+                part1 = this.part1!==false ? this.part1 : 0;
+                part2 = this.part2!==false ? this.part2 : 0;                
+                partString =  "<span class='red'>";
+                for (var i=0; i < part1+part2; i++) {
+                    if (i === part1) {
+                        partString += "</span><span class='green'>";
+                    }
+                    if (i % 5 === 0)
+                        partString += "&nbsp;";
+                    if (i % 10 === 0)
+                        partString += "&nbsp;";
+                    partString += "&#8226;";
+                }
+                partString += "</span><br/>";
+                
+                // assemble solution dots
+                solution = this.solution!==false ? this.solution : 0;
+                solutionString = "<span class='blue'>";
+                for (var i=0; i<solution; i++) {
+                    if (i % 5 === 0)
+                        solutionString += "&nbsp;";
+                    if (i % 10 === 0)
+                        solutionString += "&nbsp;";
+                    solutionString += "&#8226;";
+                }
+                solutionString += "</span>";
+                document.getElementById("helper").innerHTML = partString + solutionString;
             };
             
             
@@ -653,6 +695,8 @@
                 name = document.getElementById("name2_" + _language).value.trim();
                 colour = document.getElementById("name2_" + _language).style.backgroundColor;
                 player2 = new Player(name, colour, "player2", max);
+                helperSize = 90 / max;
+                document.getElementById("helper").style.fontSize = helperSize.toString()+"vw";
                 _gameHistory = null;
                 _gameHistory = new GameHistory(player1, player2);
             }
@@ -663,19 +707,20 @@
             // start a new game --
             // create a new gameHistory, create new cards, shuffle them
             // and put them face down on the table
-            function finishGame(rows, cols)
+            GameHistory.prototype.finishGame = function()
             {
                 resultsTable = "<table>"
-                for (var i=0; i<_gameHistory.players.length; i++) {
-                    player = _gameHistory.players[i];
-                    resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + player.name
-                    + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + player.points
-                    + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + player.pointString
-                    + "&nbsp;&nbsp;&nbsp;</td></tr>";
-                }
+                resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + this.player1.name
+                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player1.points
+                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player1.pointString
+                + "&nbsp;&nbsp;&nbsp;</td></tr>";
+                resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + this.player2.name
+                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player2.points
+                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player2.pointString
+                + "&nbsp;&nbsp;&nbsp;</td></tr>";
                 resultsTable += "</table>";
                 document.getElementById('results_' + _language).innerHTML = resultsTable;
-                nextTimeOut += 700;
+                proceed("table", "finish_" + _language);
             }
             
             
@@ -743,18 +788,18 @@
     <body>
         <!-- Card table -->
         <div id="table" class="table">
-            <div id="hint_player1" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:36vh; font-size:3vh;"></div>
+            <div id="hint_player1" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:36vh; font-size:2.5vh;"></div>
             <div style="position: relative; float: left; width:50vw; height:38vh;">
                 <div id="equation" style="position: relative; float: left; width:50vw; height:14vh;font-size:10vh; text-align: center;"></div>
-                <div style="position: relative; float: left; width:50vw; height:10vh;font-size:8vh; line-height:4vh; text-align: center;">
-                    <div id="helper" style="display: inline-block; text-align: left;"></div>
+                <div style="position: relative; float: left; width:50vw; height:10vh; line-height:4vh; text-align: center;">
+                    <div id="helper" style="display: inline-block; text-align: left; font-size: 8vh;"></div>
                 </div>
                 <div style="position: relative; float: left; width:50vw; height: 14vh; text-align: center;">
                     <button onClick="_gameHistory.confirm()">Ready</button>
                     <button onClick="_gameHistory.pass()">Pass</button>
                 </div>
             </div>
-            <div id="hint_player2" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:36vh;font-size:3vh;"></div>
+            <div id="hint_player2" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:36vh;font-size:2.5vh;"></div>
             <div id="table_player1" style="position: relative; float: left; width:48vw; height: 60vh;"></div>
             <div id="table_player2" style="position: relative; float: left; width:48vw; height: 60vh;"></div>
         </div>
@@ -762,13 +807,13 @@
         <!-- Language chose -->
         <div id="language" class="message" style="display:block;">
                 <button onClick="proceed('language', 'intro_en');" style="clear:left;">English</button>
-                <button onClick="proceed('language', 'intro_de');" style="clear:left;">Deutsch</button>
+                <!--<button onClick="proceed('language', 'intro_de');" style="clear:left;">Deutsch</button>-->
         </div>
         
         <!-- English workflow -->
         <div id="intro_en" class="message">
             <b>Addition Duell</b> <br>
-            Challenge your opponent to a duell of sums! Players play in turns.
+            Challenge your opponent to a game of sums! Players play in turns.
             <ul>
             <li>The first player chooses a number and presses "Ready".</li>
             <li>The second player chooses two numbers that add up to the number from the first player and presses "Ready". If the equation is correct, the second player gets a point.</li>
