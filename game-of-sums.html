@@ -412,13 +412,16 @@
                 if (number !== false) {
                     switch (what) {
                         case "part1":
-                            this.hint("Choose another number and press <i>Ready</i>, or press <i>Pass</i>.");
+                            if (_language === "en") this.hint("Choose another number and press <i>Ready</i>, or press <i>Pass</i>.");
+                            if (_language === "en") this.hint("W&auml;hle eine weiter Zahl und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
                             break;
                         case "part2":
-                            this.hint("If you think your answer is correct, press <i>Ready</i>.");
+                            if (_language === "en") this.hint("If you think your answer is correct, press <i>Ready</i>.");
+                            if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
                             break;
                         case "solution":
-                            this.hint("Press <i>Ready</i> or choose a different number.");
+                            if (_language === "en") this.hint("Press <i>Ready</i> or choose a different number.");
+                            if (_language === "de") this.hint("Dr&uuml;cke <i>Fertig</i> or w&auml;hle eine andere Zahl.");
                     }
                 }
                 return number;
@@ -432,7 +435,8 @@
                 switch (what) {
                     case 'part1':
                     case 'part2':
-                        this.hint("Choose two numbers that add up to the number on the right and press <i>Ready</i>, or press <i>Pass</i>.");
+                        if (_language==="en") this.hint("Choose two numbers that add up to the number on the right and press <i>Ready</i>, or press <i>Pass</i>.");
+                        if (_language==="de") this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
                         this.nextPlayer.hint("");
                         for (var i=0; i<this.cards.length; i++) {
                             this.cards[i].enable();
@@ -441,7 +445,8 @@
                         break;
                     case 'solution':
                         this.hasPassed = false;
-                        this.hint("Choose a number for " + this.nextPlayer.name + ".");
+                        if (_language==="en") this.hint("Choose a number for " + this.nextPlayer.name + ".");
+                        if (_language==="de") this.hint("W&auml;hle eine Zahl f&uuml;r " + this.nextPlayer.name + ".");
                         var open = 0;
                         var max = Math.round(this.cards.length / 4);
                         for (var i=this.cards.length-1; i>-1; i--) {
@@ -471,21 +476,19 @@
                 
                 // determine sizes for width, left, top and height
                 width = Math.floor(38.0 / cols); 
-                left = (50.0 - cols*(width + 0.7)) / 2.0; 
+                left = (50.0 - cols*(width+0.7)) / 2.0; 
                 height = Math.floor(47.0 / rows);
-                topValue = 0; //(60.0 - rows*(height + 2.4)) / 2.0;
                 fontSize = 12 / cols;
                 lineHeight =  30 / cols;
-                
+//                alert("width: " + width + ", left: " + left);
                 // hack for bug in Chrome on Android
                 if (navigator.userAgent.indexOf("Chrome") > -1 && navigator.userAgent.indexOf("Android") > -1) {
                     factor = 0.86;
                     height *= factor;
-                    topValue *= factor;
                     fontSize *= factor;
                     lineHeight *= factor;
                 }
-                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width.toString() + "vw; height:" + height.toString() + "vh; left:" + left.toString() + "vw; top:" + topValue.toString() + "vh;\" onClick=\"_gameHistory.suggest('" + playerId + "', " + this.meaning.toString() + ");\">"
+                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width.toString() + "vw; height:" + height.toString() + "vh; left:" + left.toString() + "vw;\" onClick=\"_gameHistory.suggest('" + playerId + "', " + this.meaning.toString() + ");\">"
                     +     "<div class=\"digits\" id=\"" + this.faceId + "\" style=\"font-size:" + fontSize.toString() + "vw; line-height:" + lineHeight.toString() + "vh;\">"
                     +         this.string
                     +     "</div>"
@@ -765,8 +768,13 @@
             
             //______________________________
             // start the session
-            function startSession(max, language) {
+            function startSession(max, language)
+            {
                 _language = language;
+                if (_language==="en") document.getElementById("button_ready").innerHTML = "Ready";
+                if (_language==="de") document.getElementById("button_ready").innerHTML = "Fertig";
+                if (_language==="en") document.getElementById("button_pass").innerHTML = "Pass";
+                if (_language==="de") document.getElementById("button_pass").innerHTML = "Passe";
                 goFullScreen();
                 newGame(max);
             }
@@ -795,8 +803,8 @@
                     <div id="helper" style="display: inline-block; text-align: left; font-size: 8vh;"></div>
                 </div>
                 <div style="position: relative; float: left; width:50vw; height: 14vh; text-align: center;">
-                    <button onClick="_gameHistory.confirm()">Ready</button>
-                    <button onClick="_gameHistory.pass()">Pass</button>
+                    <button id="button_ready" onClick="_gameHistory.confirm()">Ready</button>
+                    <button id="button_pass" onClick="_gameHistory.pass()">Pass</button>
                 </div>
             </div>
             <div id="hint_player2" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:36vh;font-size:2.5vh;"></div>
@@ -807,19 +815,20 @@
         <!-- Language chose -->
         <div id="language" class="message" style="display:block;">
                 <button onClick="proceed('language', 'intro_en');" style="clear:left;">English</button>
-                <!--<button onClick="proceed('language', 'intro_de');" style="clear:left;">Deutsch</button>-->
+                <button onClick="proceed('language', 'intro_de');" style="clear:left;">Deutsch</button>
         </div>
         
         <!-- English workflow -->
         <div id="intro_en" class="message">
-            <b>Addition Duell</b> <br>
+            <b>Game of Sums</b> <br>
             Challenge your opponent to a game of sums! Players play in turns.
             <ul>
-            <li>The first player chooses a number and presses "Ready".</li>
-            <li>The second player chooses two numbers that add up to the number from the first player and presses "Ready". If the equation is correct, the second player gets a point.</li>
-            <li>The second player chooses a number for the first player and presses "Ready". Then the first player finds two numbers to complete the equation.</li>
-            <li>If there are no numbers available that would complete a sum, the player presses "Pass".</li>
+            <li>The first player chooses a number and presses <i>Ready</i>.</li>
+            <li>The second player chooses two numbers that add up to the number from the first player and presses <i>Ready</i>. If the equation is correct, the second player gets a point.</li>
+            <li>The second player chooses a number for the first player and presses <i>Ready</i>. Then the first player finds two numbers to complete the equation.</li>
+            <li>If there are no numbers available that would complete a sum, the player presses <i>Pass</i>.</li>
             </ul>
+            If one player has no numbers left or if both players pass, the game is finished.
             The winner is the player with most points.<br/>
             <br/><br/>
             <div>
@@ -842,8 +851,8 @@
             <button onClick="startSession(10,'en'); proceed('start_en', 'table');" style="clear:left;">All numbers up to 10</button><br/>
             <button onClick="startSession(15,'en'); proceed('start_en', 'table');" style="clear:left;">All numbers up to 15</button><br/>
             <button onClick="startSession(20,'en'); proceed('start_en', 'table');" style="clear:left;">All numbers up to 20</button><br/>
-            <button onClick="startSession(50,'en'); proceed('start_en', 'table');" style="clear:left;">All numbers up to 50</button><br/>
-            <button onClick="startSession(100,'en'); proceed('start_en', 'table');" style="clear:left;">All numbers up to 100</button>
+            <button onClick="startSession(30,'en'); proceed('start_en', 'table');" style="clear:left;">All numbers up to 30</button><br/>
+            <button onClick="startSession(50,'en'); proceed('start_en', 'table');" style="clear:left;">All numbers up to 50</button>
             <br/><br/>
             <div>
                 Or <button onClick="proceed('start_en', 'names_en');">Go Back</button>
@@ -860,20 +869,25 @@
         
         <!-- German workflow -->
         <div id="intro_de" class="message">
-            <b>Dreifach-Zahlen-Memory</b> <br>
-            Finde alle Karten, die die gleiche Zahl zeigen. Immer drei Karten geh&ouml;ren zusammen, wie zum Beispield <span style="color: #f00000;"><b><i>3</i></b></span> und <span style="color: #f00000;"><b><i>&#8756;</i></b></span> und <span style="color: #f00000;"><b><i>Drei</i></b></span>. Spieler spielen der Reihe nach, jeder Spieler deckt drei neue Karten auf, danach ist der n&auml;chste Spieler an der Reihe.
+            <b>Additions-Wettkampf</b> <br>
+            Fordere Deinen Gegner zu einem Summenwettkampf heraus! Die Spieler spielen abwechselnd.
+            <ul>
+            <li>Der erste Spieler w&auml;hlt eine Zahl und dr&uuml;ckt <i>Fertig</i>.</li>
+            <li>Der zweite Spiele w&auml;hlt zwei Zahlen, deren Summe die Zahl des ersten Spielers ergibt und dr&uuml;ckt <i>Fertig</i>. Wenn die Gleichung korrekt ist, bekommt der zweite Spieler einen Punkt.</li>
+            <li>Der zweite Spieler w&auml;hlt eine Zahl und dr&uuml;ckt <i>Fertig</i>. Dann w&auml;hlt der erste Spieler zwei Zahlen, die die Gleichung vervollst&auml;ndigen.</li>
+            <li>Wenn es keine passenden Zahlen mehr gibt, dr&uuml;ckt der Spieler <i>Passe</i>.</li>
+            </ul>
+            Wenn ein Spieler keine Karten mehr hat, oder wenn beide Spieler hintereinander passen, ist das Spiel beendet. Sieger ist der Spieler mit den meisten Punkten.<br/>
             <br/><br/>
             <div>
                 <button onClick="proceed('intro_de', 'names_de');">Weiter</button> oder <button onClick="proceed('intro_de', 'language');">Zur&uuml;ck</button>
             </div>
         </div>
         <div id="names_de" class="message">
-            Tragt bis zu vier Spieler ein
+            Tragt zwei Spieler ein
             <br/>
             <input id="name1_de" type="text" class="text" style="clear:left; background-color: #fff090"></input>
             <input id="name2_de" type="text" class="text" style="clear:left; background-color: #b0fff0"></input>
-            <input id="name3_de" type="text" class="text" style="clear:left; background-color: #f0c0ff"></input>
-            <input id="name4_de" type="text" class="text" style="clear:left; background-color: #e0ffa0"></input>
             <br/><br/>
             <div>
                 <button onClick="proceed('names_de', 'start_de');">Weiter</button> oder <button onClick="proceed('names_de', 'intro_de');">Zur&uuml;ck</button>
@@ -882,11 +896,11 @@
         <div id="start_de" class="message">
             W&auml;hlt eine Spielgr&ouml;&szlig;e
             <br/>
-            <button onClick="startSession(7,9,'de'); proceed('start_de', 'table');" style="clear:left;">Riesig</button>
-            <button onClick="startSession(6,8,'de'); proceed('start_de', 'table');" style="clear:left;">Gro&szlig;</button>
-            <button onClick="startSession(5,6,'de'); proceed('start_de', 'table');" style="clear:left;">Mittel</button>
-            <button onClick="startSession(4,6,'de'); proceed('start_de', 'table');" style="clear:left;">Klein</button>
-            <button onClick="startSession(3,5,'de'); proceed('start_de', 'table');" style="clear:left;">Winzig</button>  
+            <button onClick="startSession(10,'de'); proceed('start_de', 'table');" style="clear:left;">Alle Zahlen bis 10</button><br/>
+            <button onClick="startSession(15,'de'); proceed('start_de', 'table');" style="clear:left;">Alle Zahlen bis 15</button><br/>
+            <button onClick="startSession(20,'de'); proceed('start_de', 'table');" style="clear:left;">Alle Zahlen bis 20</button><br/>
+            <button onClick="startSession(30,'de'); proceed('start_de', 'table');" style="clear:left;">Alle Zahlen bis 30</button><br/>
+            <button onClick="startSession(50,'de'); proceed('start_de', 'table');" style="clear:left;">Alle Zahlen bis 50</button>  
             <br/><br/>
             <div>
                 Oder <button onClick="proceed('start_de', 'names_de');">Zur&uuml;ck</button>
