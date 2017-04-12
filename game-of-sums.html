@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html>
     <!-- 
-    Simple html memory game to teach the concept of numbers.
-    Remember the place of cards that show the same number in different representations.
+    Simple html memory game to practice adding numbers below 10, 15, 20, 30 or 50.
+    Try to earn points by making your opponent use up all their useful numbers.
     
     Copyright (C) 2017 Jacob Kanev
 
@@ -21,7 +21,7 @@
     -->
     
     <head>
-        <title>Addition Duell</title>
+        <title>Game of Sums</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>
@@ -87,6 +87,19 @@
                 filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#BDBBBC, endColorstr=#E0E0E0);
             }
             
+            button:disabled{
+                color: #E0E0E0;
+                border:1px solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#E0E0E0));
+                background-image: -webkit-linear-gradient(top, #E0E0E0, #E0E0E0);
+                background-image: -moz-linear-gradient(top, #E0E0E0, #E0E0E0);
+                background-image: -ms-linear-gradient(top, #E0E0E0, #E0E0E0);
+                background-image: -o-linear-gradient(top, #E0E0E0, #E0E0E0);
+                background-image: linear-gradient(to bottom, #E0E0E0, #E0E0E0);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#E0E0E0, endColorstr=#E0E0E0);
+            }
+
             div.dots {
                 font-weight: bold;
                 background-color: #eaeaea;
@@ -371,7 +384,46 @@
             };
             
             
-          
+            //______________________________
+            // Player confirms his choice of number
+            Player.prototype.confirm = function(what)
+            {
+                message = "";
+                switch (what) {
+                    case 'part1':
+                    case 'part2':
+                        if (_language==="en") this.hint("Choose two numbers that add up to the number on the right and press <i>Ready</i>, or press <i>Pass</i>.");
+                        if (_language==="de") this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
+                        this.nextPlayer.hint("");
+                        for (var i=0; i<this.cards.length; i++) {
+                            this.cards[i].enable();
+                            this.nextPlayer.cards[i].disable();
+                        }
+                        // enable the pass button and disable the confirm button
+                        document.getElementById("button_confirm").disabled = true;
+                        document.getElementById("button_pass").disabled = false;
+                        break;
+                    case 'solution':
+                        this.hasPassed = false;
+                        if (_language==="en") this.hint("Choose a number for " + this.nextPlayer.name + ".");
+                        if (_language==="de") this.hint("W&auml;hle eine Zahl f&uuml;r " + this.nextPlayer.name + ".");
+                        var open = 0;
+                        var max = Math.round(this.cards.length / 4);
+                        for (var i=this.cards.length-1; i>-1; i--) {
+                            if (this.cards[i].state === "open" && open < max) {
+                                this.cards[i].enable();
+                                open++;
+                            } else
+                                this.cards[i].disable();
+                            this.nextPlayer.cards[i].disable();
+                        }
+                        // disable the pass and confirm buttons
+                        document.getElementById("button_confirm").disabled = true;
+                        document.getElementById("button_pass").disabled = true;
+                }
+            }
+            
+            
             //______________________________
             // Displays help for the player (what to do next)
             Player.prototype.hint = function(text)
@@ -391,10 +443,14 @@
             // Pass - remove all highlights and confirm
             Player.prototype.pass = function()
             {
+                // update all cards
                 this.hasPassed = true;
                 for (var i=0; i<this.cards.length; i++) {
                     this.cards[i].suggest(false);
                 }
+                // disable the pass and confirm buttons
+                document.getElementById("button_confirm").disabled = true;
+                document.getElementById("button_pass").disabled = true;
             }
             
             
@@ -412,55 +468,34 @@
                 if (number !== false) {
                     switch (what) {
                         case "part1":
+                            // update texts
                             if (_language === "en") this.hint("Choose another number and press <i>Ready</i>, or press <i>Pass</i>.");
                             if (_language === "en") this.hint("W&auml;hle eine weiter Zahl und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
+                            // disable the confirm and enable the pass button
+                            document.getElementById("button_confirm").disabled = true;
+                            document.getElementById("button_pass").disabled = false;
                             break;
                         case "part2":
+                            // update texts
                             if (_language === "en") this.hint("If you think your answer is correct, press <i>Ready</i>.");
                             if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
+                            // enable the pass and confirm buttons
+                            document.getElementById("button_confirm").disabled = false;
+                            document.getElementById("button_pass").disabled = false;
                             break;
                         case "solution":
+                            // update texts
                             if (_language === "en") this.hint("Press <i>Ready</i> or choose a different number.");
                             if (_language === "de") this.hint("Dr&uuml;cke <i>Fertig</i> or w&auml;hle eine andere Zahl.");
+                            // enable the confirm and disable the pass buttons
+                            document.getElementById("button_confirm").disabled = false;
+                            document.getElementById("button_pass").disabled = true;
                     }
                 }
                 return number;
-            }
+            };
             
-            //______________________________
-            // Player confirms his choice of number
-            Player.prototype.confirm = function(what)
-            {
-                message = "";
-                switch (what) {
-                    case 'part1':
-                    case 'part2':
-                        if (_language==="en") this.hint("Choose two numbers that add up to the number on the right and press <i>Ready</i>, or press <i>Pass</i>.");
-                        if (_language==="de") this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
-                        this.nextPlayer.hint("");
-                        for (var i=0; i<this.cards.length; i++) {
-                            this.cards[i].enable();
-                            this.nextPlayer.cards[i].disable();
-                        }
-                        break;
-                    case 'solution':
-                        this.hasPassed = false;
-                        if (_language==="en") this.hint("Choose a number for " + this.nextPlayer.name + ".");
-                        if (_language==="de") this.hint("W&auml;hle eine Zahl f&uuml;r " + this.nextPlayer.name + ".");
-                        var open = 0;
-                        var max = Math.round(this.cards.length / 4);
-                        for (var i=this.cards.length-1; i>-1; i--) {
-                            if (this.cards[i].state === "open" && open < max) {
-                                this.cards[i].enable();
-                                open++;
-                            } else
-                                this.cards[i].disable();
-                            this.nextPlayer.cards[i].disable();
-
-                        }
-                        break;
-                }
-            }
+            
             
             //______________________________
             // class for a single number card
@@ -773,8 +808,8 @@
             function startSession(max, language)
             {
                 _language = language;
-                if (_language==="en") document.getElementById("button_ready").innerHTML = "Ready";
-                if (_language==="de") document.getElementById("button_ready").innerHTML = "Fertig";
+                if (_language==="en") document.getElementById("button_confirm").innerHTML = "Ready";
+                if (_language==="de") document.getElementById("button_confirm").innerHTML = "Fertig";
                 if (_language==="en") document.getElementById("button_pass").innerHTML = "Pass";
                 if (_language==="de") document.getElementById("button_pass").innerHTML = "Passe";
                 goFullScreen();
@@ -805,8 +840,8 @@
                     <div id="helper" style="display: inline-block; text-align: left; font-size: 8vh;"></div>
                 </div>
                 <div style="position: relative; float: left; width:50vw; height: 14vh; text-align: center;">
-                    <button id="button_ready" onClick="_gameHistory.confirm()">Ready</button>
-                    <button id="button_pass" onClick="_gameHistory.pass()">Pass</button>
+                    <button id="button_confirm" onClick="_gameHistory.confirm()" disabled>Ready</button>
+                    <button id="button_pass" onClick="_gameHistory.pass()" disabled>Pass</button>
                 </div>
             </div>
             <div id="hint_player2" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:36vh;font-size:2.5vh;"></div>
