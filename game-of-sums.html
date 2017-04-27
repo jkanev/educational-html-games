@@ -338,9 +338,19 @@
                 cardString = "";
                 cols = Math.round(Math.sqrt(max+1));
                 rows = Math.ceil((max+1) / cols);
-                for (var i=0; i<max+1; i++) {
-                    this.cards.push(new Card(i, rows, cols, this.id));
-                    cardString += this.cards[i].html;
+                var i = 0; // counter for cards
+                var n = 0; // counter for numbers on cards
+                finished = false;
+                while (!finished) {
+                    for (k=0; k<2 && !finished; k++) {
+                        if (Math.random() > 0.5) {
+                            this.cards.push(new Card(n, i, rows, cols, this.id));
+                            cardString += this.cards[i].html;
+                            i++;
+                            if (i>max) finished = true;
+                        }
+                    }
+                    n++;
                 }
                 this.openCards = max;
                 this.hasPassed = false;
@@ -457,15 +467,14 @@
             
             //______________________________
             // Player writes a number into the next part of the equation
-            Player.prototype.suggest = function(what, number1, number2, number3)
+            Player.prototype.suggest = function(what, cardId1, cardId2, cardId3)
             {
-                if (number2!==false)
-                    this.cards[number2].suggest(false);
-                if (number3!==false)
-                    this.cards[number3].suggest(false);
-                number = this.cards[number1].suggest(this);
-                
-                if (number !== false) {
+                if (cardId2!==false)
+                    this.cards[cardId2].suggest(false);
+                if (cardId3!==false)
+                    this.cards[cardId3].suggest(false);
+                var card = this.cards[cardId1].suggest(this);
+                if (card !== false) {
                     switch (what) {
                         case "part1":
                             // update texts
@@ -492,7 +501,7 @@
                             document.getElementById("button_pass").disabled = true;
                     }
                 }
-                return number;
+                return card;
             };
             
             
@@ -503,12 +512,13 @@
             // and the inside one representing the face. The face div has a class according to the 
             // type: <div class="card"><div class="digits">23</div></div>
             // both divs have distinct IDs
-            function Card(meaning, rows, cols, playerId)
+            function Card(meaning, cardIndex, rows, cols, playerId)
             {
                 this.state = "open";
                 this.meaning = meaning; // the actual number that's on the card
-                this.faceId = meaning.toString() + "_" + playerId + "_face";     // the respective div id, e.g. "3_face"
-                this.cardId = meaning.toString() + "_" + playerId + "_card";     // the respective div id for the card, e.g. "3_card"
+                this.faceId = cardIndex.toString() + "_" + playerId + "_face";     // the respective div id, e.g. "3_face"
+                this.index = cardIndex;
+                this.cardId = cardIndex.toString() + "_" + playerId + "_card";     // the respective div id for the card, e.g. "3_card"
                 this.string = meaning.toString();
                 
                 // determine sizes for width, left, top and height
@@ -525,7 +535,7 @@
                     fontSize *= factor;
                     lineHeight *= factor;
                 }
-                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width.toString() + "vw; height:" + height.toString() + "vh; left:" + left.toString() + "vw;\" onClick=\"_gameHistory.suggest('" + playerId + "', " + this.meaning.toString() + ");\">"
+                this.html = "<div class=\"card\" id=\"" + this.cardId + "\" style=\"width:" + width.toString() + "vw; height:" + height.toString() + "vh; left:" + left.toString() + "vw;\" onClick=\"_gameHistory.suggest('" + playerId + "', " + this.index.toString() + ");\">"
                     +     "<div class=\"digits\" id=\"" + this.faceId + "\" style=\"font-size:" + fontSize.toString() + "vw; line-height:" + lineHeight.toString() + "vh;\">"
                     +         this.string
                     +     "</div>"
@@ -570,19 +580,19 @@
             // highlight a card
             Card.prototype.suggest = function(player)
             {
-                number = false;
+                index = false;
                 colour = false;
                 if (player===false && this.state==="suggested") {
                     this.state = "open";
                     colour = "#eaeaea";
                 }
                 if (player!==false && this.state==="open") {
-                    number = this.meaning;
+                    index = this.index;
                     this.state = "suggested";
                     colour = player.colour;
                 }
                 document.getElementById(this.faceId).style.backgroundColor = colour;
-                return number;
+                return index;
             };
             
             
@@ -596,6 +606,7 @@
                 this.player1.nextPlayer = this.player2;
                 this.player2.nextPlayer = this.player1;
                 this.currentPlayer = this.player1;
+                this.nextPlayer = this.player2;
                 
                 // the equation: part1 + part2 = solution
                 this.part1 = false;
@@ -612,13 +623,14 @@
             {
                 switch (this.nextMove) {
                     case 'solution':
+                        this.nextPlayer = this.currentPlayer;
                         this.currentPlayer = this.currentPlayer.nextPlayer;
                         this.nextMove = 'part1';
                         break;
                     case 'part1':
-                    case 'part2':                        
+                    case 'part2':
                         // calculating points for current player
-                        if (this.part1 + this.part2 == this.solution)
+                        if (this.currentPlayer.cards[this.part1].meaning + this.currentPlayer.cards[this.part2].meaning == this.nextPlayer.cards[this.solution].meaning)
                             this.currentPlayer.addPoint();
                         this.nextMove = 'solution';
                 }
@@ -650,27 +662,27 @@
             
             //______________________________
             // a card has been clicked -- make a move
-            GameHistory.prototype.suggest = function(player, number)
+            GameHistory.prototype.suggest = function(player, cardIndex)
             {
                 if (this.currentPlayer.id == player) {
                     if (!_globalLock) {
                         _globalLock = true;
                         switch (this.nextMove) {
                             case 'part1':
-                                this.part1 = this.currentPlayer.suggest(this.nextMove, number, this.part1, this.part2);
+                                this.part1 = this.currentPlayer.suggest(this.nextMove, cardIndex, this.part1, this.part2);
                                 this.part2 = false;
                                 this.updateGui();
                                 this.nextMove = 'part2';
                                 break;
                             case 'part2':
-                                this.part2 = this.currentPlayer.suggest(this.nextMove, number, false, false);
+                                this.part2 = this.currentPlayer.suggest(this.nextMove, cardIndex, false, false);
                                 this.updateGui();
                                 this.nextMove = 'part1';
                                 break;
                             case 'solution':
                                 this.part1 = false;
                                 this.part2 = false;
-                                this.solution = this.currentPlayer.suggest(this.nextMove, number, this.solution, false);
+                                this.solution = this.currentPlayer.suggest(this.nextMove, cardIndex, this.solution, false);
                                 this.updateGui();
                         }
                         _globalLock = false;
@@ -684,15 +696,27 @@
             // a card has been clicked -- make a move
             GameHistory.prototype.updateGui = function()
             {
+                // find parts
+                var part1 = false;
+                var part2 = false;
+                var solution = false;
+                if (this.part1===false && this.part2===false) {
+                    part1 = this.part1!==false ? this.nextPlayer.cards[this.part1].meaning : false;
+                    part2 = this.part2!==false ? this.nextPlayer.cards[this.part2].meaning : false;
+                    solution = this.solution!==false ? this.currentPlayer.cards[this.solution].meaning : false;
+                }
+                else {
+                    part1 = this.part1!==false ? this.currentPlayer.cards[this.part1].meaning : false;
+                    part2 = this.part2!==false ? this.currentPlayer.cards[this.part2].meaning : false;
+                    solution = this.solution!==false ? this.nextPlayer.cards[this.solution].meaning : false;
+                }
+                
                 // assemble and write equation
-                part1 = this.part1!==false ? this.part1 : "&nbsp;&nbsp;";
-                part2 = this.part2!==false ? this.part2 : "&nbsp;&nbsp;";
-                solution = this.solution!==false ? this.solution : "&nbsp;&nbsp;";
-                document.getElementById("equation").innerHTML = "<span class='red'>"+part1+"</span>" +  " + " + "<span class='green'>"+part2+"</span>" + " = " + "<span class='blue'>"+solution+"</span>";
+                document.getElementById("equation").innerHTML = "<span class='red'>" + (part1!==false ? part1 : "&nbsp;&nbsp;") + "</span>" +  " + " + "<span class='green'>" + (part2!==false ? part2 : "&nbsp;&nbsp;") + "</span>" + " = " + "<span class='blue'>"+ (solution!==false ? solution : "&nbsp;&nbsp;") + "</span>";
                 
                 // assemble part1 and part2 dots
-                part1 = this.part1!==false ? this.part1 : 0;
-                part2 = this.part2!==false ? this.part2 : 0;                
+                part1 = this.part1!==false ? part1 : 0;
+                part2 = this.part2!==false ? part2 : 0;                
                 partString =  "<span class='red'>";
                 for (var i=0; i < part1+part2; i++) {
                     if (i === part1) {
@@ -707,7 +731,7 @@
                 partString += "</span><br/>";
                 
                 // assemble solution dots
-                solution = this.solution!==false ? this.solution : 0;
+                solution = solution!==false ? solution : 0;
                 solutionString = "<span class='blue'>";
                 for (var i=0; i<solution; i++) {
                     if (i % 5 === 0)
