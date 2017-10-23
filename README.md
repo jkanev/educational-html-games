@@ -28,7 +28,7 @@ Deutsch
 ## Introduction ##
 [Table of Contents](#id-contents)
 
-Various small educational games. Each game consists of a single file -- to play a game, all you need is one (html) file. Code is under a CC-BY license, please feel free to share with your friends.
+Various small educational games. Each game consists of a single file -- to play a game, all you need is the one (html) game file and a standard internet browser. Games can be saved to your local PC/tablet/mobile and played there, sent via email, skype, etc,. Code is under a CC-BY license, please feel free to share with your friends.
 
 <div id='id-animal-sets-en'/>
 
@@ -98,7 +98,7 @@ If you enter only one name you'll be playing on your own. Try to choose your num
 ## Einleitung ##
 [Inhalt](#id-contents)
 
-Verschiedene kleine Lernspiele. Jedes Spiel besteht aus einer einzigen (html-) Datei, die von einem Standard-Internetbrowser gelesen werden kann. Um ein Spiel zu benutzen, ist nur diese eine Datei nötig. Die Spiele sind unter einer CC-BY-Lizenz, bitte teilt und verbreitet sie.
+Verschiedene kleine Lernspiele. Jedes Spiel besteht aus einer einzigen (html-) Datei. Um ein Spiel zu benutzen, sind nur diese eine Datei und ein Standard Internetbrowse n&ouml;tig. Spiele können auf PC/Tablet/Telefon gespeichert und gespielt werden, per Mail oder Skype verschickt, etc. Die Spiele sind unter einer CC-BY-Lizenz, bitte teilt und verbreitet sie.
 
 
 <div id='id-animal-sets-de'/>
@@ -119,7 +119,7 @@ Versuche, die Gr&ouml;&szlig;e von Mengen zu erfassen ohne zu z&auml;hlen. Es es
 Mit dem _Download_-Knopf oben rechts auf dieser Seite kannst Du alle Spiele herunterladen, oder Du kannst das Spiel hier online ausprobieren: https://rawgit.com/jkanev/educational-html-games/master/set-sizes-shapes.html
 
 
-<div id='id-triple-number-memory-en'/>
+<div id='id-triple-number-memory-de'/>
 
 ## Dreifach-Zahlenmemory ##
 [Table of Contents](#id-contents)
@@ -128,7 +128,7 @@ Finde alle Karten, die die gleiche Zahl zeigen. Immer drei Karten geh&ouml;ren z
 Mit dem _Download_-Knopf oben rechts auf dieser Seite kannst Du alle Spiele herunterladen, oder Du kannst das Spiel hier online ausprobieren: https://rawgit.com/jkanev/educational-html-games/master/triple-number-memory.html
 
 
-<div id='id-game-of-sums-en'/>
+<div id='id-game-of-sums-de'/>
 
 ## Additionsduell ##
 [Table of Contents](#id-contents)
@@ -143,7 +143,7 @@ Wenn Du nur einen Namen eintr&auml;gst, spielst Du alleine. Versuche so geschick
 Mit dem _Download_-Knopf oben rechts auf dieser Seite kannst Du alle Spiele herunterladen, oder Du kannst das Spiel hier online ausprobieren: https://rawgit.com/jkanev/educational-html-games/master/game-of-sums.html
 
 
-<div id='id-game-of-differences-en'/>
+<div id='id-game-of-differences-de'/>
 
 ## Game of Differences ##
 [Table of Contents](#id-contents)
