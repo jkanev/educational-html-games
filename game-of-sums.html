@@ -313,6 +313,8 @@
         <script type="text/javascript">
             <!--
             
+            // debug mode
+            var _debugMode = false;
             
             // global gameHistory object
             var _gameHistory = null;
@@ -326,8 +328,10 @@
             //______________________________
             // Class representing a single player.
             // Used to count points, colours and names.
-            function Player(name, colour, id, max)
+            function Player(name, colour, id, max, amount)
             {
+                if (_debugMode)
+                    alert("Player( name=" + name.toString() + ", colour=" + colour.toString() + ", id=" + id.toString(), + ", max=" + max.toString() + ")");
                 this.name = name;
                 this.colour = colour;
                 this.id = id;
@@ -336,8 +340,8 @@
                 this.nextPlayer = 0;
                 this.cards = [];
                 cardString = "";
-                cols = Math.round(Math.sqrt(max+1));
-                rows = Math.ceil((max+1) / cols);
+                cols = Math.round(Math.sqrt(amount+1));
+                rows = Math.ceil((amount+1) / cols);
                 var i = 0; // counter for cards
                 var n = 0; // counter for numbers on cards
                 finished = false;
@@ -347,14 +351,15 @@
                             this.cards.push(new Card(n, i, rows, cols, this.id));
                             cardString += this.cards[i].html;
                             i++;
-                            if (i>max) finished = true;
+                            if (i>amount) finished = true;
                         }
                     }
-                    n++;
+                    n = Math.round(i*max/(amount-1));
                 }
-                this.openCards = max;
+                this.openCards = amount;
                 this.hasPassed = false;
                 document.getElementById("table_" + this.id).innerHTML = cardString;
+                document.getElementById("table_" + this.id).style.display = "block";
                 document.getElementById(this.id).style.backgroundColor = this.colour;
                 this.hint("");
             }
@@ -405,10 +410,12 @@
                     case 'part2':
                         if (_language==="en") this.hint("Choose two numbers that add up to the number on the right and press <i>Ready</i>, or press <i>Pass</i>.");
                         if (_language==="de") this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
-                        this.nextPlayer.hint("");
+                        if (this !== this.nextPlayer)
+                            this.nextPlayer.hint("");
                         for (var i=0; i<this.cards.length; i++) {
                             this.cards[i].enable();
-                            this.nextPlayer.cards[i].disable();
+                            if (this.nextPlayer !== this)
+                                this.nextPlayer.cards[i].disable();
                         }
                         // enable the pass button and disable the confirm button
                         document.getElementById("button_confirm").disabled = true;
@@ -424,9 +431,12 @@
                             if (this.cards[i].state === "open" && open < max) {
                                 this.cards[i].enable();
                                 open++;
-                            } else
+                            } else {
                                 this.cards[i].disable();
-                            this.nextPlayer.cards[i].disable();
+                            }
+                            if (this.nextPlayer !== this) {
+                                this.nextPlayer.cards[i].disable();
+                            }
                         }
                         // disable the pass and confirm buttons
                         document.getElementById("button_confirm").disabled = true;
@@ -480,7 +490,7 @@
                         case "part1":
                             // update texts
                             if (_language === "en") this.hint("Choose another number and press <i>Ready</i>, or press <i>Pass</i>.");
-                            if (_language === "en") this.hint("W&auml;hle eine weiter Zahl und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
+                            if (_language === "de") this.hint("W&auml;hle eine weiter Zahl und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
                             // disable the confirm and enable the pass button
                             document.getElementById("button_confirm").disabled = true;
                             document.getElementById("button_pass").disabled = false;
@@ -602,12 +612,19 @@
             // player1,2:  players
             function GameHistory(player1, player2)
             {
+                if (_debugMode) alert("GameHistory( player1=" + player1.toString() + ", player2=" + player2.toString() + ")");
                 this.player1 = player1;
                 this.player2 = player2;
-                this.player1.nextPlayer = this.player2;
-                this.player2.nextPlayer = this.player1;
-                this.currentPlayer = this.player1;
-                this.nextPlayer = this.player2;
+                if (player2) {
+                    this.player1.nextPlayer = this.player2;
+                    this.player2.nextPlayer = this.player1;
+                    this.currentPlayer = this.player1;
+                    this.nextPlayer = this.player2;
+                } else {
+                    this.player1.nextPlayer = this.player1;
+                    this.currentPlayer = this.player1;
+                    this.nextPlayer = this.player1;
+                }
                 
                 // the equation: part1 + part2 = solution
                 this.part1 = false;
@@ -637,8 +654,9 @@
                 }
                 this.currentPlayer.confirm(this.nextMove);
                 this.player1.clearUp();
-                this.player2.clearUp();
-                if (this.player1.isFinished() || this.player2.isFinished())
+                if (this.player2)
+                    this.player2.clearUp();
+                if (this.player1.isFinished() || (!this.player2 && this.player2.isFinished()))
                     this.finishGame();
             };
             
@@ -655,7 +673,7 @@
                 this.currentPlayer.confirm(this.nextMove);
                 this.currentPlayer.hasPassed = true;
                 this.updateGui();
-                if (this.player1.hasPassed && this.player2.hasPassed)
+                if (this.player1.isFinished() || (!this.player2 && this.player2.isFinished()))
                     this.finishGame();
             }
             
@@ -753,13 +771,27 @@
             // and put them face down on the table
             function newGame(max)
             {
-                // get players and create history
-                name = document.getElementById("name1_" + _language).value.trim();
-                colour = document.getElementById("name1_" + _language).style.backgroundColor;
-                player1 = new Player(name, colour, "player1", max);
+                if (_debugMode) alert("newGame(max=" + max.toString() + ")");
+                    
+                // read player 2 (if missing, we're in single player mode)
                 name = document.getElementById("name2_" + _language).value.trim();
                 colour = document.getElementById("name2_" + _language).style.backgroundColor;
-                player2 = new Player(name, colour, "player2", max);
+                amount = max;
+                if (name=="") {
+                    player2 = false;
+                    single = true;
+                    document.getElementById("table_player1").style.width = "70vw";
+                    document.getElementById("table_player1").style.left = "10vw";
+                    amount = Math.floor(2*max/3)*3; // the largest multiple of three that is smaller than twice max
+                } else
+                    player2 = new Player(name, colour, "player2", max, amount);
+                
+                // read player 1
+                name = document.getElementById("name1_" + _language).value.trim();
+                colour = document.getElementById("name1_" + _language).style.backgroundColor;
+                player1 = new Player(name, colour, "player1", max, amount);
+                
+                // create history
                 helperSize = 90 / max;
                 document.getElementById("helper").style.fontSize = helperSize.toString()+"vw";
                 _gameHistory = null;
@@ -779,10 +811,12 @@
                 + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player1.points
                 + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player1.pointString
                 + "&nbsp;&nbsp;&nbsp;</td></tr>";
-                resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + this.player2.name
-                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player2.points
-                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player2.pointString
-                + "&nbsp;&nbsp;&nbsp;</td></tr>";
+                if (this.player2) {
+                    resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + this.player2.name
+                    + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player2.points
+                    + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player2.pointString
+                    + "&nbsp;&nbsp;&nbsp;</td></tr>";
+                }
                 resultsTable += "</table>";
                 document.getElementById('results_' + _language).innerHTML = resultsTable;
                 proceed("table", "finish_" + _language);
@@ -870,8 +904,8 @@
                 </div>
             </div>
             <div id="hint_player2" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:36vh;font-size:2.5vh;"></div>
-            <div id="table_player1" style="position: relative; float: left; width:48vw; height: 60vh;"></div>
-            <div id="table_player2" style="position: relative; float: left; width:48vw; height: 60vh;"></div>
+            <div id="table_player1" style="position: relative; float: left; width:48vw; height: 60vh; display: none;"></div>
+            <div id="table_player2" style="position: relative; float: left; width:48vw; height: 60vh; display: none;"></div>
         </div>
         
         <!-- Language chose -->
@@ -893,6 +927,7 @@
             If one player has no numbers left or if both players pass, the game is finished.
             The winner is the player with most points.<br/>
             <br/><br/>
+            If you enter only one name you'll be playing on your own. Try to choose your numbers in a clever way and use up all your cards without having to pass once.
             <div>
                 <button onClick="proceed('intro_en', 'names_en');">Next</button> or <button onClick="proceed('intro_en', 'language');">Go Back</button>
             </div>
@@ -941,12 +976,13 @@
             </ul>
             Wenn ein Spieler keine Karten mehr hat, oder wenn beide Spieler hintereinander passen, ist das Spiel beendet. Sieger ist der Spieler mit den meisten Punkten.<br/>
             <br/><br/>
+            Wenn Du nur einen Namen eintr&auml;gst, spielst Du alleine. Versuche so geschickt zu spielen, da&szlig; Du alle Karten aufbrauchst ohne zu passen.
             <div>
                 <button onClick="proceed('intro_de', 'names_de');">Weiter</button> oder <button onClick="proceed('intro_de', 'language');">Zur&uuml;ck</button>
             </div>
         </div>
         <div id="names_de" class="message">
-            Tragt zwei Spieler ein
+            Tragt ein oder zwei Spieler ein
             <br/>
             <input id="name1_de" type="text" class="text" style="clear:left; background-color: #fff090"></input>
             <input id="name2_de" type="text" class="text" style="clear:left; background-color: #b0fff0"></input>
