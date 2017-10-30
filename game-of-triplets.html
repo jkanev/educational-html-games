@@ -1,0 +1,1381 @@
+
+<!DOCTYPE html>
+<html>
+    <!-- 
+    Simple html game to practice calculations with numbers below 20.
+    Try to earn points by making your opponent use up all their useful numbers.
+    
+    Copyright (C) 2017 Jacob Kanev
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    For a copy of the GNU General Public License see <http://www.gnu.org/licenses/>.
+    -->
+    
+    <head>
+        <title>Game of Triplets</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            
+            html, body {
+                background-color: #eef;
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
+                border: 0;
+                font-family: Sans-Serif;
+                overflow: hidden;
+            }
+            
+            button {
+                display: inline;
+                margin: 1vw;
+                padding: 1vw;
+                border: 1px solid #CCCCCC;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 10px;
+                -moz-border-radius: 10px;
+                border-radius: 10px;
+                padding: 10px 10px 10px 10px;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #4A4A4A;
+                background-color: #F7F5F6;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#F7F5F6), to(#DDDDDD));
+                background-image: -webkit-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -moz-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -ms-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -o-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#F7F5F6, endColorstr=#DDDDDD);
+                white-space: normal;
+                font-size: 3vmin;
+            }
+            
+            button:hover{
+                border:1px solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#BDBBBC));
+                background-image: -webkit-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -moz-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -ms-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -o-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: linear-gradient(to bottom, #E0E0E0, #BDBBBC);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#E0E0E0, endColorstr=#BDBBBC);
+            }            
+            
+            button:active{
+                border:1px solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#BDBBBC), to(#E0E0E0));
+                background-image: -webkit-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -moz-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -ms-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -o-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: linear-gradient(to bottom, #BDBBBC, #E0E0E0);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#BDBBBC, endColorstr=#E0E0E0);
+            }
+            
+            button:disabled{
+                color: #E0E0E0;
+                border:1px solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#E0E0E0));
+                background-image: -webkit-linear-gradient(top, #E0E0E0, #E0E0E0);
+                background-image: -moz-linear-gradient(top, #E0E0E0, #E0E0E0);
+                background-image: -ms-linear-gradient(top, #E0E0E0, #E0E0E0);
+                background-image: -o-linear-gradient(top, #E0E0E0, #E0E0E0);
+                background-image: linear-gradient(to bottom, #E0E0E0, #E0E0E0);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#E0E0E0, endColorstr=#E0E0E0);
+            }
+
+            div.dots {
+                font-weight: bold;
+                background-color: #eaeaea;
+                width: 100%;
+                height: 100%;
+                -webkit-border-radius: 15px;
+                -moz-border-radius: 15px;
+                border-radius: 15px;
+                text-align: center;
+                vertical-align: middle;
+                color: #a00;
+                display: none;
+            }
+            
+            div.english {
+                background-color: #eaeaea;
+                width: 100%;
+                height: 100%;
+                -webkit-border-radius: 15px;
+                -moz-border-radius: 15px;
+                border-radius: 15px;
+                text-align: center;
+                vertical-align: middle;
+                color: #060;
+                display: none;
+            }
+            
+            div.german {
+                background-color: #eaeaea;
+                width: 100%;
+                height: 100%;
+                -webkit-border-radius: 15px;
+                -moz-border-radius: 15px;
+                border-radius: 15px;
+                text-align: center;
+                vertical-align: middle;
+                color: #060;
+                display: none;
+            }
+            
+            div.digits {
+                background-color: #eaeaea;
+                width: 100%;
+                height: 100%;
+                -webkit-border-radius: 15px;
+                -moz-border-radius: 15px;
+                border-radius: 15px;
+                text-align: center;
+                vertical-align: middle;
+            }
+            
+            div.number {
+                position: relative;
+                float: left;
+                border: 0.1vw solid #CCCCCC;
+                margin: 0.3vw;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                padding: 0.3vw;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #4A4A4A;
+                background-color: #F7F5F6;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#F7F5F6), to(#DDDDDD));
+                background-image: -webkit-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -moz-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -ms-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -o-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#F7F5F6, endColorstr=#DDDDDD);
+                white-space: normal;
+                vertical-align: top;
+            }
+            
+            div.number:hover{
+                border: 0.1vw solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#E0E0E0), to(#BDBBBC));
+                background-image: -webkit-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -moz-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -ms-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: -o-linear-gradient(top, #E0E0E0, #BDBBBC);
+                background-image: linear-gradient(to bottom, #E0E0E0, #BDBBBC);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#E0E0E0, endColorstr=#BDBBBC);
+            }            
+            
+            div.number:active{
+                border: 0.1vw solid #ADADAD;
+                background-color: #E0E0E0;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#BDBBBC), to(#E0E0E0));
+                background-image: -webkit-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -moz-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -ms-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: -o-linear-gradient(top, #BDBBBC, #E0E0E0);
+                background-image: linear-gradient(to bottom, #BDBBBC, #E0E0E0);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#BDBBBC, endColorstr=#E0E0E0);
+            }
+            
+            div {
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #202020;
+            }
+            
+            div.table {
+                position: absolute; left:0; right:0;padding:0; width:100vw; height:100vh; text-align: justify;
+            }
+            
+            div.message {
+                position: relative;
+                width:78vw;
+                height:77vh;
+                left:1%;
+                top:1%;
+                padding: 10vh 10vw 10vh 10vw;
+                font-size: 3vmin;
+                display: none;
+                border: 1px solid #CCCCCC;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #4A4A4A;
+                background-color: #F7F5F6;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#F7F5F6), to(#DDDDDD));
+                background-image: -webkit-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -moz-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -ms-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: -o-linear-gradient(top, #F7F5F6, #DDDDDD);
+                background-image: linear-gradient(to bottom, #F7F5F6, #DDDDDD);
+                filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#F7F5F6, endColorstr=#DDDDDD);
+                white-space: normal;
+                vertical-align: top;
+            }
+            
+            div.result {
+                position: relative; float: left; padding: 0.5em; margin: 0.1em;
+                display: none;
+                border: 1px solid #CCCCCC;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 10px;
+                -moz-border-radius: 10px;
+                border-radius: 10px;
+            }
+            
+            input.text {
+                font-family: verdana, arial, sansserif;
+                font-size: 3vmin;
+                border: 0.1px solid #CCCCCC;
+                margin: 1vw;
+                padding: 1vw;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #000000;
+                background-color: #F7F5F6;
+            }
+
+            select {
+                font-family: verdana, arial, sansserif;
+                font-size: 3vmin;
+                border: 0.1px solid #CCCCCC;
+                margin: 1vw;
+                padding: 1vw;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: #FEFFFF 0px 2px 2px ;
+                -webkit-border-radius: 20px;
+                -moz-border-radius: 20px;
+                border-radius: 20px;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+                color: #000000;
+                background-color: #F7F5F6;
+            }
+
+            div.player {
+                font-size: 3vmin;
+                padding: 5vw;
+                position: absolute;
+                left:33vw;
+                width:20vw;
+                top:13vmin;
+                height: 20vh;
+                display: none;
+                -webkit-box-shadow: #FEFFFF 0px 2px 2px ;
+                -moz-box-shadow: #FEFFFF 0px 2px 2px ;
+                box-shadow: 0px 0px 50px  #505050;
+                -webkit-border-radius: 30px;
+                -moz-border-radius: 30px;
+                border-radius: 30px;
+                text-shadow: 0px 2px 2px rgba(255,255,255,1);
+            }
+            
+            span.stars {
+                text-shadow: 0px 0px 1px #400;
+                color: #fb0;
+                font-size: 5vmin;
+            }
+            
+            .blue {
+                color: #00c;
+            }
+            
+            .red {
+                color: #c00;
+            }
+            
+            .green {
+                color: #0c0;
+            }
+            
+            .super {
+                vertical-align: super;
+                font-size: 0.6em;
+            }
+            
+            .sub {
+                vertical-align: sub;
+                font-size: 0.6em;
+            }
+            
+            </style>
+        
+        <script type="text/javascript">
+            <!--
+            
+            // debug mode
+            var _debugMode = false;
+            
+            // global gameHistory object
+            var _gameHistory = null;
+            var _equation = null;
+            var _globalLock = false;
+            var _quitFullScreen = false;
+            var _language = "en";
+            
+            
+            
+            //______________________________
+            // Class representing a single player.
+            // Used to count points, colours and names.
+            function Player(name, colour, id, max, amount, operators)
+            {
+                if (_debugMode)
+                    alert("Player( name=" + name.toString() + ", colour=" + colour.toString() + ", id=" + id.toString() + ", max=" + max.toString() + ", amount=" + amount.toString() +")");
+                this.name = name;
+                this.colour = colour;
+                this.id = id;
+                this.points = 0;
+                this.pointString = "";
+                this.nextPlayer = 0;
+                
+                // init numbers
+                this.numbers = [];
+                numberString = "";
+                cols = Math.round(Math.sqrt(amount+1));
+                rows = Math.ceil((amount+1) / cols);
+                for (var i=0; i<amount; i++) {
+                    this.numbers.push(new Number(i, rows, cols, this.id, max));
+                    numberString += this.numbers[i].html;
+                }
+                this.hasPassed = false;
+                document.getElementById("table_" + this.id).innerHTML = numberString;
+                document.getElementById("table_" + this.id).style.display = "block";
+                
+                // init operators
+                this.operators = [];
+                operatorString = "";
+                for (var i=0; i<operators.length; i++) {
+                    this.operators.push(new Operator(i, operators[i], 1, operators.length, this.id));
+                    operatorString += this.operators[i].html;
+                }
+                document.getElementById("operators_" + this.id).innerHTML = operatorString;
+                document.getElementById("operators_" + this.id).style.display = "block";
+                document.getElementById(this.id).style.backgroundColor = this.colour;
+                this.hint("");
+            }
+            
+            
+            
+            //______________________________
+            // Adds a point to the player's score,  displays a message with the new score and releases the lock
+            Player.prototype.addPoints = function(operators)
+            {
+                if(_debugMode)
+                    alert("addPoints(operators=" + operators.toString() + ")");
+                // show message
+                var points = 0;
+                for (var i=0; i<operators.length; i++) {
+                    switch (operators[i]) {
+                        case "+":
+                        case "-":
+                            points += 0.5;
+                            break;
+                        case "*":
+                        case "/":
+                        case "mod":
+                            points += 1.5;
+                            break;
+                        case "pow":
+                        case "log":
+                        case "root":
+                            points += 2.5;
+                            break;
+                    }
+                }
+                this.points += points;
+                var pointString = "";
+                for (var n=0; n<points; n++)
+                    pointString += " <span class='stars'>&#9733;</span>";
+                var message = "";
+                if (_language == "en")
+                    message = pointString + "<br/>"
+                        + "Congratulations, " + this.name + ", you scored " + points.toString() + "points! <br/>" 
+                        + "Your current score is now " + this.points.toString() + ".";
+                if (_language == "de")
+                    message = pointString + "<br/>"
+                        + "Gratulation, " + this.name + ", Du bekommst " + points.toString() + "Punkte! <br/>" 
+                        + "Dein aktueller Stand ist jetzt " + this.points.toString() + "Punkte.";
+                document.getElementById(this.id).innerHTML = message;
+                document.getElementById(this.id).style.display = "block";
+                
+                // start time out for hiding message
+                setTimeout( function(id) { document.getElementById(id).style.display = "none";  _globalLock = false;}.bind(0, this.id), 1200 );
+            };
+            
+            
+            //______________________________
+            // Remove all numbers that are covered
+            Player.prototype.clearUp = function()
+            {
+                for (i=0; i<this.numbers.length; i++) {
+                    if (this.numbers[i].state === 'suggested') {
+                        this.numbers[i].remove();
+                    }
+                }
+            };
+            
+            
+            //______________________________
+            // Player confirms his choice of number
+            Player.prototype.confirm = function(what)
+            {
+                message = "";
+                switch (what) {
+                    case 'number1':
+                    case 'number2':
+                        if (_language==="en") this.hint(what);
+                        if (_language==="de") this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
+                        if (this !== this.nextPlayer)
+                            this.nextPlayer.hint("");
+                        for (var i=0; i<this.numbers.length; i++) {
+                            this.numbers[i].enable();
+                            if (this.nextPlayer !== this)
+                                this.nextPlayer.numbers[i].disable();
+                        }
+                        // enable the pass button and disable the confirm button
+                        document.getElementById("button_confirm").disabled = false;
+                        document.getElementById("button_pass").disabled = false;
+                        break;
+                    case 'solution':
+                        this.hasPassed = false;
+                        if (_language==="en") this.hint(what);
+                        if (_language==="de") this.hint("W&auml;hle eine Zahl f&uuml;r " + this.nextPlayer.name + ".");
+                        // disable the pass and confirm buttons
+                        document.getElementById("button_confirm").disabled = false;
+                        document.getElementById("button_pass").disabled = false;
+                }
+            }
+            
+            
+            //______________________________
+            // Displays help for the player (what to do next)
+            Player.prototype.hint = function(text)
+            {
+                document.getElementById("hint_" + this.id).innerHTML = this.name + "<br/>" + this.pointString + "<br/>" + text;
+            };
+            
+            
+            //______________________________
+            // Pass - remove all highlights and confirm
+            Player.prototype.pass = function()
+            {
+                // update all numbers
+                this.hasPassed = true;
+                for (var i=0; i<this.numbers.length; i++) {
+                    this.numbers[i].suggest(false);
+                }
+                // disable the pass and confirm buttons
+                document.getElementById("button_confirm").disabled = true;
+                document.getElementById("button_pass").disabled = true;
+            }
+            
+            
+            
+            //______________________________
+            // Player writes a number into the next part of the equation
+            // numberId1 - the number that was suggested
+            // numberId2, numberId2 - numbers that should get set to open (unsuggested) again
+            Player.prototype.suggestNumber = function(what, numberId, disableId, reEnableId)
+            {
+                if (_debugMode) alert("Player.suggestNumber(what=" + what + ", numberId=" + numberId.toString() + ", disabledId=" + disableId.toString() + ")");
+                if (disableId!==false)
+                    this.numbers[disableId].suggest(false);
+                if (reEnableId!==false)
+                    this.numbers[reEnableId].suggest(false);
+                switch (what) {
+                    case "incomplete":
+                        // update texts
+                        if (_language === "en") this.hint("incomplete");
+                        if (_language === "de") this.hint("W&auml;hle eine weiter Zahl und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
+                        // disable the confirm and enable the pass button
+                        document.getElementById("button_confirm").disabled = false;
+                        document.getElementById("button_pass").disabled = false;
+                        break;
+                    case "complete":
+                        // update texts
+                        if (_language === "en") this.hint("complete");
+                        if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
+                        // enable the pass and confirm buttons
+                        document.getElementById("button_confirm").disabled = false;
+                        document.getElementById("button_pass").disabled = false;
+                        break;
+                    case "solution":
+                        // update texts
+                        if (_language === "en") this.hint("solution");
+                        if (_language === "de") this.hint("Dr&uuml;cke <i>Fertig</i> or w&auml;hle eine andere Zahl.");
+                        // enable the confirm and disable the pass buttons
+                        document.getElementById("button_confirm").disabled = false;
+                        document.getElementById("button_pass").disabled = false;
+                }
+                return this.numbers[numberId].suggest(this);
+            };
+            
+            
+            
+            //______________________________
+            // Player writes an operator into the equation
+            // operatorId - the operator that was suggested
+            Player.prototype.suggestOperator = function(what)
+            {
+                switch (what) {
+                    case "incomplete":
+                        // update texts
+                        if (_language === "en") this.hint("incomplete");
+                        if (_language === "de") this.hint("W&auml;hle eine weiter Zahl und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
+                        // disable the confirm and enable the pass button
+                        document.getElementById("button_confirm").disabled = false;
+                        document.getElementById("button_pass").disabled = false;
+                        break;
+                    case "complete":
+                        // update texts
+                        if (_language === "en") this.hint("complete");
+                        if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
+                        // enable the pass and confirm buttons
+                        document.getElementById("button_confirm").disabled = false;
+                        document.getElementById("button_pass").disabled = false;
+                        break;
+                }
+            };
+            
+            
+            
+            //______________________________
+            // class for a single operator (+-*/...)
+            // An operator is represented by two divs with the outside one representing the card
+            // and the inside one representing the face. The face div has a class according to the 
+            // type: <div class="number"><div class="digits">23</div></div>
+            // both divs have distinct IDs
+            function Operator(operatorIndex, operator, rows, cols, playerId)
+            {
+                this.faceId = operatorIndex.toString() + "_" + playerId + "_operator_face";     // the respective div id, e.g. "2_operator_face"
+                this.index = operatorIndex;
+                this.operatorId = operatorIndex.toString() + "_" + playerId + "_operator_box";     // the respective div id for the number, e.g. "2_operator_box"
+                this.playerId = playerId;
+                this.operator = operator;     // +, -, *, /, mod, ...
+                this.function = false;
+                if (operator=='+')
+                    this.function = function(a,b) {return a + b;}; 
+                if (operator=='-')
+                    this.function = function(a,b) {return a - b;}; 
+                if (operator=='*')
+                    this.function = function(a,b) {return a * b;}; 
+                if (operator=='/')
+                    this.function = function(a,b) {return a / b;}; 
+                if (operator=='mod')
+                    this.function = function(a,b) {return a % b;}; 
+                if (operator=='pow')
+                    this.function = function(a,b) {return Math.pow(a, b);}; 
+                if (operator=='root')
+                    this.function = function(a,b) {return Math.pow(b, 1/a);}; 
+                if (operator=='log')
+                    this.function = function(a,b) {return Math.log(b) / Math.log(a);}; 
+                
+                // determine sizes for width, left, top and height
+                this.width = Math.floor(38.0 / cols); 
+                this.left = (50.0 - cols*(this.width+0.7)) / 2.0; 
+                this.height = Math.floor(8.0 / rows);
+                this.fontSize = 12 / cols;
+                this.lineHeight =  30 / cols;
+                // hack for bug in Chrome on Android
+                if (navigator.userAgent.indexOf("Chrome") > -1 && navigator.userAgent.indexOf("Android") > -1) {
+                    factor = 0.86;
+                    this.height *= factor;
+                    this.fontSize *= factor;
+                    this.lineHeight *= factor;
+                }
+                
+                // and create initial html string
+                this.html = "<div class=\"number\" id=\"" + this.operatorId + "\" style=\"width:" + this.width.toString() + "vw; height:" + this.height.toString() + "vh; left:" + this.left.toString() + "vw;\" onClick=\"_gameHistory.suggestOperator('" + this.playerId + "', " + this.index.toString() + ");\">"
+                    +     "<div class=\"digits\" id=\"" + this.faceId + "\" style=\"font-size:" + this.fontSize.toString() + "vw; line-height:" + this.lineHeight.toString() + "vh;\">"
+                    +         this.operator
+                    +     "</div>"
+                    + "</div>";
+            }
+            
+            
+            
+            //______________________________
+            // class for a single number number
+            // A memory number is represented by two divs with the outside one representing the number
+            // and the inside one representing the face. The face div has a class according to the 
+            // type: <div class="number"><div class="digits">23</div></div>
+            // both divs have distinct IDs
+            function Number(numberIndex, rows, cols, playerId, max)
+            {
+                this.faceId = numberIndex.toString() + "_" + playerId + "_number_face";     // the respective div id, e.g. "3_number_box_face"
+                this.index = numberIndex;
+                this.numberId = numberIndex.toString() + "_" + playerId + "_number_box";     // the respective div id for the number, e.g. "3_number"
+                this.playerId = playerId;
+                this.max = max; // the maximum value for re-initialising
+                
+                // determine sizes for width, left, top and height
+                this.width = Math.floor(38.0 / cols); 
+                this.left = (50.0 - cols*(this.width+0.7)) / 2.0; 
+                this.height = Math.floor(47.0 / rows);
+                this.fontSize = 12 / cols;
+                this.lineHeight =  30 / cols;
+                // hack for bug in Chrome on Android
+                if (navigator.userAgent.indexOf("Chrome") > -1 && navigator.userAgent.indexOf("Android") > -1) {
+                    factor = 0.86;
+                    this.height *= factor;
+                    this.fontSize *= factor;
+                    this.lineHeight *= factor;
+                }
+                
+                // initialise the number
+                this.state = "open";
+                this.meaning = Math.floor(Math.random()*(this.max+1));
+                
+                // decide on its colour (primes (i.e. one divisor pair) - red, two divisor pairs - blue, three or more - green)
+                this.colour = "green";
+                if ([1,2,3,5,7,11,13,17,19,23,29,31].indexOf(this.meaning) > -1)
+                    this.colour = "red";
+                if ([4,6,8,9,10,14,15,21,22,25,26,27].indexOf(this.meaning) > -1)
+                    this.colour = "blue";
+                    
+                // and create initial html string
+                this.html = "<div class=\"number\" id=\"" + this.numberId + "\" style=\"width:" + this.width.toString() + "vw; height:" + this.height.toString() + "vh; left:" + this.left.toString() + "vw;\" onClick=\"_gameHistory.suggestNumber('" + this.playerId + "', " + this.index.toString() + ");\">"
+                    +     "<div class=\"digits "+this.colour+"\" id=\"" + this.faceId + "\" style=\"font-size:" + this.fontSize.toString() + "vw; line-height:" + this.lineHeight.toString() + "vh;\">"
+                    +         this.meaning.toString()
+                    +     "</div>"
+                    + "</div>";
+            }
+            
+            
+            
+            //______________________________
+            // remove the number from the table
+            Number.prototype.remove = function()
+            {
+                this.state = "removed";
+                document.getElementById(this.numberId).style.visibility = "hidden";
+                setTimeout(this.recover.bind(this), 1000);
+
+            };
+            
+            //______________________________
+            // recover the number - give it a new number and make it visible again
+            Number.prototype.recover = function()
+            {
+                this.meaning = Math.floor(Math.random()*(this.max+1));
+                document.getElementById(this.faceId).innerHTML = this.meaning.toString();
+                this.enable();
+                this.disable();
+            };
+            
+            
+            
+            
+            //______________________________
+            // disable a number
+            Number.prototype.disable = function()
+            {
+                if (this.state === "open") {
+                    this.state = "disabled";
+                    document.getElementById(this.faceId).style.color = "#bbb";
+                }
+            };
+            
+            
+            //______________________________
+            // enable a number
+            Number.prototype.enable = function()
+            {
+                if (this.state === "disabled" || this.state === "removed") { // don't set suggested numbers back to open
+                    this.state = "open";
+                    if (this.colour==="red")
+                        document.getElementById(this.faceId).style.color = "#c00";
+                    if (this.colour==="green")
+                        document.getElementById(this.faceId).style.color = "#0c0";
+                    if (this.colour==="blue")
+                        document.getElementById(this.faceId).style.color = "#00c";
+                    document.getElementById(this.faceId).style.backgroundColor = "#eaeaea";
+                    document.getElementById(this.numberId).style.visibility = "visible";
+                }
+            };
+            
+            
+            //______________________________
+            // highlight a number
+            Number.prototype.suggest = function(player)
+            {
+                index = false;
+                colour = false;
+                if (player===false && this.state==="suggested") {
+                    this.state = "open";
+                    colour = "#eaeaea";
+                }
+                if (player!==false && (this.state==="open" || this.state==="suggested")) {
+                    index = this.index;
+                    this.state = "suggested";
+                    colour = player.colour;
+                }
+                document.getElementById(this.faceId).style.backgroundColor = colour;
+                return index;
+            };
+            
+            
+            //______________________________
+            // gameHistory object, tracks open numbers, removes numbers and assigns points
+            // player1,2:  players
+            function GameHistory(player1, player2)
+            {
+                if (_debugMode) alert("GameHistory( player1=" + player1.toString() + ", player2=" + player2.toString() + ")");
+                this.player1 = player1;
+                this.player2 = player2;
+                if (player2) {
+                    this.player1.nextPlayer = this.player2;
+                    this.player2.nextPlayer = this.player1;
+                    this.currentPlayer = this.player1;
+                    this.nextPlayer = this.player2;
+                } else {
+                    this.player1.nextPlayer = this.player1;
+                    this.currentPlayer = this.player1;
+                    this.nextPlayer = this.player1;
+                }
+                
+                // the equation: number1 + number2 = solution
+                this.number1 = false;
+                this.number2 = false;
+                this.number3 = false;
+                this.operator1 = false;
+                this.operator2 = false;
+                this.solution = false;
+                this.nextNumberMove = 'solution';
+                this.nextOperatorMove = 'operator1';
+                this.currentPlayer.confirm("solution");
+                this.updateGui();
+            }
+            
+            
+            //______________________________
+            // a confirm button has been clicked
+            GameHistory.prototype.confirm = function()
+            {
+                switch (this.nextNumberMove) {
+                    case 'solution':
+                        this.nextPlayer = this.currentPlayer;
+                        this.currentPlayer = this.currentPlayer.nextPlayer;
+                        this.nextNumberMove = 'number1';
+                        this.currentPlayer.confirm(this.nextNumberMove);
+                        break;
+                    case 'number1':
+                    case 'number2':
+                        // calculating points for current player
+                        number1 = this.currentPlayer.numbers[this.number1].meaning;
+                        number2 = this.currentPlayer.numbers[this.number2].meaning;
+                        number3 = this.currentPlayer.numbers[this.number3].meaning;
+                        operator1 = this.currentPlayer.operators[this.operator1];
+                        operator2 = this.currentPlayer.operators[this.operator2];
+                        solution = this.nextPlayer.numbers[this.solution].meaning;
+                        hypothesis = operator2.function(operator1.function(number1, number2), number3);
+                        
+                        // give the winner a point
+                        if (hypothesis == solution)
+                            this.currentPlayer.addPoints([operator1.operator, operator2.operator]);
+                        
+                        // either finish game
+                        if (this.currentPlayer.points >= 10 || this.nextPlayer.points >= 10)
+                            finishGame();
+                            
+                        // prepare next move
+                        else {
+                            this.nextNumberMove = 'solution';
+                            this.currentPlayer.confirm(this.nextNumberMove);
+                            this.player1.clearUp();
+                            if (this.player2)
+                                this.player2.clearUp();
+                        }
+                }
+            };
+            
+            
+            //______________________________
+            // a pass button has been clicked
+            GameHistory.prototype.pass = function()
+            {
+                this.number1 = false;
+                this.number2 = false;
+                this.solution = false;
+                this.nextNumberMove = "solution";
+                this.currentPlayer.pass();
+                this.currentPlayer.confirm(this.nextNumberMove);
+                this.currentPlayer.hasPassed = true;
+                this.updateGui();
+            }
+            
+            
+            
+            //______________________________
+            // a number has been clicked -- make a move
+            GameHistory.prototype.suggestNumber = function(player, numberIndex)
+            {
+                if (_debugMode) alert("GameHistory.suggestNumber(player=" + player.toString() + ", numberIndex=" + numberIndex.toString() + ")");
+                if (this.currentPlayer.id == player) {
+                    if (!_globalLock) {
+                        _globalLock = true;
+                        var what = "incomplete";
+                        switch (this.nextNumberMove) {
+                            case 'number1':
+                                if (this.number2!==false && this.number3!==false && this.operator1!==false && this.operator2!==false) 
+                                    what = "complete";
+                                if (numberIndex == this.number2) {
+                                    this.number2 = false;
+                                    this.number1 = this.currentPlayer.suggestNumber(what, numberIndex, false, this.number1);
+                                }
+                                else if (numberIndex == this.number3) {
+                                    this.number3 = false;
+                                    this.number1 = this.currentPlayer.suggestNumber(what, numberIndex, false, this.number1);
+                                }
+                                else
+                                    this.number1 = this.currentPlayer.suggestNumber(what, numberIndex, this.number1, false);
+                                this.updateGui();
+                                this.nextNumberMove = 'number2';
+                                break;
+                            case 'number2':
+                                if (this.number1!==false && this.number3!==false && this.operator1!==false && this.operator2!==false) 
+                                    what = "complete";
+                                if (numberIndex == this.number1) {
+                                    this.number1 = false;
+                                    this.number2 = this.currentPlayer.suggestNumber(what, numberIndex, false, this.number2);
+                                }
+                                else if (numberIndex == this.number3) {
+                                    this.number3 = false;
+                                    this.number2 = this.currentPlayer.suggestNumber(what, numberIndex, false, this.number2);
+                                }
+                                else
+                                    this.number2 = this.currentPlayer.suggestNumber(what, numberIndex, this.number2, false);
+                                this.updateGui();
+                                this.nextNumberMove = 'number3';
+                                break;
+                            case 'number3':
+                                if (this.number1!==false && this.number2!==false && this.operator1!==false && this.operator2!==false) 
+                                    what = "complete";
+                                if (numberIndex == this.number1) {
+                                    this.number1 = false;
+                                    this.number3 = this.currentPlayer.suggestNumber(what, numberIndex, false, this.number3);
+                                }
+                                else if (numberIndex == this.number2) {
+                                    this.number2 = false;
+                                    this.number3 = this.currentPlayer.suggestNumber(what, numberIndex, false, this.number3);
+                                }
+                                else
+                                    this.number3 = this.currentPlayer.suggestNumber(what, numberIndex, this.number3, false);
+                                this.updateGui();
+                                this.nextNumberMove = 'number1';
+                                break;
+                            case 'solution':
+                                this.number1 = false;
+                                this.number2 = false;
+                                this.number3 = false;
+                                this.operator1 = false;
+                                this.operator2 = false;
+                                this.solution = this.currentPlayer.suggestNumber("solution", numberIndex, this.solution, false);
+                                this.updateGui();
+                        }
+                        _globalLock = false;
+                    }
+                }
+            };
+            
+            
+            //______________________________
+            // an operator has been clicked -- make a move
+            GameHistory.prototype.suggestOperator = function(player, operatorIndex)
+            {
+                if (_debugMode) alert("GameHistory.suggestOperator(player=" + player.toString() + ", operatorIndex=" + operatorIndex.toString() + ")");
+                if (this.currentPlayer.id == player) {
+                    if (!_globalLock) {
+                        _globalLock = true;
+                        switch (this.nextOperatorMove) {
+                            case 'operator1':
+                                this.operator1 = operatorIndex;
+                                this.updateGui();
+                                this.nextOperatorMove = 'operator2';
+                                break;
+                            case 'operator2':
+                                this.operator2 = operatorIndex;
+                                this.updateGui();
+                                this.nextOperatorMove = 'operator1';
+                                break;
+                        }
+                        what = "incomplete";
+                        if (this.number1!==false && this.number3!==false && this.operator1!==false && this.operator2!==false) 
+                            what = "complete";
+                        this.currentPlayer.suggestOperator(what);
+                        _globalLock = false;
+                    }
+                }
+            };
+            
+            
+            
+            //______________________________
+            // a number has been clicked -- make a move
+            GameHistory.prototype.updateGui = function()
+            {
+                if (_debugMode) alert("GameHistory.updateGui()");
+                
+                // find parts
+                var number1 = this.number1!==false ? this.currentPlayer.numbers[this.number1] : false;
+                var number2 = this.number2!==false ? this.currentPlayer.numbers[this.number2] : false;
+                var number3 = this.number3!==false ? this.currentPlayer.numbers[this.number3] : false;
+                var operator1 = this.operator1!==false ? this.currentPlayer.operators[this.operator1] : false;
+                var operator2 = this.operator2!==false ? this.currentPlayer.operators[this.operator2] : false;
+                var solution = false;
+                if (this.solution !== false) {
+                    if (this.number1===false && this.number2===false && this.number3===false && this.operator1===false && this.operator2 ===false) {
+                        solution = this.currentPlayer.numbers[this.solution];
+                    } else {
+                        solution = this.nextPlayer.numbers[this.solution];
+                    }
+                }
+                
+                // create parentheses if necessary
+                var leftParen = "";
+                var rightParen = "";
+                if (operator1 && operator2) {
+                    // + before *,/,...
+                    if ((operator1.operator=='+' || operator1.operator=='-') && !(operator2.operator=='+' || operator2.operator=='-')) {
+                        leftParen = "(";
+                        rightParen = ")";
+                    }
+                    // logs and powers always get one
+                    if (operator1.operator=='log' || operator1.operator=='pow' || operator2.operator=='log') {
+                        leftParen = "(";
+                        rightParen = ")";
+                    }
+                }
+                
+                // assemble first clause of equation
+                var clause1 = "";
+                if (operator1) {
+                    switch (operator1.operator) {
+                        case "pow":
+                            clause1 = (number1 ? "<span class='"+number1.colour+"'>" + number1.meaning + "</span>" : "_")
+                                + (number2 ? "<span class='"+number2.colour+" super'>" + number2.meaning + "</span>" : "_ ");
+                            break;
+                        case "root":
+                            clause1 = (number1 ? "<span class='"+number1.colour+"' style='font-size: 0.5em; vertical-align: 1.5em;'>" + number1.meaning + "</span>" : "_")
+                                + "<span style='font-size: 1.2em; position: relative; left: -0.25em;'>&#8730;</span>"
+                                + (number2 ? "<span class='"+number2.colour+"' style='border-top: 5px solid #000; padding-top: 0; position: relative; left: -0.4em;'>" + number2.meaning + "</span>" : "_ ");
+                            break;
+                        case "log":
+                            clause1 = leftParen
+                                + "log"
+                                + (number1 ? "<span class='"+number1.colour+" sub'>" + number1.meaning + "</span>" : "_")
+                                + " "
+                                + (number2 ? "<span class='"+number2.colour+"'>" + number2.meaning + "</span>" : "_ ")
+                                + rightParen;
+                            break;
+                        default:
+                            clause1 = leftParen
+                                + (number1 ? "<span class='"+number1.colour+"'>" + number1.meaning + "</span>" : "_ ")
+                                + operator1.operator
+                                + (number2 ? "<span class='"+number2.colour+"'>" + number2.meaning + "</span>" : "_ ")
+                                + rightParen;
+                    }
+                } else {
+                    clause1 = leftParen
+                        + (number1 ? "<span class='"+number1.colour+"'>" + number1.meaning + "</span>" : "_ ")
+                        + "_ "
+                        + (number2 ? "<span class='"+number2.colour+"'>" + number2.meaning + "</span>" : "_ ");
+                }
+
+                // assemble second clause of equation
+                var clause2 = "";
+                if (operator2) {
+                    switch (operator2.operator) {
+                        case "pow":
+                            clause2 = clause1
+                                + (number2 ? "<span class='"+number3.colour+" super'>" + number3.meaning + "</span>" : "_ ");
+                            break;
+                        case "root":
+                            clause2 = "<span style='font-size: 0.5em; vertical-align: 1.5em;'>" + clause1 + "</span>"
+                                + "<span style='font-size: 1.2em; position: relative; left: -0.25em;'>&#8730;</span>"
+                                + (number3 ? "<span class='"+number3.colour+"' style='border-top: 5px solid #000; padding-top: 0; position: relative; left: -0.4em;'>" + number3.meaning + "</span>" : "_ ");
+                            break;
+                        case "log":
+                            clause2 = "log"
+                                + "<span class='sub'>" + clause1 + "</span>"
+                                + " "
+                                + (number3 ? "<span class='"+number3.colour+"'>" + number3.meaning + "</span>" : "_ ");
+                            break;
+                        default:
+                            clause2 = clause1
+                                + operator2.operator
+                                + (number3 ? "<span class='"+number3.colour+"'>" + number3.meaning + "</span>" : "_ ");
+                    }
+                } else {
+                    clause2 = clause1
+                        + "_ "
+                        + (number3 ? "<span class='"+number2.colour+"'>" + number2.meaning + "</span>" : "_ ");
+                }
+                // assemble and write equation
+                document.getElementById("equation").innerHTML =
+                    clause2 + " = " + (solution ? "<span class='"+solution.colour+"'>" + solution.meaning + "</span>" : "_ ");
+            };
+            
+            
+            
+            //______________________________
+            // start a new game --
+            // create a new gameHistory, create new numbers, shuffle them
+            // and put them face down on the table
+            function newGame(name1, colour1, max1, amount1, operators1, name2, colour2, max2, amount2, operators2)
+            {
+                if (_debugMode)
+                    alert("newGame(name1=" + name1.toString()
+                        + ", colour1="     + colour1.toString()
+                        + ", max1="        + max1.toString()
+                        + ", amount1="     + amount1.toString()
+                        + ", operators1="  + operators1.toString()
+                        + ", name2="       + name2.toString()
+                        + ", colour2="     + colour2.toString()
+                        + ", max2="        + max2.toString()
+                        + ", amount2="     + amount2.toString()
+                        + ", operators2="  + operators2.toString()
+                        + ")");
+
+                    
+                // create players (if player 2 is missing, we're in single player mode)
+                var player1 = false, player2 = false;
+                if (name2==="") {
+                    document.getElementById("table_player1").style.width = "70vw";
+                    document.getElementById("table_player1").style.left = "10vw";
+                } else
+                    player2 = new Player(name2, colour2, "player2", max2, amount2, operators2);
+                player1 = new Player(name1, colour1, "player1", max1, amount1, operators1);
+                
+                // create history
+                _gameHistory = null;
+                _gameHistory = new GameHistory(player1, player2);
+            }
+            
+            
+            
+            //______________________________
+            // start a new game --
+            // create a new gameHistory, create new numbers, shuffle them
+            // and put them face down on the table
+            GameHistory.prototype.finishGame = function()
+            {
+                resultsTable = "<table>"
+                resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + this.player1.name
+                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player1.points
+                + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player1.pointString
+                + "&nbsp;&nbsp;&nbsp;</td></tr>";
+                if (this.player2) {
+                    resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + this.player2.name
+                    + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player2.points
+                    + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player2.pointString
+                    + "&nbsp;&nbsp;&nbsp;</td></tr>";
+                }
+                resultsTable += "</table>";
+                document.getElementById('results_' + _language).innerHTML = resultsTable;
+                proceed("table", "finish_" + _language);
+            }
+            
+            
+            //______________________________
+            // go to full screen
+            function goFullScreen()
+            {
+                if (_quitFullScreen) {
+                    clearTimeout(_quitFullScreen);
+                    _quitFullScreen = false;
+                } else {
+                    if (document.documentElement.requestFullScreen) {  
+                        document.documentElement.requestFullScreen();  
+                    } else if (document.documentElement.mozRequestFullScreen) {  
+                        document.documentElement.mozRequestFullScreen();  
+                    } else if (document.documentElement.webkitRequestFullScreen) {  
+                        document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);  
+                    } else if (document.documentElement.msRequestFullScreen) {  
+                        document.documentElement.msRequestFullScreen();  
+                    }
+                }
+            }
+            
+            
+            //______________________________
+            // stop full screen
+            function quitFullScreen()
+            {
+                if (document.cancelFullScreen) {  
+                    document.cancelFullScreen();  
+                } else if (document.mozCancelFullScreen) {  
+                    document.mozCancelFullScreen();  
+                } else if (document.webkitCancelFullScreen) {  
+                    document.webkitCancelFullScreen();  
+                } else if (document.msCancelFullScreen) {  
+                    document.msCancelFullScreen();  
+                } 
+                _quitFullScreen = false;
+            }
+            
+            
+            
+            //______________________________
+            // start the session
+            function startSession(language)
+            {
+                if (_debugMode)
+                    alert("startSession(language=" + language.toString() + ")");
+                    
+                // set global language
+                _language = language;
+                
+                // variables for calling startGame function
+                var name1 = "";
+                var colour1 = "";
+                var max1 = 20;
+                var amount1 = 8;
+                var operators1 = [];
+                var name2 = "";
+                var colour2 = "";
+                var max2 = 20;
+                var amount2 = 8;
+                var operators2 = [];
+                
+                // read settings from html
+                if (_language==="en") {
+                    document.getElementById("button_confirm").innerHTML = "Ready";
+                    document.getElementById("button_pass").innerHTML = "Pass";
+                    name1 = document.getElementById("name1_en").value.trim();
+                    colour1 = document.getElementById("name1_en").style.backgroundColor;
+                    amount1 = parseInt(document.getElementById("amount1_en").value);
+                    if (document.getElementById("plus1_en").checked) operators1.push('+');
+                    if (document.getElementById("minus1_en").checked) operators1.push('-');
+                    if (document.getElementById("mult1_en").checked) operators1.push('*');
+                    if (document.getElementById("div1_en").checked) operators1.push('/');
+                    if (document.getElementById("mod1_en").checked) operators1.push('mod');
+                    if (document.getElementById("pow1_en").checked) operators1.push('pow');
+                    if (document.getElementById("root1_en").checked) operators1.push('root');
+                    if (document.getElementById("log1_en").checked) operators1.push('log');
+                    name2 = document.getElementById("name2_en").value.trim();
+                    colour2 = document.getElementById("name2_en").style.backgroundColor;
+                    amount2 = parseInt(document.getElementById("amount2_en").value);
+                    if (document.getElementById("plus2_en").checked) operators2.push('+');
+                    if (document.getElementById("minus2_en").checked) operators2.push('-');
+                    if (document.getElementById("mult2_en").checked) operators2.push('*');
+                    if (document.getElementById("div2_en").checked) operators2.push('/');
+                    if (document.getElementById("mod2_en").checked) operators2.push('mod');
+                    if (document.getElementById("pow2_en").checked) operators2.push('pow');
+                    if (document.getElementById("root2_en").checked) operators2.push('root');
+                    if (document.getElementById("log2_en").checked) operators2.push('log');                    
+                }
+                else if (_language==="de") {
+                    document.getElementById("button_confirm").innerHTML = "Fertig";
+                    document.getElementById("button_pass").innerHTML = "Passe";
+                }
+                
+                // start game
+                goFullScreen();
+                newGame(name1, colour1, max1, amount1, operators1, name2, colour2, max2, amount2, operators2);
+            }
+            
+            
+            
+            //______________________________
+            // hides the first id and shows the second
+            function proceed(hide, show)
+            {
+                document.getElementById(hide).style.display = "none";
+                document.getElementById(show).style.display = "block";
+            }
+            
+            //-->
+        </script>
+
+    </head>
+    <body>
+        <!-- Number table -->
+        <div id="table" class="table">
+            <div id="hint_player1" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:26vh; font-size:2.5vh;"></div>
+            <div style="position: relative; float: left; width:50vw; height:28vh;">
+                <div id="equation" style="position: relative; float: left; width:50vw; height:14vh;font-size:10vh; text-align: center;"></div>
+                <div style="position: relative; float: left; width:50vw; height: 14vh; text-align: center;">
+                    <button id="button_confirm" onClick="_gameHistory.confirm()" disabled>Ready</button>
+                    <button id="button_pass" onClick="_gameHistory.pass()" disabled>Pass</button>
+                </div>
+            </div>
+            <div id="hint_player2" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:26vh;font-size:2.5vh;"></div>
+            <div id="operators_player1" style="position: relative; float: left; width:48vw; height: 20vh; display: none;"></div>
+            <div id="operators_player2" style="position: relative; float: left; width:48vw; height: 20vh; display: none;"></div>
+            <div id="table_player1" style="position: relative; float: left; width:48vw; height: 50vh; display: none;"></div>
+            <div id="table_player2" style="position: relative; float: left; width:48vw; height: 50vh; display: none;"></div>
+        </div>
+        
+        <!-- Language chose -->
+        <div id="language" class="message" style="display:block;">
+                <button onClick="proceed('language', 'intro_en');" style="clear:left;">English</button>
+                <button onClick="proceed('language', 'intro_de');" style="clear:left;">Deutsch</button>
+        </div>
+        
+        <!-- English workflow -->
+        <div id="intro_en" class="message">
+            <b>Game of Triplets</b> <br>
+            Bla bla bla.
+            <div>
+                <button onClick="proceed('intro_en', 'settings1_en');">Next</button> or <button onClick="proceed('intro_en', 'language');">Go Back</button>
+            </div>
+        </div>
+        <div id="settings1_en" class="message">
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Name of First Player:&nbsp;<input id="name1_en" type="text" class="text" style="background-color: #fff090"></input>
+            </div>
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Available Operators:<br/><br/>
+                <input type="checkbox" id="plus1_en" checked="checked">Add (a + b)</input> <br/>
+                <input type="checkbox" id="minus1_en" checked="checked">Subtract (a - b)</input> <br/>
+                <input type="checkbox" id="mult1_en" checked="checked">Multiply (a * b)</input> <br/>
+                <input type="checkbox" id="div1_en" checked="checked">Divide (a / b)</input> <br/>
+                <input type="checkbox" id="mod1_en">Modulo (a mod b)</input> <br/>
+                <input type="checkbox" id="pow1_en">Power (a<span class="super">b</span>)</input> <br/>
+                <input type="checkbox" id="root1_en">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b)</span></input> <br/>
+                <input type="checkbox" id="log1_en">Logarithm (log<span class="sub">a</span>b)</span></input>
+            </div>
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Amount of available Numbers:
+                <select id="amount1_en" style="background-color: #fff090; font-size: 1em;">
+                    <option value="4">4 numbers</option>
+                    <option value="8">8 numbers</option>
+                    <option value="12" selected>12 numbers</option>
+                    <option value="16">16 numbers</option>
+                    <option value="20">20 numbers</option>
+                </select><br/>
+            </div>
+            <div style="position: relative; float: right; clear: left; padding: 1em 1em;">
+                <button onClick="proceed('settings1_en', 'settings2_en');">Next</button> or <button onClick="proceed('settings1_en', 'intro_en');">Go Back</button>
+            </div>
+        </div>
+        <div id="settings2_en" class="message">
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Name of Second Player (leave empty to play on your own):&nbsp;<input id="name2_en" type="text" class="text" style="background-color: #b0fff0"></input>
+            </div>
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Available Operators:<br/><br/>
+                <input type="checkbox" id="plus2_en" checked="checked">Add (a + b)</input> <br/>
+                <input type="checkbox" id="minus2_en" checked="checked">Subtract (a - b)</input> <br/>
+                <input type="checkbox" id="mult2_en" checked="checked">Multiply (a * b)</input> <br/>
+                <input type="checkbox" id="div2_en" checked="checked">Divide (a / b)</input> <br/>
+                <input type="checkbox" id="mod2_en">Modulo (a mod b)</input> <br/>
+                <input type="checkbox" id="pow2_en">Power (a<span class="super">b</span>)</input> <br/>
+                <input type="checkbox" id="root2_en">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b)</span></input> <br/>
+                <input type="checkbox" id="log2_en">Logarithm (log<span class="sub">a</span>b)</span></input>
+            </div>
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Amount of available Numbers:
+                <select id="amount2_en" style="background-color: #fff090; font-size: 1em;">
+                    <option value="4">4 numbers</option>
+                    <option value="8">8 numbers</option>
+                    <option value="12" selected>12 numbers</option>
+                    <option value="16">16 numbers</option>
+                    <option value="20">20 numbers</option>
+                </select><br/>
+            </div>
+            <div style="position: relative; float: right; clear: left; padding: 1em 1em;">
+                <button onClick="startSession('en'); proceed('settings2_en', 'table');">Next</button> or <button onClick="proceed('setting2_en', 'settings1_en');">Go Back</button>
+            </div>
+        </div>
+        <div id="finish_en" class="message">
+            Final Results
+            <br/><br/>
+            <span id="results_en"></span>
+            <br/><br/>
+            <button onClick="proceed('finish_en', 'names_en');" style="clear:left;">New Game</button>
+            <br/>
+        </div>
+        
+        <!-- German workflow -->
+        <div id="intro_de" class="message">
+            <b>Additions-Wettkampf</b> <br>
+            Fordere Deinen Gegner zu einem Summenwettkampf heraus! Die Spieler spielen abwechselnd.
+            <ul>
+            <li>Der erste Spieler w&auml;hlt eine Zahl und dr&uuml;ckt <i>Fertig</i>.</li>
+            <li>Der zweite Spiele w&auml;hlt zwei Zahlen, deren Summe die Zahl des ersten Spielers ergibt und dr&uuml;ckt <i>Fertig</i>. Wenn die Gleichung korrekt ist, bekommt der zweite Spieler einen Punkt.</li>
+            <li>Der zweite Spieler w&auml;hlt eine Zahl und dr&uuml;ckt <i>Fertig</i>. Dann w&auml;hlt der erste Spieler zwei Zahlen, die die Gleichung vervollst&auml;ndigen.</li>
+            <li>Wenn es keine passenden Zahlen mehr gibt, dr&uuml;ckt der Spieler <i>Passe</i>.</li>
+            </ul>
+            Wenn ein Spieler keine Karten mehr hat, oder wenn beide Spieler hintereinander passen, ist das Spiel beendet. Sieger ist der Spieler mit den meisten Punkten.<br/>
+            <br/><br/>
+            Wenn Du nur einen Namen eintr&auml;gst, spielst Du alleine. Versuche so geschickt zu spielen, da&szlig; Du alle Karten aufbrauchst ohne zu passen.
+            <div>
+                <button onClick="proceed('intro_de', 'names_de');">Weiter</button> oder <button onClick="proceed('intro_de', 'language');">Zur&uuml;ck</button>
+            </div>
+        </div>
+        <div id="names_de" class="message">
+            Tragt ein oder zwei Spieler ein
+            <br/>
+            <input id="name1_de" type="text" class="text" style="clear:left; background-color: #fff090"></input>
+            <input id="name2_de" type="text" class="text" style="clear:left; background-color: #b0fff0"></input>
+            <br/><br/>
+            <div>
+                <button onClick="proceed('names_de', 'start_de');">Weiter</button> oder <button onClick="proceed('names_de', 'intro_de');">Zur&uuml;ck</button>
+            </div>
+        </div>
+        <div id="start_de" class="message">
+            W&auml;hlt eine Spielgr&ouml;&szlig;e
+            <br/>
+            <button onClick="startSession(4,'de'); proceed('start_de', 'table');" style="clear:left;">4 Zahlen</button><br/>
+            <button onClick="startSession(8,'de'); proceed('start_de', 'table');" style="clear:left;">8 Zahlen</button><br/>
+            <button onClick="startSession(12,'de'); proceed('start_de', 'table');" style="clear:left;">12 Zahlen</button><br/>
+            <button onClick="startSession(16,'de'); proceed('start_de', 'table');" style="clear:left;">16 Zahlen</button><br/>
+            <button onClick="startSession(20,'de'); proceed('start_de', 'table');" style="clear:left;">20 Zahlen</button>  
+            <br/><br/>
+            <div>
+                Oder <button onClick="proceed('start_de', 'names_de');">Zur&uuml;ck</button>
+            </div>
+        </div>
+        <div id="finish_de" class="message">
+            Ergebnis
+            <br/><br/>
+            <span id="results_de"></span>
+            <br/><br/>
+            <button onClick="proceed('finish_de', 'names_de');" style="clear:left;">Neues Spiel</button>
+            <br/>
+        </div>
+        
+        <!-- Player message boxes -->
+        <div id="player1" class="player"></div>
+        <div id="player2" class="player"></div>
+    </body>
+</html>
+
+
