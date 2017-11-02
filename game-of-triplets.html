@@ -361,7 +361,7 @@
                 this.id = id;
                 this.points = 0;
                 this.pointString = "";
-                this.nextPlayer = 0;
+                this.nextPlayer = false;
                 
                 // init numbers
                 this.numbers = [];
@@ -421,6 +421,7 @@
                 var pointString = "";
                 for (var n=0; n<points; n++)
                     pointString += " <span class='stars'>&#9733;</span>";
+                this.pointString += pointString;
                 var message = "";
                 if (_language == "en")
                     message = pointString + "<br/>"
@@ -454,18 +455,24 @@
             // Player confirms his choice of number
             Player.prototype.confirm = function(what)
             {
+                if (_debugMode)
+                    alert("player.confirm(what=" + what.toString() + "), player.name=" + this.name);
                 message = "";
                 switch (what) {
                     case 'number1':
                     case 'number2':
-                        if (_language==="en") this.hint(what);
+                        if (_language==="en") this.hint("Choose numbers and operators so the equation on the left has the solution on the right, or press <i>Pass</i>.");
                         if (_language==="de") this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
-                        if (this !== this.nextPlayer)
-                            this.nextPlayer.hint("");
-                        for (var i=0; i<this.numbers.length; i++) {
+                        this.nextPlayer.hint("Wait for " + this.name + ".");
+                        for (var i=0; i<this.numbers.length; i++)
                             this.numbers[i].enable();
-                            if (this.nextPlayer !== this)
+                        for (var i=0; i<this.operators.length; i++)
+                            this.operators[i].enable();
+                        if (this.nextPlayer.id !== this.id) {
+                            for (var i=0; i<this.nextPlayer.numbers.length; i++)
                                 this.nextPlayer.numbers[i].disable();
+                            for (var i=0; i<this.nextPlayer.operators.length; i++)
+                                this.nextPlayer.operators[i].disable();
                         }
                         // enable the pass button and disable the confirm button
                         document.getElementById("button_confirm").disabled = false;
@@ -473,7 +480,7 @@
                         break;
                     case 'solution':
                         this.hasPassed = false;
-                        if (_language==="en") this.hint(what);
+                        if (_language==="en") this.hint("Choose a number for " + this.nextPlayer.name + ".");
                         if (_language==="de") this.hint("W&auml;hle eine Zahl f&uuml;r " + this.nextPlayer.name + ".");
                         // disable the pass and confirm buttons
                         document.getElementById("button_confirm").disabled = false;
@@ -512,23 +519,21 @@
             // numberId2, numberId2 - numbers that should get set to open (unsuggested) again
             Player.prototype.suggestNumber = function(what, numberId, disableId, reEnableId)
             {
-                if (_debugMode) alert("Player.suggestNumber(what=" + what + ", numberId=" + numberId.toString() + ", disabledId=" + disableId.toString() + ")");
+                if (_debugMode)
+                    alert("Player.suggestNumber(what=" + what + ", numberId=" + numberId.toString() + ", disabledId=" + disableId.toString() + "), player.name=" + this.name);
                 if (disableId!==false)
                     this.numbers[disableId].suggest(false);
                 if (reEnableId!==false)
                     this.numbers[reEnableId].suggest(false);
                 switch (what) {
                     case "incomplete":
-                        // update texts
-                        if (_language === "en") this.hint("incomplete");
-                        if (_language === "de") this.hint("W&auml;hle eine weiter Zahl und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
                         // disable the confirm and enable the pass button
-                        document.getElementById("button_confirm").disabled = false;
+                        document.getElementById("button_confirm").disabled = true;
                         document.getElementById("button_pass").disabled = false;
                         break;
                     case "complete":
                         // update texts
-                        if (_language === "en") this.hint("complete");
+                        if (_language === "en") this.hint("If you think your equation is correct, press <i>Ready</i>");
                         if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
                         // enable the pass and confirm buttons
                         document.getElementById("button_confirm").disabled = false;
@@ -536,11 +541,11 @@
                         break;
                     case "solution":
                         // update texts
-                        if (_language === "en") this.hint("solution");
+                        if (_language === "en") this.hint("Press <i>Ready</i> or decide for different number.");
                         if (_language === "de") this.hint("Dr&uuml;cke <i>Fertig</i> or w&auml;hle eine andere Zahl.");
                         // enable the confirm and disable the pass buttons
                         document.getElementById("button_confirm").disabled = false;
-                        document.getElementById("button_pass").disabled = false;
+                        document.getElementById("button_pass").disabled = true;
                 }
                 return this.numbers[numberId].suggest(this);
             };
@@ -588,22 +593,23 @@
                 this.playerId = playerId;
                 this.operator = operator;     // +, -, *, /, mod, ...
                 this.function = false;
+                this.state = "enabled";
                 if (operator=='+')
-                    this.function = function(a,b) {return a + b;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = a + b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='-')
-                    this.function = function(a,b) {return a - b;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = a - b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='*')
-                    this.function = function(a,b) {return a * b;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = a * b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='/')
-                    this.function = function(a,b) {return a / b;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = a / b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='mod')
-                    this.function = function(a,b) {return a % b;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = a % b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='pow')
-                    this.function = function(a,b) {return Math.pow(a, b);}; 
+                    this.function = function(a,b) {var c = NaN; try {c = Math.pow(a, b);}            catch(err) { alert(err); } return c;}; 
                 if (operator=='root')
-                    this.function = function(a,b) {return Math.pow(b, 1/a);}; 
+                    this.function = function(a,b) {var c = NaN; try {c = Math.pow(b, 1/a);}          catch(err) { alert(err); } return c;}; 
                 if (operator=='log')
-                    this.function = function(a,b) {return Math.log(b) / Math.log(a);}; 
+                    this.function = function(a,b) {var c = NaN; try {c = Math.log(b) / Math.log(a);} catch(err) { alert(err); } return c;}; 
                 
                 // determine sizes for width, left, top and height
                 this.width = Math.floor(38.0 / cols); 
@@ -627,6 +633,29 @@
                     + "</div>";
             }
             
+            
+            //______________________________
+            // disable an operator
+            Operator.prototype.disable = function()
+            {
+                if (this.state === "enabled") {
+                    this.state = "disabled";
+                    document.getElementById(this.faceId).style.color = "#bbb";
+                }
+            };
+            
+
+            //______________________________
+            // enable an operator
+            Operator.prototype.enable = function()
+            {
+                if (this.state === "disabled") {
+                    this.state = "enabled";
+                    document.getElementById(this.faceId).style.color = "#000";
+                }
+            };
+            
+
             
             
             //______________________________
@@ -692,7 +721,15 @@
             // recover the number - give it a new number and make it visible again
             Number.prototype.recover = function()
             {
+                // give it a new meaning
                 this.meaning = Math.floor(Math.random()*(this.max+1));
+                this.colour = "green";
+                if ([1,2,3,5,7,11,13,17,19,23,29,31].indexOf(this.meaning) > -1)
+                    this.colour = "red";
+                if ([4,6,8,9,10,14,15,21,22,25,26,27].indexOf(this.meaning) > -1)
+                    this.colour = "blue";
+                
+                // and show in the GUI
                 document.getElementById(this.faceId).innerHTML = this.meaning.toString();
                 this.enable();
                 this.disable();
@@ -705,7 +742,7 @@
             // disable a number
             Number.prototype.disable = function()
             {
-                if (this.state === "open") {
+                if (this.state === "open" || this.state === "suggested") {
                     this.state = "disabled";
                     document.getElementById(this.faceId).style.color = "#bbb";
                 }
@@ -755,7 +792,9 @@
             // player1,2:  players
             function GameHistory(player1, player2)
             {
-                if (_debugMode) alert("GameHistory( player1=" + player1.toString() + ", player2=" + player2.toString() + ")");
+                if (_debugMode)
+                    alert("GameHistory( player1=" + player1.toString() + ", player2=" + player2.toString() + ")");
+
                 this.player1 = player1;
                 this.player2 = player2;
                 if (player2) {
@@ -787,41 +826,45 @@
             // a confirm button has been clicked
             GameHistory.prototype.confirm = function()
             {
-                switch (this.nextNumberMove) {
-                    case 'solution':
-                        this.nextPlayer = this.currentPlayer;
-                        this.currentPlayer = this.currentPlayer.nextPlayer;
-                        this.nextNumberMove = 'number1';
-                        this.currentPlayer.confirm(this.nextNumberMove);
-                        break;
-                    case 'number1':
-                    case 'number2':
-                        // calculating points for current player
-                        number1 = this.currentPlayer.numbers[this.number1].meaning;
-                        number2 = this.currentPlayer.numbers[this.number2].meaning;
-                        number3 = this.currentPlayer.numbers[this.number3].meaning;
-                        operator1 = this.currentPlayer.operators[this.operator1];
-                        operator2 = this.currentPlayer.operators[this.operator2];
-                        solution = this.nextPlayer.numbers[this.solution].meaning;
-                        hypothesis = operator2.function(operator1.function(number1, number2), number3);
-                        
-                        // give the winner a point
-                        if (hypothesis == solution)
-                            this.currentPlayer.addPoints([operator1.operator, operator2.operator]);
-                        
-                        // either finish game
-                        if (this.currentPlayer.points >= 10 || this.nextPlayer.points >= 10)
-                            finishGame();
-                            
-                        // prepare next move
-                        else {
-                            this.nextNumberMove = 'solution';
+                try {
+                    switch (this.nextNumberMove) {
+                        case 'solution':
+                            this.nextPlayer = this.currentPlayer;
+                            this.currentPlayer = this.currentPlayer.nextPlayer;
+                            this.nextNumberMove = 'number1';
                             this.currentPlayer.confirm(this.nextNumberMove);
-                            this.player1.clearUp();
-                            if (this.player2)
-                                this.player2.clearUp();
-                        }
-                }
+                            this.currentPlayer.hint('GameHistory.confirm = solution');
+                            break;
+                        case 'number1':
+                        case 'number2':
+                            // calculating points for current player
+                            number1 = this.currentPlayer.numbers[this.number1].meaning;
+                            number2 = this.currentPlayer.numbers[this.number2].meaning;
+                            number3 = this.currentPlayer.numbers[this.number3].meaning;
+                            operator1 = this.currentPlayer.operators[this.operator1];
+                            operator2 = this.currentPlayer.operators[this.operator2];
+                            solution = this.nextPlayer.numbers[this.solution].meaning;
+                            hypothesis = operator2.function(operator1.function(number1, number2), number3);
+                            
+                            // give the winner a point
+                            if (hypothesis == solution)
+                                this.currentPlayer.addPoints([operator1.operator, operator2.operator]);
+                            
+                            // either finish game
+                            if (this.currentPlayer.points >= 10 || this.nextPlayer.points >= 10)
+                                finishGame();
+                                
+                            // prepare next move
+                            else {
+                                this.nextNumberMove = 'solution';
+                                this.currentPlayer.confirm(this.nextNumberMove);
+                            }
+                            this.currentPlayer.hint('GameHistory.confirm = number1/2');
+                        this.player1.clearUp();
+                        if (this.player2)
+                            this.player2.clearUp();
+                    }
+                } catch(err) {alert(err);}
             };
             
             
@@ -959,7 +1002,7 @@
                 var operator2 = this.operator2!==false ? this.currentPlayer.operators[this.operator2] : false;
                 var solution = false;
                 if (this.solution !== false) {
-                    if (this.number1===false && this.number2===false && this.number3===false && this.operator1===false && this.operator2 ===false) {
+                    if (this.nextNumberMove === 'solution') {
                         solution = this.currentPlayer.numbers[this.solution];
                     } else {
                         solution = this.nextPlayer.numbers[this.solution];
@@ -975,8 +1018,8 @@
                         leftParen = "(";
                         rightParen = ")";
                     }
-                    // logs and powers always get one
-                    if (operator1.operator=='log' || operator1.operator=='pow' || operator2.operator=='log') {
+                    // logs, mods and powers always get one
+                    if (operator1.operator=='log' || operator1.operator=='pow' || operator1.operator=='mod' || operator2.operator=='log' || operator2.operator=='mod') {
                         leftParen = "(";
                         rightParen = ")";
                     }
@@ -995,9 +1038,10 @@
                                 + "<span style='font-size: 1.2em; position: relative; left: -0.25em;'>&#8730;</span>"
                                 + (number2 ? "<span class='"+number2.colour+"' style='border-top: 5px solid #000; padding-top: 0; position: relative; left: -0.4em;'>" + number2.meaning + "</span>" : "_ ");
                             break;
+                        case "mod":
                         case "log":
                             clause1 = leftParen
-                                + "log"
+                                + operator1.operator
                                 + (number1 ? "<span class='"+number1.colour+" sub'>" + number1.meaning + "</span>" : "_")
                                 + " "
                                 + (number2 ? "<span class='"+number2.colour+"'>" + number2.meaning + "</span>" : "_ ")
@@ -1031,7 +1075,8 @@
                                 + (number3 ? "<span class='"+number3.colour+"' style='border-top: 5px solid #000; padding-top: 0; position: relative; left: -0.4em;'>" + number3.meaning + "</span>" : "_ ");
                             break;
                         case "log":
-                            clause2 = "log"
+                        case "mod":
+                            clause2 = operator1.operator
                                 + "<span class='sub'>" + clause1 + "</span>"
                                 + " "
                                 + (number3 ? "<span class='"+number3.colour+"'>" + number3.meaning + "</span>" : "_ ");
@@ -1075,12 +1120,12 @@
                     
                 // create players (if player 2 is missing, we're in single player mode)
                 var player1 = false, player2 = false;
+                player1 = new Player(name1, colour1, "player1", max1, amount1, operators1);
                 if (name2==="") {
                     document.getElementById("table_player1").style.width = "70vw";
                     document.getElementById("table_player1").style.left = "10vw";
                 } else
                     player2 = new Player(name2, colour2, "player2", max2, amount2, operators2);
-                player1 = new Player(name1, colour1, "player1", max1, amount1, operators1);
                 
                 // create history
                 _gameHistory = null;
@@ -1287,7 +1332,7 @@
         </div>
         <div id="settings2_en" class="message">
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
-                Name of Second Player (leave empty to play on your own):&nbsp;<input id="name2_en" type="text" class="text" style="background-color: #b0fff0"></input>
+                Name of Second Player:&nbsp;<input id="name2_en" type="text" class="text" style="background-color: #b0fff0"></input>
             </div>
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
                 Available Operators:<br/><br/>
@@ -1295,17 +1340,17 @@
                 <input type="checkbox" id="minus2_en" checked="checked">Subtract (a - b)</input> <br/>
                 <input type="checkbox" id="mult2_en" checked="checked">Multiply (a * b)</input> <br/>
                 <input type="checkbox" id="div2_en" checked="checked">Divide (a / b)</input> <br/>
-                <input type="checkbox" id="mod2_en">Modulo (a mod b)</input> <br/>
-                <input type="checkbox" id="pow2_en">Power (a<span class="super">b</span>)</input> <br/>
-                <input type="checkbox" id="root2_en">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b)</span></input> <br/>
-                <input type="checkbox" id="log2_en">Logarithm (log<span class="sub">a</span>b)</span></input>
+                <input type="checkbox" id="mod2_en" checked="checked">Modulo (a mod b)</input> <br/>
+                <input type="checkbox" id="pow2_en" checked="checked">Power (a<span class="super">b</span>)</input> <br/>
+                <input type="checkbox" id="root2_en" checked="checked">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b)</span></input> <br/>
+                <input type="checkbox" id="log2_en" checked="checked">Logarithm (log<span class="sub">a</span>b)</span></input>
             </div>
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
                 Amount of available Numbers:
-                <select id="amount2_en" style="background-color: #fff090; font-size: 1em;">
-                    <option value="4">4 numbers</option>
+                <select id="amount2_en" style="background-color: #b0fff0; font-size: 1em;">
+                    <option value="4" selected>4 numbers</option>
                     <option value="8">8 numbers</option>
-                    <option value="12" selected>12 numbers</option>
+                    <option value="12">12 numbers</option>
                     <option value="16">16 numbers</option>
                     <option value="20">20 numbers</option>
                 </select><br/>
