@@ -338,8 +338,9 @@
             <!--
             
             // debug mode
-            var _debugMode = false;
-            
+            var _debugMode = true;
+            var _log = "Log:\n";
+
             // global gameHistory object
             var _gameHistory = null;
             var _equation = null;
@@ -355,7 +356,7 @@
             function Player(name, colour, id, max, amount, operators)
             {
                 if (_debugMode)
-                    alert("Player( name=" + name.toString() + ", colour=" + colour.toString() + ", id=" + id.toString() + ", max=" + max.toString() + ", amount=" + amount.toString() +")");
+                    _log += "Player( name=" + name.toString() + ", colour=" + colour.toString() + ", id=" + id.toString() + ", max=" + max.toString() + ", amount=" + amount.toString() +")\n";
                 this.name = name;
                 this.colour = colour;
                 this.id = id;
@@ -393,49 +394,68 @@
             
             //______________________________
             // Adds a point to the player's score,  displays a message with the new score and releases the lock
-            Player.prototype.addPoints = function(operators)
+            Player.prototype.addPoints = function(hypothesis, solution, operators)
             {
                 if(_debugMode)
-                    alert("addPoints(operators=" + operators.toString() + ")");
-                // show message
-                var points = 0;
-                for (var i=0; i<operators.length; i++) {
-                    switch (operators[i]) {
-                        case "+":
-                        case "-":
-                            points += 0.5;
-                            break;
-                        case "*":
-                        case "/":
-                        case "mod":
-                            points += 1.5;
-                            break;
-                        case "pow":
-                        case "log":
-                        case "root":
-                            points += 2.5;
-                            break;
-                    }
-                }
-                this.points += points;
-                var pointString = "";
-                for (var n=0; n<points; n++)
-                    pointString += " <span class='stars'>&#9733;</span>";
-                this.pointString += pointString;
+                    _log += "addPoints(hypothesis=" + hypothesis.toString() + ", solution=" + solution.toString() + " operators=" + operators.toString() + ")\n";
+                    
+                // give the winner a point (solution is correct if result is less than 0.0001 away from solution)
+                var displayTime = 0;
                 var message = "";
-                if (_language == "en")
-                    message = pointString + "<br/>"
-                        + "Congratulations, " + this.name + ", you scored " + points.toString() + "points! <br/>" 
-                        + "Your current score is now " + this.points.toString() + ".";
-                if (_language == "de")
-                    message = pointString + "<br/>"
-                        + "Gratulation, " + this.name + ", Du bekommst " + points.toString() + "Punkte! <br/>" 
-                        + "Dein aktueller Stand ist jetzt " + this.points.toString() + "Punkte.";
-                document.getElementById(this.id).innerHTML = message;
-                document.getElementById(this.id).style.display = "block";
+                var eps = 0.0001;
+                if (Math.abs(hypothesis - solution) < eps) {
+                
+                    // display time is short for success messages
+                    displayTime = 1500;
+
+                    // calculate points
+                    var points = 0;
+                    for (var i=0; i<operators.length; i++) {
+                        switch (operators[i]) {
+                            case "+":
+                            case "-":
+                                points += 1.5;
+                                break;
+                            case "*":
+                            case "/":
+                            case "mod":
+                                points += 2.5;
+                                break;
+                            case "pow":
+                            case "log":
+                            case "root":
+                                points += 3.5;
+                                break;
+                        }
+                    }
+                    this.points += points;
+                    var pointString = "";
+                    for (var n=0; n<points; n++)
+                        pointString += " <span class='stars'>&#9733;</span>";
+                    this.pointString += pointString;
+                    if (_language == "en")
+                        message = pointString + "<br/>"
+                            + "Congratulations, " + this.name + ", you scored " + points.toString() + (points=== 1 ? " point! <br/><br/>" : " points! <br/><br/>") 
+                            + "Your current score is now " + this.points.toString() + ".";
+                    if (_language == "de")
+                        message = pointString + "<br/>"
+                            + "Gratulation, " + this.name + ", Du bekommst " + points.toString() + "Punkte! <br/>" 
+                            + "Dein aktueller Stand ist jetzt " + this.points.toString() + "Punkte.";
+                }
+                else {
+                    // display time is longer for error messages
+                    displayTime = 3500;
+                    if (_language == "en")
+                        message = "Sorry " + this.name + ", your suggestion results in <br/><span style='font-size:2em;'>" + Math.round(10000.0*hypothesis.toString())/10000.0 + "</span><br/> instead of <br/><span style='font-size:1.5em;'>" + solution.toString() + "</span>."; 
+                    if (_language == "de")
+                        message = pointString + "<br/>"
+                            + "Sorry, " + this.name + ", your suggestion results in " + hypothesis.toString() + " instead of " + solution.toString() + "."; 
+                }
                 
                 // start time out for hiding message
-                setTimeout( function(id) { document.getElementById(id).style.display = "none";  _globalLock = false;}.bind(0, this.id), 1200 );
+                document.getElementById(this.id).innerHTML = message;
+                document.getElementById(this.id).style.display = "block";
+                setTimeout( function(id) {document.getElementById(id).style.display = "none";  _globalLock = false;}.bind(0, this.id), displayTime );
             };
             
             
@@ -443,6 +463,8 @@
             // Remove all numbers that are covered
             Player.prototype.clearUp = function()
             {
+                if (_debugMode)
+                    _log += "clearUp()\n";
                 for (i=0; i<this.numbers.length; i++) {
                     if (this.numbers[i].state === 'suggested') {
                         this.numbers[i].remove();
@@ -456,35 +478,40 @@
             Player.prototype.confirm = function(what)
             {
                 if (_debugMode)
-                    alert("player.confirm(what=" + what.toString() + "), player.name=" + this.name);
-                message = "";
-                switch (what) {
-                    case 'number1':
-                    case 'number2':
-                        if (_language==="en") this.hint("Choose numbers and operators so the equation on the left has the solution on the right, or press <i>Pass</i>.");
-                        if (_language==="de") this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
-                        this.nextPlayer.hint("Wait for " + this.name + ".");
-                        for (var i=0; i<this.numbers.length; i++)
-                            this.numbers[i].enable();
-                        for (var i=0; i<this.operators.length; i++)
-                            this.operators[i].enable();
-                        if (this.nextPlayer.id !== this.id) {
-                            for (var i=0; i<this.nextPlayer.numbers.length; i++)
-                                this.nextPlayer.numbers[i].disable();
-                            for (var i=0; i<this.nextPlayer.operators.length; i++)
-                                this.nextPlayer.operators[i].disable();
-                        }
-                        // enable the pass button and disable the confirm button
-                        document.getElementById("button_confirm").disabled = false;
-                        document.getElementById("button_pass").disabled = false;
-                        break;
-                    case 'solution':
-                        this.hasPassed = false;
-                        if (_language==="en") this.hint("Choose a number for " + this.nextPlayer.name + ".");
-                        if (_language==="de") this.hint("W&auml;hle eine Zahl f&uuml;r " + this.nextPlayer.name + ".");
-                        // disable the pass and confirm buttons
-                        document.getElementById("button_confirm").disabled = false;
-                        document.getElementById("button_pass").disabled = false;
+                    _log += "player.confirm(what=" + what.toString() + "), player.name=" + this.name + ")\n";
+                try {
+                    message = "";
+                    switch (what) {
+                        case 'number1':
+                        case 'number2':
+                            if (_language==="en") this.hint("Choose numbers and operators so the equation on the left has the solution on the right, or press <i>Pass</i>.");
+                            if (_language==="de") this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
+                            this.nextPlayer.hint("Wait for " + this.name + ".");
+                            for (var i=0; i<this.numbers.length; i++)
+                                this.numbers[i].enable();
+                            for (var i=0; i<this.operators.length; i++)
+                                this.operators[i].enable();
+                            if (this.nextPlayer.id !== this.id) {
+                                for (var i=0; i<this.nextPlayer.numbers.length; i++)
+                                    this.nextPlayer.numbers[i].disable();
+                                for (var i=0; i<this.nextPlayer.operators.length; i++)
+                                    this.nextPlayer.operators[i].disable();
+                            }
+                            // enable the pass button and disable the confirm button
+                            document.getElementById("button_confirm").disabled = false;
+                            document.getElementById("button_pass").disabled = false;
+                            break;
+                        case 'solution1':
+                        case 'solution2':
+                            this.hasPassed = false;
+                            if (_language==="en") this.hint("Choose a number for " + this.nextPlayer.name + ".");
+                            if (_language==="de") this.hint("W&auml;hle eine Zahl f&uuml;r " + this.nextPlayer.name + ".");
+                            // disable the pass and confirm buttons
+                            document.getElementById("button_confirm").disabled = false;
+                            document.getElementById("button_pass").disabled = false;
+                    }
+                } catch(err) {
+                    alert(err);
                 }
             }
             
@@ -501,6 +528,9 @@
             // Pass - remove all highlights and confirm
             Player.prototype.pass = function()
             {
+                if (_debugMode)
+                    _log += "pass()\n";
+                
                 // update all numbers
                 this.hasPassed = true;
                 for (var i=0; i<this.numbers.length; i++) {
@@ -520,7 +550,8 @@
             Player.prototype.suggestNumber = function(what, numberId, disableId, reEnableId)
             {
                 if (_debugMode)
-                    alert("Player.suggestNumber(what=" + what + ", numberId=" + numberId.toString() + ", disabledId=" + disableId.toString() + "), player.name=" + this.name);
+                    _log += "Player.suggestNumber(what=" + what + ", numberId=" + numberId.toString() + ", disabledId=" + disableId.toString() + "), player.name=" + this.name + "\n";
+                    
                 if (disableId!==false)
                     this.numbers[disableId].suggest(false);
                 if (reEnableId!==false)
@@ -533,16 +564,16 @@
                         break;
                     case "complete":
                         // update texts
-                        if (_language === "en") this.hint("If you think your equation is correct, press <i>Ready</i>");
-                        if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
+                        // if (_language === "en") this.hint("If you think your equation is correct, press <i>Ready</i>");
+                        // if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
                         // enable the pass and confirm buttons
                         document.getElementById("button_confirm").disabled = false;
                         document.getElementById("button_pass").disabled = false;
                         break;
                     case "solution":
                         // update texts
-                        if (_language === "en") this.hint("Press <i>Ready</i> or decide for different number.");
-                        if (_language === "de") this.hint("Dr&uuml;cke <i>Fertig</i> or w&auml;hle eine andere Zahl.");
+                        // if (_language === "en") this.hint("Press <i>Ready</i> or decide for different number.");
+                        // if (_language === "de") this.hint("Dr&uuml;cke <i>Fertig</i> or w&auml;hle eine andere Zahl.");
                         // enable the confirm and disable the pass buttons
                         document.getElementById("button_confirm").disabled = false;
                         document.getElementById("button_pass").disabled = true;
@@ -557,6 +588,8 @@
             // operatorId - the operator that was suggested
             Player.prototype.suggestOperator = function(what)
             {
+                if (_debugMode)
+                    _log += this.name + ".suggestOperator(what=" + what.toString() + ")\n";
                 switch (what) {
                     case "incomplete":
                         // update texts
@@ -587,6 +620,9 @@
             // both divs have distinct IDs
             function Operator(operatorIndex, operator, rows, cols, playerId)
             {
+                if (_debugMode)
+                    _log += "new Operator(operatorIndex=" + operatorIndex.toString() + ", operator=" + operator + ", rows=" + rows.toString() + ", cols=" + cols.toString() + ", playerId=" + playerId.toString() + ")\n";
+
                 this.faceId = operatorIndex.toString() + "_" + playerId + "_operator_face";     // the respective div id, e.g. "2_operator_face"
                 this.index = operatorIndex;
                 this.operatorId = operatorIndex.toString() + "_" + playerId + "_operator_box";     // the respective div id for the number, e.g. "2_operator_box"
@@ -603,7 +639,7 @@
                 if (operator=='/')
                     this.function = function(a,b) {var c = NaN; try {c = a / b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='mod')
-                    this.function = function(a,b) {var c = NaN; try {c = a % b;}                     catch(err) { alert(err); } return c;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = b % a;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='pow')
                     this.function = function(a,b) {var c = NaN; try {c = Math.pow(a, b);}            catch(err) { alert(err); } return c;}; 
                 if (operator=='root')
@@ -638,6 +674,8 @@
             // disable an operator
             Operator.prototype.disable = function()
             {
+                if (_debugMode)
+                    _log += this.operator + ".disable()\n";
                 if (this.state === "enabled") {
                     this.state = "disabled";
                     document.getElementById(this.faceId).style.color = "#bbb";
@@ -649,6 +687,8 @@
             // enable an operator
             Operator.prototype.enable = function()
             {
+                if (_debugMode)
+                    _log += this.operator + ".enable()\n";
                 if (this.state === "disabled") {
                     this.state = "enabled";
                     document.getElementById(this.faceId).style.color = "#000";
@@ -666,6 +706,9 @@
             // both divs have distinct IDs
             function Number(numberIndex, rows, cols, playerId, max)
             {
+                if (_debugMode)
+                    _log += "new Number(numberIndex=" + numberIndex.toString() + ", rows=" + rows.toString() + ", cols=" + cols.toString() + ", playerId=" + playerId.toString() + ", max=" + max.toString() + ")\n";
+                
                 this.faceId = numberIndex.toString() + "_" + playerId + "_number_face";     // the respective div id, e.g. "3_number_box_face"
                 this.index = numberIndex;
                 this.numberId = numberIndex.toString() + "_" + playerId + "_number_box";     // the respective div id for the number, e.g. "3_number"
@@ -711,6 +754,8 @@
             // remove the number from the table
             Number.prototype.remove = function()
             {
+                if (_debugMode)
+                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").remove()\n";
                 this.state = "removed";
                 document.getElementById(this.numberId).style.visibility = "hidden";
                 setTimeout(this.recover.bind(this), 1000);
@@ -721,6 +766,8 @@
             // recover the number - give it a new number and make it visible again
             Number.prototype.recover = function()
             {
+                if (_debugMode)
+                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").recover()\n";
                 // give it a new meaning
                 this.meaning = Math.floor(Math.random()*(this.max+1));
                 this.colour = "green";
@@ -742,6 +789,8 @@
             // disable a number
             Number.prototype.disable = function()
             {
+                if (_debugMode)
+                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").disable()\n";
                 if (this.state === "open" || this.state === "suggested") {
                     this.state = "disabled";
                     document.getElementById(this.faceId).style.color = "#bbb";
@@ -753,6 +802,8 @@
             // enable a number
             Number.prototype.enable = function()
             {
+                if (_debugMode)
+                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").enable()\n";
                 if (this.state === "disabled" || this.state === "removed") { // don't set suggested numbers back to open
                     this.state = "open";
                     if (this.colour==="red")
@@ -771,6 +822,8 @@
             // highlight a number
             Number.prototype.suggest = function(player)
             {
+                if (_debugMode)
+                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").suggest(player=" + player.toString() + ")\n";
                 index = false;
                 colour = false;
                 if (player===false && this.state==="suggested") {
@@ -793,8 +846,7 @@
             function GameHistory(player1, player2)
             {
                 if (_debugMode)
-                    alert("GameHistory( player1=" + player1.toString() + ", player2=" + player2.toString() + ")");
-
+                _log += "new GameHistory( player1=" + player1.toString() + ", player2=" + player2.toString() + ")\n";
                 this.player1 = player1;
                 this.player2 = player2;
                 if (player2) {
@@ -815,9 +867,9 @@
                 this.operator1 = false;
                 this.operator2 = false;
                 this.solution = false;
-                this.nextNumberMove = 'solution';
+                this.nextNumberMove = 'solution1';
                 this.nextOperatorMove = 'operator1';
-                this.currentPlayer.confirm("solution");
+                this.currentPlayer.confirm("solution1");
                 this.updateGui();
             }
             
@@ -826,12 +878,16 @@
             // a confirm button has been clicked
             GameHistory.prototype.confirm = function()
             {
+                if (_debugMode)
+                    _log += "GameHistory.confirm()\n";
                 try {
                     switch (this.nextNumberMove) {
-                        case 'solution':
+                        case 'solution1':
+                        case 'solution2':
                             this.nextPlayer = this.currentPlayer;
                             this.currentPlayer = this.currentPlayer.nextPlayer;
                             this.nextNumberMove = 'number1';
+                            this.nextOperatorMove = 'operator1';
                             this.currentPlayer.confirm(this.nextNumberMove);
                             this.currentPlayer.hint('GameHistory.confirm = solution');
                             break;
@@ -846,17 +902,16 @@
                             solution = this.nextPlayer.numbers[this.solution].meaning;
                             hypothesis = operator2.function(operator1.function(number1, number2), number3);
                             
-                            // give the winner a point
-                            if (hypothesis == solution)
-                                this.currentPlayer.addPoints([operator1.operator, operator2.operator]);
+                            // show dialog
+                            this.currentPlayer.addPoints(hypothesis, solution, [operator1.operator, operator2.operator]);
                             
                             // either finish game
                             if (this.currentPlayer.points >= 10 || this.nextPlayer.points >= 10)
-                                finishGame();
+                                this.finishGame();
                                 
                             // prepare next move
                             else {
-                                this.nextNumberMove = 'solution';
+                                this.nextNumberMove = 'solution1';
                                 this.currentPlayer.confirm(this.nextNumberMove);
                             }
                             this.currentPlayer.hint('GameHistory.confirm = number1/2');
@@ -872,10 +927,12 @@
             // a pass button has been clicked
             GameHistory.prototype.pass = function()
             {
+                if (_debugMode)
+                    _log += "GameHistory.pass()\n";
                 this.number1 = false;
                 this.number2 = false;
                 this.solution = false;
-                this.nextNumberMove = "solution";
+                this.nextNumberMove = "solution1";
                 this.currentPlayer.pass();
                 this.currentPlayer.confirm(this.nextNumberMove);
                 this.currentPlayer.hasPassed = true;
@@ -888,7 +945,8 @@
             // a number has been clicked -- make a move
             GameHistory.prototype.suggestNumber = function(player, numberIndex)
             {
-                if (_debugMode) alert("GameHistory.suggestNumber(player=" + player.toString() + ", numberIndex=" + numberIndex.toString() + ")");
+                if (_debugMode)
+                    _log += "GameHistory.suggestNumber(player=" + player.toString() + ", numberIndex=" + numberIndex.toString() + ")\n";
                 if (this.currentPlayer.id == player) {
                     if (!_globalLock) {
                         _globalLock = true;
@@ -942,14 +1000,30 @@
                                 this.updateGui();
                                 this.nextNumberMove = 'number1';
                                 break;
-                            case 'solution':
+                            
+                            // if the solution is suggested for the first time, the previous solution is from the previous player, and must not
+                            // be disabled.
+                            case 'solution1':
                                 this.number1 = false;
                                 this.number2 = false;
                                 this.number3 = false;
                                 this.operator1 = false;
                                 this.operator2 = false;
-                                this.solution = this.currentPlayer.suggestNumber("solution", numberIndex, this.solution, false);
+                                this.solution = this.currentPlayer.suggestNumber("solution1", numberIndex, false, false);
                                 this.updateGui();
+                                this.nextNumberMove = 'solution2';
+                                break;
+                                
+                            // if the solution is re-suggested, disable the previous suggestion
+                            case 'solution2':
+                                this.number1 = false;
+                                this.number2 = false;
+                                this.number3 = false;
+                                this.operator1 = false;
+                                this.operator2 = false;
+                                this.solution = this.currentPlayer.suggestNumber("solution1", numberIndex, this.solution, false);
+                                this.updateGui();
+                                break;
                         }
                         _globalLock = false;
                     }
@@ -961,7 +1035,8 @@
             // an operator has been clicked -- make a move
             GameHistory.prototype.suggestOperator = function(player, operatorIndex)
             {
-                if (_debugMode) alert("GameHistory.suggestOperator(player=" + player.toString() + ", operatorIndex=" + operatorIndex.toString() + ")");
+                if (_debugMode)
+                    _log += "GameHistory.suggestOperator(player=" + player.toString() + ", operatorIndex=" + operatorIndex.toString() + ")\n";
                 if (this.currentPlayer.id == player) {
                     if (!_globalLock) {
                         _globalLock = true;
@@ -992,7 +1067,8 @@
             // a number has been clicked -- make a move
             GameHistory.prototype.updateGui = function()
             {
-                if (_debugMode) alert("GameHistory.updateGui()");
+                if (_debugMode)
+                    _log += "GameHistory.updateGui()\n";
                 
                 // find parts
                 var number1 = this.number1!==false ? this.currentPlayer.numbers[this.number1] : false;
@@ -1002,7 +1078,7 @@
                 var operator2 = this.operator2!==false ? this.currentPlayer.operators[this.operator2] : false;
                 var solution = false;
                 if (this.solution !== false) {
-                    if (this.nextNumberMove === 'solution') {
+                    if (this.nextNumberMove === 'solution1' || this.nextNumberMove === 'solution2') {
                         solution = this.currentPlayer.numbers[this.solution];
                     } else {
                         solution = this.nextPlayer.numbers[this.solution];
@@ -1067,7 +1143,7 @@
                     switch (operator2.operator) {
                         case "pow":
                             clause2 = clause1
-                                + (number2 ? "<span class='"+number3.colour+" super'>" + number3.meaning + "</span>" : "_ ");
+                                + (number3 ? "<span class='"+number3.colour+" super'>" + number3.meaning + "</span>" : "_ ");
                             break;
                         case "root":
                             clause2 = "<span style='font-size: 0.5em; vertical-align: 1.5em;'>" + clause1 + "</span>"
@@ -1076,7 +1152,7 @@
                             break;
                         case "log":
                         case "mod":
-                            clause2 = operator1.operator
+                            clause2 = operator2.operator
                                 + "<span class='sub'>" + clause1 + "</span>"
                                 + " "
                                 + (number3 ? "<span class='"+number3.colour+"'>" + number3.meaning + "</span>" : "_ ");
@@ -1089,7 +1165,7 @@
                 } else {
                     clause2 = clause1
                         + "_ "
-                        + (number3 ? "<span class='"+number2.colour+"'>" + number2.meaning + "</span>" : "_ ");
+                        + (number3 ? "<span class='"+number3.colour+"'>" + number3.meaning + "</span>" : "_ ");
                 }
                 // assemble and write equation
                 document.getElementById("equation").innerHTML =
@@ -1105,7 +1181,7 @@
             function newGame(name1, colour1, max1, amount1, operators1, name2, colour2, max2, amount2, operators2)
             {
                 if (_debugMode)
-                    alert("newGame(name1=" + name1.toString()
+                    _log += "newGame(name1=" + name1.toString()
                         + ", colour1="     + colour1.toString()
                         + ", max1="        + max1.toString()
                         + ", amount1="     + amount1.toString()
@@ -1115,9 +1191,8 @@
                         + ", max2="        + max2.toString()
                         + ", amount2="     + amount2.toString()
                         + ", operators2="  + operators2.toString()
-                        + ")");
-
-                    
+                        + ")\n";
+                        
                 // create players (if player 2 is missing, we're in single player mode)
                 var player1 = false, player2 = false;
                 player1 = new Player(name1, colour1, "player1", max1, amount1, operators1);
@@ -1140,6 +1215,9 @@
             // and put them face down on the table
             GameHistory.prototype.finishGame = function()
             {
+                if (_debugMode)
+                    _log += "GameHistory.finishGame()\n";
+                    
                 resultsTable = "<table>"
                 resultsTable += "<tr><td>&nbsp;&nbsp;&nbsp;" + this.player1.name
                 + "&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;" + this.player1.points
@@ -1161,6 +1239,9 @@
             // go to full screen
             function goFullScreen()
             {
+                if (_debugMode)
+                    _log += "goFullScreen()\n";
+                    
                 if (_quitFullScreen) {
                     clearTimeout(_quitFullScreen);
                     _quitFullScreen = false;
@@ -1182,6 +1263,9 @@
             // stop full screen
             function quitFullScreen()
             {
+                if (_debugMode)
+                    _log += "quitFullScreen()\n";
+                    
                 if (document.cancelFullScreen) {  
                     document.cancelFullScreen();  
                 } else if (document.mozCancelFullScreen) {  
@@ -1201,8 +1285,8 @@
             function startSession(language)
             {
                 if (_debugMode)
-                    alert("startSession(language=" + language.toString() + ")");
-                    
+                    _log += "startSession(language=" + language.toString() + ")\n";
+                
                 // set global language
                 _language = language;
                 
@@ -1261,6 +1345,8 @@
             // hides the first id and shows the second
             function proceed(hide, show)
             {
+                if (_debugMode)
+                    _log += "proceed(hide=" + hide.toString() + ", show=" + show.toString() + ")\n";
                 document.getElementById(hide).style.display = "none";
                 document.getElementById(show).style.display = "block";
             }
@@ -1269,7 +1355,11 @@
         </script>
 
     </head>
-    <body>
+    <body onload="if (_debugMode) document.getElementById('log_button').style.display = 'block';">
+    
+        <!-- debug log -->
+        <span id="log_button" style="background-color:#fff; display:block;" onclick="document.getElementById('log_text').innerHTML = _log; document.getElementById('log_box').style.display = 'block';">Click to show Debug Log</span>
+
         <!-- Number table -->
         <div id="table" class="table">
             <div id="hint_player1" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:26vh; font-size:2.5vh;"></div>
@@ -1420,6 +1510,11 @@
         <!-- Player message boxes -->
         <div id="player1" class="player"></div>
         <div id="player2" class="player"></div>
+        <div id="log_box" style="position: absolute; top: 0; left: 10%; width:80%; height: 100%; display: none;">
+            <button onclick="document.getElementById('log_box').style.display = 'none';">Hide Log</button><br/><br/>
+            <textarea id="log_text" style="width:100%; height:70%;">
+            </textarea>
+        </div>
     </body>
 </html>
 
