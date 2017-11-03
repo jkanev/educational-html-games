@@ -1104,6 +1104,11 @@
                         leftParen = "(";
                         rightParen = ")";
                     }
+                    // unless the second part is a root, then there are never parens
+                    if (operator2.operator=='root') {
+                        leftParen = "";
+                        rightParen = "";
+                    }
                 }
                 
                 // assemble first clause of equation
@@ -1117,7 +1122,7 @@
                         case "root":
                             clause1 = (number2 ? "<span class='"+number2.colour+"' style='font-size: 0.5em; vertical-align: 1.5em;'>" + number2.meaning + "</span>" : "_")
                                 + "<span style='position: relative; left: -0.5ch;'>&#8730;</span>"
-                                + (number1 ? "<span class='"+number1.colour+"' style='text-decoration: overline black; position: relative; left: -0.6ch;'> " + number1.meaning + "</span>" : "_ ");
+                                + (number1 ? "<span class='"+number1.colour+"' style='border-top: solid black 0.1ch; padding-top: 0; position: relative; left: -0.6ch;'> " + number1.meaning + "</span>" : "_ ");
                             break;
                         case "mod":
                         case "log":
@@ -1153,7 +1158,7 @@
                         case "root":
                             clause2 = (number3 ? "<span class='"+number3.colour+"' style='font-size: 0.5em; vertical-align: 1.5em;'>" + number3.meaning + "</span>" : "_ ")
                                 + "<span style='position: relative; left: -0.5ch;'>&#8730;</span>"
-                                + "<span style='text-decoration: overline black; position: relative; left: -0.6ch;'>" + clause1 + "</span>";
+                                + "<span style='border-top: solid black 0.1ch; padding-top: 0; position: relative; left: -0.6ch;'>" + clause1 + "</span>";
                             break;
                         case "log":
                         case "mod":
