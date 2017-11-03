@@ -564,16 +564,17 @@
                         break;
                     case "complete":
                         // update texts
-                        // if (_language === "en") this.hint("If you think your equation is correct, press <i>Ready</i>");
-                        // if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
+                        if (_language === "en") this.hint("If you think your equation is correct, press <i>Ready</i>.");
+                        if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
                         // enable the pass and confirm buttons
                         document.getElementById("button_confirm").disabled = false;
                         document.getElementById("button_pass").disabled = false;
                         break;
-                    case "solution":
+                    case "solution1":
+                    case "solution2":
                         // update texts
-                        // if (_language === "en") this.hint("Press <i>Ready</i> or decide for different number.");
-                        // if (_language === "de") this.hint("Dr&uuml;cke <i>Fertig</i> or w&auml;hle eine andere Zahl.");
+                        if (_language === "en") this.hint("Press <i>Ready</i> or decide for different number.");
+                        if (_language === "de") this.hint("Dr&uuml;cke <i>Fertig</i> or w&auml;hle eine andere Zahl.");
                         // enable the confirm and disable the pass buttons
                         document.getElementById("button_confirm").disabled = false;
                         document.getElementById("button_pass").disabled = true;
@@ -593,7 +594,7 @@
                 switch (what) {
                     case "incomplete":
                         // update texts
-                        if (_language === "en") this.hint("incomplete");
+                        if (_language === "en") this.hint("Complete your equation or press <i>Pass</i>.");
                         if (_language === "de") this.hint("W&auml;hle eine weiter Zahl und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
                         // disable the confirm and enable the pass button
                         document.getElementById("button_confirm").disabled = false;
@@ -601,7 +602,7 @@
                         break;
                     case "complete":
                         // update texts
-                        if (_language === "en") this.hint("complete");
+                        if (_language === "en") this.hint("If you think your solution is correct, press <i>Ready</i>, else press <i>Pass</i>.");
                         if (_language === "de") this.hint("Wenn Du meinst, dass die Zahlen richtig sind, dr&uuml;cke <i>Fertig</i>.");
                         // enable the pass and confirm buttons
                         document.getElementById("button_confirm").disabled = false;
@@ -639,13 +640,13 @@
                 if (operator=='/')
                     this.function = function(a,b) {var c = NaN; try {c = a / b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='mod')
-                    this.function = function(a,b) {var c = NaN; try {c = b % a;}                     catch(err) { alert(err); } return c;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = a % b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='pow')
                     this.function = function(a,b) {var c = NaN; try {c = Math.pow(a, b);}            catch(err) { alert(err); } return c;}; 
                 if (operator=='root')
                     this.function = function(a,b) {var c = NaN; try {c = Math.pow(b, 1/a);}          catch(err) { alert(err); } return c;}; 
                 if (operator=='log')
-                    this.function = function(a,b) {var c = NaN; try {c = Math.log(b) / Math.log(a);} catch(err) { alert(err); } return c;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = Math.log(a) / Math.log(b);} catch(err) { alert(err); } return c;}; 
                 
                 // determine sizes for width, left, top and height
                 this.width = Math.floor(38.0 / cols); 
@@ -889,7 +890,6 @@
                             this.nextNumberMove = 'number1';
                             this.nextOperatorMove = 'operator1';
                             this.currentPlayer.confirm(this.nextNumberMove);
-                            this.currentPlayer.hint('GameHistory.confirm = solution');
                             break;
                         case 'number1':
                         case 'number2':
@@ -914,7 +914,6 @@
                                 this.nextNumberMove = 'solution1';
                                 this.currentPlayer.confirm(this.nextNumberMove);
                             }
-                            this.currentPlayer.hint('GameHistory.confirm = number1/2');
                         this.player1.clearUp();
                         if (this.player2)
                             this.player2.clearUp();
@@ -1118,9 +1117,9 @@
                         case "log":
                             clause1 = leftParen
                                 + operator1.operator
-                                + (number1 ? "<span class='"+number1.colour+" sub'>" + number1.meaning + "</span>" : "_")
+                                + (number2 ? "<span class='"+number2.colour+" sub'>" + number2.meaning + "</span>" : "_ ")
                                 + " "
-                                + (number2 ? "<span class='"+number2.colour+"'>" + number2.meaning + "</span>" : "_ ")
+                                + (number1 ? "<span class='"+number1.colour+"'>" + number1.meaning + "</span>" : "_")
                                 + rightParen;
                             break;
                         default:
@@ -1153,9 +1152,9 @@
                         case "log":
                         case "mod":
                             clause2 = operator2.operator
-                                + "<span class='sub'>" + clause1 + "</span>"
+                                + (number3 ? "<span class='"+number3.colour+" sub'>" + number3.meaning + "</span>" : "_ ")
                                 + " "
-                                + (number3 ? "<span class='"+number3.colour+"'>" + number3.meaning + "</span>" : "_ ");
+                                + clause1;
                             break;
                         default:
                             clause2 = clause1
