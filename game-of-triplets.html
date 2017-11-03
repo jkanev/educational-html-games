@@ -338,8 +338,8 @@
             <!--
             
             // debug mode
-            var _debugMode = true;
-            var _log = "Log:\n";
+            var _debugMode = false;
+            var _log = "";
 
             // global gameHistory object
             var _gameHistory = null;
@@ -416,8 +416,10 @@
                             case "-":
                                 points += 1.5;
                                 break;
-                            case "*":
+                            case "&middot;":
+                            case "&times;":
                             case "/":
+                            case ":":
                             case "mod":
                                 points += 2.5;
                                 break;
@@ -498,8 +500,8 @@
                                     this.nextPlayer.operators[i].disable();
                             }
                             // enable the pass button and disable the confirm button
-                            document.getElementById("button_confirm").disabled = false;
-                            document.getElementById("button_pass").disabled = false;
+                            document.getElementById("button_confirm").disabled = true;
+                            document.getElementById("button_pass").disabled = true;
                             break;
                         case 'solution1':
                         case 'solution2':
@@ -507,8 +509,8 @@
                             if (_language==="en") this.hint("Choose a number for " + this.nextPlayer.name + ".");
                             if (_language==="de") this.hint("W&auml;hle eine Zahl f&uuml;r " + this.nextPlayer.name + ".");
                             // disable the pass and confirm buttons
-                            document.getElementById("button_confirm").disabled = false;
-                            document.getElementById("button_pass").disabled = false;
+                            document.getElementById("button_confirm").disabled = true;
+                            document.getElementById("button_pass").disabled = true;
                     }
                 } catch(err) {
                     alert(err);
@@ -635,16 +637,20 @@
                     this.function = function(a,b) {var c = NaN; try {c = a + b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='-')
                     this.function = function(a,b) {var c = NaN; try {c = a - b;}                     catch(err) { alert(err); } return c;}; 
-                if (operator=='*')
+                if (operator=='&times;')
+                    this.function = function(a,b) {var c = NaN; try {c = a * b;}                     catch(err) { alert(err); } return c;}; 
+                if (operator=='&middot;')
                     this.function = function(a,b) {var c = NaN; try {c = a * b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='/')
+                    this.function = function(a,b) {var c = NaN; try {c = a / b;}                     catch(err) { alert(err); } return c;}; 
+                if (operator==':')
                     this.function = function(a,b) {var c = NaN; try {c = a / b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='mod')
                     this.function = function(a,b) {var c = NaN; try {c = a % b;}                     catch(err) { alert(err); } return c;}; 
                 if (operator=='pow')
                     this.function = function(a,b) {var c = NaN; try {c = Math.pow(a, b);}            catch(err) { alert(err); } return c;}; 
                 if (operator=='root')
-                    this.function = function(a,b) {var c = NaN; try {c = Math.pow(b, 1/a);}          catch(err) { alert(err); } return c;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = Math.pow(a, 1/b);}          catch(err) { alert(err); } return c;}; 
                 if (operator=='log')
                     this.function = function(a,b) {var c = NaN; try {c = Math.log(a) / Math.log(b);} catch(err) { alert(err); } return c;}; 
                 
@@ -1089,7 +1095,7 @@
                 var rightParen = "";
                 if (operator1 && operator2) {
                     // + before *,/,...
-                    if ((operator1.operator=='+' || operator1.operator=='-') && !(operator2.operator=='+' || operator2.operator=='-')) {
+                    if ((operator1.operator=='+' || operator1.operator=='-') && !(operator2.operator=='+' || operator2.operator=='-' || operator2.operator=='root')) {
                         leftParen = "(";
                         rightParen = ")";
                     }
@@ -1109,9 +1115,9 @@
                                 + (number2 ? "<span class='"+number2.colour+" super'>" + number2.meaning + "</span>" : "_ ");
                             break;
                         case "root":
-                            clause1 = (number1 ? "<span class='"+number1.colour+"' style='font-size: 0.5em; vertical-align: 1.5em;'>" + number1.meaning + "</span>" : "_")
-                                + "<span style='font-size: 1.2em; position: relative; left: -0.25em;'>&#8730;</span>"
-                                + (number2 ? "<span class='"+number2.colour+"' style='border-top: 5px solid #000; padding-top: 0; position: relative; left: -0.4em;'>" + number2.meaning + "</span>" : "_ ");
+                            clause1 = (number2 ? "<span class='"+number2.colour+"' style='font-size: 0.5em; vertical-align: 1.5em;'>" + number2.meaning + "</span>" : "_")
+                                + "<span style='position: relative; left: -0.5ch;'>&#8730;</span>"
+                                + (number1 ? "<span class='"+number1.colour+"' style='text-decoration: overline black; position: relative; left: -0.6ch;'> " + number1.meaning + "</span>" : "_ ");
                             break;
                         case "mod":
                         case "log":
@@ -1145,9 +1151,9 @@
                                 + (number3 ? "<span class='"+number3.colour+" super'>" + number3.meaning + "</span>" : "_ ");
                             break;
                         case "root":
-                            clause2 = "<span style='font-size: 0.5em; vertical-align: 1.5em;'>" + clause1 + "</span>"
-                                + "<span style='font-size: 1.2em; position: relative; left: -0.25em;'>&#8730;</span>"
-                                + (number3 ? "<span class='"+number3.colour+"' style='border-top: 5px solid #000; padding-top: 0; position: relative; left: -0.4em;'>" + number3.meaning + "</span>" : "_ ");
+                            clause2 = (number3 ? "<span class='"+number3.colour+"' style='font-size: 0.5em; vertical-align: 1.5em;'>" + number3.meaning + "</span>" : "_ ")
+                                + "<span style='position: relative; left: -0.5ch;'>&#8730;</span>"
+                                + "<span style='text-decoration: overline black; position: relative; left: -0.6ch;'>" + clause1 + "</span>";
                             break;
                         case "log":
                         case "mod":
@@ -1310,8 +1316,10 @@
                     amount1 = parseInt(document.getElementById("amount1_en").value);
                     if (document.getElementById("plus1_en").checked) operators1.push('+');
                     if (document.getElementById("minus1_en").checked) operators1.push('-');
-                    if (document.getElementById("mult1_en").checked) operators1.push('*');
-                    if (document.getElementById("div1_en").checked) operators1.push('/');
+                    if (document.getElementById("multm1_en").checked) operators1.push('&middot;');
+                    if (document.getElementById("multt1_en").checked) operators1.push('&times;');
+                    if (document.getElementById("divo1_en").checked) operators1.push('/');
+                    if (document.getElementById("divr1_en").checked) operators1.push(':');
                     if (document.getElementById("mod1_en").checked) operators1.push('mod');
                     if (document.getElementById("pow1_en").checked) operators1.push('pow');
                     if (document.getElementById("root1_en").checked) operators1.push('root');
@@ -1321,8 +1329,10 @@
                     amount2 = parseInt(document.getElementById("amount2_en").value);
                     if (document.getElementById("plus2_en").checked) operators2.push('+');
                     if (document.getElementById("minus2_en").checked) operators2.push('-');
-                    if (document.getElementById("mult2_en").checked) operators2.push('*');
-                    if (document.getElementById("div2_en").checked) operators2.push('/');
+                    if (document.getElementById("multm2_en").checked) operators2.push('&middot;');
+                    if (document.getElementById("multt2_en").checked) operators2.push('&times;');
+                    if (document.getElementById("divo2_en").checked) operators2.push('/');
+                    if (document.getElementById("divr2_en").checked) operators2.push(':');
                     if (document.getElementById("mod2_en").checked) operators2.push('mod');
                     if (document.getElementById("pow2_en").checked) operators2.push('pow');
                     if (document.getElementById("root2_en").checked) operators2.push('root');
@@ -1357,7 +1367,7 @@
     <body onload="if (_debugMode) document.getElementById('log_button').style.display = 'block';">
     
         <!-- debug log -->
-        <span id="log_button" style="background-color:#fff; display:block;" onclick="document.getElementById('log_text').innerHTML = _log; document.getElementById('log_box').style.display = 'block';">Click to show Debug Log</span>
+        <span id="log_button" style="background-color:#fff; display:none;" onclick="document.getElementById('log_text').innerHTML = _log; document.getElementById('log_box').style.display = 'block';">Click to show Debug Log</span>
 
         <!-- Number table -->
         <div id="table" class="table">
@@ -1398,11 +1408,13 @@
                 Available Operators:<br/><br/>
                 <input type="checkbox" id="plus1_en" checked="checked">Add (a + b)</input> <br/>
                 <input type="checkbox" id="minus1_en" checked="checked">Subtract (a - b)</input> <br/>
-                <input type="checkbox" id="mult1_en" checked="checked">Multiply (a * b)</input> <br/>
-                <input type="checkbox" id="div1_en" checked="checked">Divide (a / b)</input> <br/>
+                <input type="checkbox" id="multt1_en">Multiply (a &times; b)</input> <br/>
+                <input type="checkbox" id="multm1_en" checked="checked">Multiply (a &middot; b)</input> <br/>
+                <input type="checkbox" id="divo1_en">Divide (a / b)</input> <br/>
+                <input type="checkbox" id="divr1_en" checked="checked">Divide (a : b)</input> <br/>
                 <input type="checkbox" id="mod1_en">Modulo (a mod b)</input> <br/>
                 <input type="checkbox" id="pow1_en">Power (a<span class="super">b</span>)</input> <br/>
-                <input type="checkbox" id="root1_en">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b)</span></input> <br/>
+                <input type="checkbox" id="root1_en">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b</span>)</input> <br/>
                 <input type="checkbox" id="log1_en">Logarithm (log<span class="sub">a</span>b)</span></input>
             </div>
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
@@ -1427,11 +1439,13 @@
                 Available Operators:<br/><br/>
                 <input type="checkbox" id="plus2_en" checked="checked">Add (a + b)</input> <br/>
                 <input type="checkbox" id="minus2_en" checked="checked">Subtract (a - b)</input> <br/>
-                <input type="checkbox" id="mult2_en" checked="checked">Multiply (a * b)</input> <br/>
-                <input type="checkbox" id="div2_en" checked="checked">Divide (a / b)</input> <br/>
+                <input type="checkbox" id="multt2_en">Multiply (a &times; b)</input> <br/>
+                <input type="checkbox" id="multm2_en" checked="checked">Multiply (a &middot; b)</input> <br/>
+                <input type="checkbox" id="divo2_en">Divide (a / b)</input> <br/>
+                <input type="checkbox" id="divr2_en" checked="checked">Divide (a : b)</input> <br/>
                 <input type="checkbox" id="mod2_en" checked="checked">Modulo (a mod b)</input> <br/>
                 <input type="checkbox" id="pow2_en" checked="checked">Power (a<span class="super">b</span>)</input> <br/>
-                <input type="checkbox" id="root2_en" checked="checked">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b)</span></input> <br/>
+                <input type="checkbox" id="root2_en" checked="checked">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b</span>)</input> <br/>
                 <input type="checkbox" id="log2_en" checked="checked">Logarithm (log<span class="sub">a</span>b)</span></input>
             </div>
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
