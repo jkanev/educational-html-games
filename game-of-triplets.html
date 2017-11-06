@@ -442,7 +442,7 @@
                             + "Your current score is now " + this.points.toString() + ".<br/>&nbsp;<br/>&nbsp;";
                     if (_language == "de")
                         message = pointString + "<br/>"
-                            + "Gratulation, " + this.name + ", Du bekommst " + points.toString() + "Punkte! <br/>" 
+                            + "Gl&uuml;ckwunsch, " + this.name + ", Du bekommst " + points.toString() + "Punkte! <br/>" 
                             + "Dein aktueller Stand ist jetzt " + this.points.toString() + "Punkte.";
                 }
                 else {
@@ -919,7 +919,7 @@
                             this.currentPlayer.addPoints(hypothesis, solution, [operator1.operator, operator2.operator]);
                             
                             // either finish game
-                            if (this.currentPlayer.points >= 10 || this.nextPlayer.points >= 10)
+                            if (this.currentPlayer.points >= 10 || this.nextPlayer.points >= 20)
                                 this.finishGame();
                                 
                             // prepare next move
@@ -1353,6 +1353,32 @@
                 else if (_language==="de") {
                     document.getElementById("button_confirm").innerHTML = "Fertig";
                     document.getElementById("button_pass").innerHTML = "Passe";
+                    name1 = document.getElementById("name1_de").value.trim();
+                    colour1 = document.getElementById("name1_de").style.backgroundColor;
+                    amount1 = parseInt(document.getElementById("amount1_de").value);
+                    if (document.getElementById("plus1_de").checked) operators1.push('+');
+                    if (document.getElementById("minus1_de").checked) operators1.push('-');
+                    if (document.getElementById("multm1_de").checked) operators1.push('&middot;');
+                    if (document.getElementById("multt1_de").checked) operators1.push('&times;');
+                    if (document.getElementById("divo1_de").checked) operators1.push('/');
+                    if (document.getElementById("divr1_de").checked) operators1.push(':');
+                    if (document.getElementById("mod1_de").checked) operators1.push('mod');
+                    if (document.getElementById("pow1_de").checked) operators1.push('pow');
+                    if (document.getElementById("root1_de").checked) operators1.push('root');
+                    if (document.getElementById("log1_de").checked) operators1.push('log');
+                    name2 = document.getElementById("name2_de").value.trim();
+                    colour2 = document.getElementById("name2_de").style.backgroundColor;
+                    amount2 = parseInt(document.getElementById("amount2_de").value);
+                    if (document.getElementById("plus2_de").checked) operators2.push('+');
+                    if (document.getElementById("minus2_de").checked) operators2.push('-');
+                    if (document.getElementById("multm2_de").checked) operators2.push('&middot;');
+                    if (document.getElementById("multt2_de").checked) operators2.push('&times;');
+                    if (document.getElementById("divo2_de").checked) operators2.push('/');
+                    if (document.getElementById("divr2_de").checked) operators2.push(':');
+                    if (document.getElementById("mod2_de").checked) operators2.push('mod');
+                    if (document.getElementById("pow2_de").checked) operators2.push('pow');
+                    if (document.getElementById("root2_de").checked) operators2.push('root');
+                    if (document.getElementById("log2_de").checked) operators2.push('log');                    
                 }
                 
                 // start game
@@ -1407,7 +1433,17 @@
         <!-- English workflow -->
         <div id="intro_en" class="message">
             <b>Game of Triplets</b> <br>
-            Bla bla bla.
+            Who can find more equations? Game for two players, both players play in turns. The game starts, each player can choose from a set of numbers and mathematical operations. The top part of the playing field shows an empty equation, _&nbsp;_&nbsp;_&nbsp;_&nbsp;_&nbsp;=&nbsp;.
+            <ul>
+            <li>The first player chooses a number for the right part of an equation, e.g. <i>_&nbsp;_&nbsp;_&nbsp;_&nbsp;_&nbsp;=&nbsp;6</i>, and presses <i>Ready</i>. </li>
+            <li>The second player chooses three numbers and two mathematical operations for the left part of the equation, e.g. <i>(1&nbsp;+&nbsp;2)&nbsp;&times;&nbsp;3</i>) and presses <i>Ready</i>. If the equation is correct the second Player scores points. </li>
+            <li>The second player chooses a number and presses <i>Ready</i>, then the first player completes the equation.
+            <li>If a player cannot complete an equation using the numbers they've got, they can press <i>Pass</i>.</li>
+            <li>The winner is the player who has scored 20 points first.</li>
+            </ul>
+            For every <i>plus</i> and <i>minus</i> there are 1.5 points, for every <i>times</i>, <i>over</i> and <i>modulo</i> there are 2.5 points, and for every <i>log</i>, <i>power</i> and <i>root</i>there are 3.5 points. The amount of numbers and the mathematical operators a player can choose from can be set individually for each player before the start of the game.<br/>
+            <br/><br/>
+            If you enter just a single player's name, the game will be run in single-player mode.
             <div>
                 <button onClick="proceed('intro_en', 'settings1_en');">Next</button> or <button onClick="proceed('intro_en', 'language');">Go Back</button>
             </div>
@@ -1420,10 +1456,10 @@
                 Available Operators:<br/><br/>
                 <input type="checkbox" id="plus1_en" checked="checked">Add (a + b)</input> <br/>
                 <input type="checkbox" id="minus1_en" checked="checked">Subtract (a - b)</input> <br/>
-                <input type="checkbox" id="multt1_en">Multiply (a &times; b)</input>
-                <input type="checkbox" id="multm1_en" checked="checked">Multiply (a &middot; b)</input> <br/>
-                <input type="checkbox" id="divo1_en">Divide (a / b)</input> 
-                <input type="checkbox" id="divr1_en" checked="checked">Divide (a : b)</input> <br/>
+                <input type="checkbox" id="multt1_en" checked="checked">Multiply (a &times; b)</input>
+                <input type="checkbox" id="multm1_en">Multiply (a &middot; b)</input> <br/>
+                <input type="checkbox" id="divo1_en" checked="checked">Divide (a / b)</input> 
+                <input type="checkbox" id="divr1_en">Divide (a : b)</input> <br/>
                 <input type="checkbox" id="mod1_en">Modulo (a mod b)</input> <br/>
                 <input type="checkbox" id="pow1_en">Power (a<span class="super">b</span>)</input> <br/>
                 <input type="checkbox" id="root1_en">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b</span>)</input> <br/>
@@ -1481,48 +1517,90 @@
             <br/><br/>
             <span id="results_en"></span>
             <br/><br/>
-            <button onClick="proceed('finish_en', 'names_en');" style="clear:left;">New Game</button>
+            <button onClick="proceed('finish_en', 'settings1_en');" style="clear:left;">New Game</button>
             <br/>
         </div>
         
         <!-- German workflow -->
         <div id="intro_de" class="message">
-            <b>Additions-Wettkampf</b> <br>
-            Fordere Deinen Gegner zu einem Summenwettkampf heraus! Die Spieler spielen abwechselnd.
+            <b>Tripel-Spiel</b> <br>
+            Wer kann mehr Gleichungen finden? Spiel f&uuml;r zwei Spieler, die Spieler spielen abwechselnd. Das Spiel beginnt, jeder Spieler hat eine Anzahl an Zahlen und Rechenoperationen zur Auswahl, im oberen Spielfeld ist eine leere Gleichung, _&nbsp;_&nbsp;_&nbsp;_&nbsp;_&nbsp;=&nbsp;_, zu sehen.
             <ul>
-            <li>Der erste Spieler w&auml;hlt eine Zahl und dr&uuml;ckt <i>Fertig</i>.</li>
-            <li>Der zweite Spiele w&auml;hlt zwei Zahlen, deren Summe die Zahl des ersten Spielers ergibt und dr&uuml;ckt <i>Fertig</i>. Wenn die Gleichung korrekt ist, bekommt der zweite Spieler einen Punkt.</li>
-            <li>Der zweite Spieler w&auml;hlt eine Zahl und dr&uuml;ckt <i>Fertig</i>. Dann w&auml;hlt der erste Spieler zwei Zahlen, die die Gleichung vervollst&auml;ndigen.</li>
-            <li>Wenn es keine passenden Zahlen mehr gibt, dr&uuml;ckt der Spieler <i>Passe</i>.</li>
+            <li>Der erste Spieler w&auml;hlt eine Zahl f&uuml;r den rechten Teil einer Gleichung, z.B. <i>_&nbsp;_&nbsp;_&nbsp;_&nbsp;_&nbsp;=&nbsp;9</i>, und dr&uuml;ckt <i>Fertig</i>. </li>
+            <li>Der zweite Spiele w&auml;hlt drei Zahlen und zwei Rechenoperationen f&uuml;r den linken Teil einer Gleichung, z.B. <i>(1&nbsp;+&nbsp;2)&nbsp;&middot;&nbsp;3&nbsp;=&nbsp;9</i>, und dr&uuml;ckt <i>Fertig</i>. Wenn die Gleichung korrekt ist, bekommt der Spieler Punkte. </li>
+            <li>Der zweite Spieler w&auml;hlt eine Zahl und dr&uuml;ckt <i>Fertig</i>, dann vervollst&auml;ndigt der erste Spieler die Gleichung.
+            <li>Wenn ein Spieler keine L&ouml;sung findet, dr&uuml;ckt sie/er <i>Passe</i>.</li>
+            <li>Sieger ist der Spieler, der zuerst 20 Punkte hat.</li>
             </ul>
-            Wenn ein Spieler keine Karten mehr hat, oder wenn beide Spieler hintereinander passen, ist das Spiel beendet. Sieger ist der Spieler mit den meisten Punkten.<br/>
-            <br/><br/>
-            Wenn Du nur einen Namen eintr&auml;gst, spielst Du alleine. Versuche so geschickt zu spielen, da&szlig; Du alle Karten aufbrauchst ohne zu passen.
+            F&uuml;r jedes <i>Plus</i> und <i>Minus</i> gibt es 1.5 Punkte, f&uuml;r <i>Mal</i>, <i>Geteilt Durch</i> und <i>Modulo</i> gibt es 2.5 Punkte, f&uuml;r <i>Log</i>, <i>Potenzen</i> und <i>Wurzeln</i> gibt es 3.5 Punkte. Die Anzahl Zahlen und Rechenoperationen, aus denen ein Spieler ausw&auml;hlen kann, ist individuell f&uuml;r jeden Spieler einstellbar.<br/>
+            <br/>
+            Wenn Du nur einen Namen eintr&auml;gst, spielst Du alleine.
             <div>
-                <button onClick="proceed('intro_de', 'names_de');">Weiter</button> oder <button onClick="proceed('intro_de', 'language');">Zur&uuml;ck</button>
+                <button onClick="proceed('intro_de', 'settings1_de');">Weiter</button> oder <button onClick="proceed('intro_de', 'language');">Zur&uuml;ck</button>
             </div>
         </div>
-        <div id="names_de" class="message">
-            Tragt ein oder zwei Spieler ein
-            <br/>
-            <input id="name1_de" type="text" class="text" style="clear:left; background-color: #fff090"></input>
-            <input id="name2_de" type="text" class="text" style="clear:left; background-color: #b0fff0"></input>
-            <br/><br/>
-            <div>
-                <button onClick="proceed('names_de', 'start_de');">Weiter</button> oder <button onClick="proceed('names_de', 'intro_de');">Zur&uuml;ck</button>
+        <div id="settings1_de" class="message">
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Name des ersten Spielers:&nbsp;<input id="name1_de" type="text" class="text" style="background-color: #fff090"></input>
+            </div>
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                M&ouml;gliche Rechenoperationen:<br/><br/>
+                <input type="checkbox" id="plus1_de" checked="checked">Addieren (a + b)</input> <br/>
+                <input type="checkbox" id="minus1_de" checked="checked">Subtrahieren (a - b)</input> <br/>
+                <input type="checkbox" id="multt1_de">Multiplizieren (a &times; b)</input>
+                <input type="checkbox" id="multm1_de" checked="checked">Multiplizieren (a &middot; b)</input> <br/>
+                <input type="checkbox" id="divo1_de">Dividieren (a / b)</input> 
+                <input type="checkbox" id="divr1_de" checked="checked">Dividieren (a : b)</input> <br/>
+                <input type="checkbox" id="mod1_de">Modulo (a mod b)</input> <br/>
+                <input type="checkbox" id="pow1_de">Potenz bilden (a<span class="super">b</span>)</input> <br/>
+                <input type="checkbox" id="root1_de">Wurzel ziehen (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b</span>)</input> <br/>
+                <input type="checkbox" id="log1_de">Logarithmus bilen (log<span class="sub">a</span>b)</span></input>
+            </div>
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Anzahl Zahlen:
+                <select id="amount1_de" style="background-color: #fff090; font-size: 1em;">
+                    <option value="4">4 Zahlen</option>
+                    <option value="6">6 Zahlen</option>
+                    <option value="9">9 Zahlen</option>
+                    <option value="12" selected>12 Zahlen</option>
+                    <option value="16">16 Zahlen</option>
+                    <option value="20">20 Zahlen</option>
+                </select><br/>
+            </div>
+            <div style="position: relative; float: right; clear: left; padding: 1em 1em;">
+                <button onClick="proceed('settings1_de', 'settings2_de');">Weiter</button> oder <button onClick="proceed('settings1_de', 'intro_de');">Zur&uuml;ck</button>
             </div>
         </div>
-        <div id="start_de" class="message">
-            W&auml;hlt eine Spielgr&ouml;&szlig;e
-            <br/>
-            <button onClick="startSession(4,'de'); proceed('start_de', 'table');" style="clear:left;">4 Zahlen</button><br/>
-            <button onClick="startSession(8,'de'); proceed('start_de', 'table');" style="clear:left;">8 Zahlen</button><br/>
-            <button onClick="startSession(12,'de'); proceed('start_de', 'table');" style="clear:left;">12 Zahlen</button><br/>
-            <button onClick="startSession(16,'de'); proceed('start_de', 'table');" style="clear:left;">16 Zahlen</button><br/>
-            <button onClick="startSession(20,'de'); proceed('start_de', 'table');" style="clear:left;">20 Zahlen</button>  
-            <br/><br/>
-            <div>
-                Oder <button onClick="proceed('start_de', 'names_de');">Zur&uuml;ck</button>
+        <div id="settings2_de" class="message">
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Name des zweiten Spielers:&nbsp;<input id="name2_de" type="text" class="text" style="background-color: #b0fff0"></input>
+            </div>
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Available Operators:<br/><br/>
+                <input type="checkbox" id="plus2_de" checked="checked">Addieren (a + b)</input> <br/>
+                <input type="checkbox" id="minus2_de" checked="checked">Subtrahieren (a - b)</input> <br/>
+                <input type="checkbox" id="multt2_de">Multiplizieren (a &times; b)</input>
+                <input type="checkbox" id="multm2_de" checked="checked">Multiplizieren (a &middot; b)</input> <br/>
+                <input type="checkbox" id="divo2_de">Dividieren (a / b)</input>
+                <input type="checkbox" id="divr2_de" checked="checked">Dividieren (a : b)</input> <br/>
+                <input type="checkbox" id="mod2_de" checked="checked">Modulo (a mod b)</input> <br/>
+                <input type="checkbox" id="pow2_de" checked="checked">Potenzieren (a<span class="super">b</span>)</input> <br/>
+                <input type="checkbox" id="root2_de" checked="checked">Wurzel ziehen (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b</span>)</input> <br/>
+                <input type="checkbox" id="log2_de" checked="checked">Logarithm (log<span class="sub">a</span>b)</span></input>
+            </div>
+            <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
+                Anzahl Zahlen:
+                <select id="amount2_de" style="background-color: #b0fff0; font-size: 1em;">
+                    <option value="4">4 Zahlen</option>
+                    <option value="6" selected>6 Zahlen</option>
+                    <option value="9">9 Zahlen</option>
+                    <option value="12">12 Zahlen</option>
+                    <option value="16">16 Zahlen</option>
+                    <option value="20">20 Zahlen</option>
+                </select><br/>
+            </div>
+            <div style="position: relative; float: right; clear: left; padding: 1em 1em;">
+                <button onClick="startSession('de'); proceed('settings2_de', 'table');">Weiter</button> oder <button onClick="proceed('setting2_de', 'settings1_de');">Zur&uuml;ck</button>
             </div>
         </div>
         <div id="finish_de" class="message">
@@ -1530,7 +1608,7 @@
             <br/><br/>
             <span id="results_de"></span>
             <br/><br/>
-            <button onClick="proceed('finish_de', 'names_de');" style="clear:left;">Neues Spiel</button>
+            <button onClick="proceed('finish_de', 'settings1_de');" style="clear:left;">Neues Spiel</button>
             <br/>
         </div>
         
