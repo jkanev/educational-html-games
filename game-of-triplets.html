@@ -560,7 +560,7 @@
             Player.prototype.suggestNumber = function(what, numberId, disableId, reEnableId)
             {
                 if (_debugMode)
-                    _log += + this.name + ".suggestNumber(what=" + what + ", numberId=" + numberId.toString() + ", disabledId=" + disableId.toString() + ")\n";
+                    _log += this.name + ".suggestNumber(what=" + what + ", numberId=" + numberId.toString() + ", disabledId=" + disableId.toString() + ")\n";
                     
                 if (disableId!==false)
                     this.numbers[disableId].suggest(false);
@@ -883,7 +883,7 @@
                 this.solution = false;
                 this.nextNumberMove = 'solution1';
                 this.nextOperatorMove = 'operator1';
-                this.currentPlayer.confirm("solution1");
+                this.currentPlayer.confirm('solution1');
                 this.updateGui();
             }
             
@@ -903,6 +903,7 @@
                             this.nextNumberMove = 'number1';
                             this.nextOperatorMove = 'operator1';
                             this.currentPlayer.confirm(this.nextNumberMove);
+                            this.updateGui();
                             break;
                         case 'number1':
                         case 'number2':
@@ -926,6 +927,7 @@
                             else {
                                 this.nextNumberMove = 'solution1';
                                 this.currentPlayer.confirm(this.nextNumberMove);
+                                this.updateGui();
                             }
                         this.player1.clearUp();
                         if (this.player2)
@@ -977,8 +979,8 @@
                                 }
                                 else
                                     this.number1 = this.currentPlayer.suggestNumber(what, numberIndex, this.number1, false);
-                                this.updateGui();
                                 this.nextNumberMove = 'number2';
+                                this.updateGui();
                                 break;
                             case 'number2':
                                 if (this.number1!==false && this.number3!==false && this.operator1!==false && this.operator2!==false) 
@@ -993,8 +995,8 @@
                                 }
                                 else
                                     this.number2 = this.currentPlayer.suggestNumber(what, numberIndex, this.number2, false);
-                                this.updateGui();
                                 this.nextNumberMove = 'number3';
+                                this.updateGui();
                                 break;
                             case 'number3':
                                 if (this.number1!==false && this.number2!==false && this.operator1!==false && this.operator2!==false) 
@@ -1009,8 +1011,8 @@
                                 }
                                 else
                                     this.number3 = this.currentPlayer.suggestNumber(what, numberIndex, this.number3, false);
-                                this.updateGui();
                                 this.nextNumberMove = 'number1';
+                                this.updateGui();
                                 break;
                             
                             // if the solution is suggested for the first time, the previous solution is from the previous player, and must not
@@ -1022,8 +1024,8 @@
                                 this.operator1 = false;
                                 this.operator2 = false;
                                 this.solution = this.currentPlayer.suggestNumber("solution1", numberIndex, false, false);
-                                this.updateGui();
                                 this.nextNumberMove = 'solution2';
+                                this.updateGui();
                                 break;
                                 
                             // if the solution is re-suggested, disable the previous suggestion
@@ -1055,13 +1057,13 @@
                         switch (this.nextOperatorMove) {
                             case 'operator1':
                                 this.operator1 = operatorIndex;
-                                this.updateGui();
                                 this.nextOperatorMove = 'operator2';
+                                this.updateGui();
                                 break;
                             case 'operator2':
                                 this.operator2 = operatorIndex;
-                                this.updateGui();
                                 this.nextOperatorMove = 'operator1';
+                                this.updateGui();
                                 break;
                         }
                         what = "incomplete";
@@ -1123,35 +1125,35 @@
                 if (operator1) {
                     switch (operator1.operator) {
                         case "pow":
-                            clause1 = (number1 ? "<span class='"+number1.colour+"'>" + number1.meaning + "</span>" : "_")
-                                + (number2 ? "<span class='"+number2.colour+" super'>" + number2.meaning + "</span>" : "_ ");
+                            clause1 = "<span id='number1' class='" + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>" 
+                                + "<span id='number2' class='super" + (number2 ? " " + number2.colour + "'>" + number2.meaning : "'>_") + "</span>";
                             break;
                         case "root":
-                            clause1 = (number2 ? "<span class='"+number2.colour+"' style='font-size: 0.5em; vertical-align: 1.5em;'>" + number2.meaning + "</span>" : "_")
-                                + "<span style='position: relative; left: -0.5ch;'>&#8730;</span>"
-                                + (number1 ? "<span class='"+number1.colour+"' style='border-top: solid black 0.1ch; padding-top: 0; position: relative; left: -0.6ch;'> " + number1.meaning + "</span>" : "_ ");
+                            clause1 = "<span id='number2' style='font-size: 0.5em; vertical-align: 1.5em;' class='" + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
+                                + "<span id='operator1' style='position: relative; left: -0.5ch;'>&#8730;</span>"
+                                + "<span id='number1' style='border-top: solid black 0.1ch; padding-top: 0; position: relative; left: -0.6ch;' class='" + (number1 ? number1.colour + "'> " + number1.meaning : "'>_") + "</span>";
                             break;
                         case "mod":
                         case "log":
                             clause1 = leftParen
-                                + operator1.operator
-                                + (number2 ? "<span class='"+number2.colour+" sub'>" + number2.meaning + "</span>" : "_ ")
+                                + " <span id='operator1'>" + operator1.operator + "</span>"
+                                + "<span id='number2' class='" + (number2 ? number2.colour + " sub'>" + number2.meaning : "'sub'>_") + "</span>"
                                 + " "
-                                + (number1 ? "<span class='"+number1.colour+"'>" + number1.meaning + "</span>" : "_")
+                                + "<span id='number1' class='" + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
                                 + rightParen;
                             break;
                         default:
                             clause1 = leftParen
-                                + (number1 ? "<span class='"+number1.colour+"'>" + number1.meaning + "</span>" : "_ ")
-                                + operator1.operator
-                                + (number2 ? "<span class='"+number2.colour+"'>" + number2.meaning + "</span>" : "_ ")
+                                + "<span id='number1' class='" + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
+                                + " <span id='operator1'>" + operator1.operator + "</span> "
+                                + "<span id='number2' class='" + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
                                 + rightParen;
                     }
                 } else {
                     clause1 = leftParen
-                        + (number1 ? "<span class='"+number1.colour+"'>" + number1.meaning + "</span>" : "_ ")
-                        + "_ "
-                        + (number2 ? "<span class='"+number2.colour+"'>" + number2.meaning + "</span>" : "_ ");
+                        + "<span id='number1' class='" + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
+                        + " <span id='operator1' style='color:#ccc;'>_</span> "
+                        + "<span id='number2' class='" + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>";
                 }
 
                 // assemble second clause of equation
@@ -1160,33 +1162,39 @@
                     switch (operator2.operator) {
                         case "pow":
                             clause2 = clause1
-                                + (number3 ? "<span class='"+number3.colour+" super'>" + number3.meaning + "</span>" : "_ ");
+                                + "<span id='number3' class='super " + (number3 ? number3.colour + "'>" + number3.meaning : "'>_ ") + "</span>";
                             break;
                         case "root":
-                            clause2 = (number3 ? "<span class='"+number3.colour+"' style='font-size: 0.5em; vertical-align: 1.7em;'>" + number3.meaning + "</span>" : "_ ")
-                                + "<span style='position: relative; left: -0.5ch; font-size: 1.4em;'>&#8730;</span>"
+                            clause2 = "<span id='number3' style='font-size: 0.5em; vertical-align: 1.7em;' class='" + (number3 ? number3.colour + "' >" + number3.meaning : "_") + "</span>"
+                                + "<span id='operator2' style='position: relative; left: -0.5ch; font-size: 1.4em;'>&#8730;</span>"
                                 + "<span style='border-top: solid black 0.1ch; padding-top: 0; font-size: 1.4em; position: relative; left: -0.6ch;'> <span style='font-size:0.7em;'>" + clause1 + "</span></span>";
                             break;
                         case "log":
                         case "mod":
-                            clause2 = operator2.operator
-                                + (number3 ? "<span class='"+number3.colour+" sub'>" + number3.meaning + "</span>" : "_ ")
+                            clause2 = " <span id='operator2'>" + operator2.operator + "</span> "
+                                + "<span id='number3' class='sub " + (number3 ? number3.colour + "'>" + number3.meaning : "'>_") + "</span>"
                                 + " "
                                 + clause1;
                             break;
                         default:
                             clause2 = clause1
-                                + operator2.operator
-                                + (number3 ? "<span class='"+number3.colour+"'>" + number3.meaning + "</span>" : "_ ");
+                                + " <span id='operator2'>" + operator2.operator + "</span> "
+                                + "<span id='number3' class='" + (number3 ? number3.colour + "'>" + number3.meaning : "'>_") + "</span>";
                     }
                 } else {
                     clause2 = clause1
-                        + "_ "
-                        + (number3 ? "<span class='"+number3.colour+"'>" + number3.meaning + "</span>" : "_ ");
+                        + " <span id='operator2' style='color:#ccc;'>_</span> "
+                        + "<span id='number3' class='" + (number3 ? number3.colour+ "'>" + number3.meaning : "'>_") + "</span>";
                 }
                 // assemble and write equation
                 document.getElementById("equation").innerHTML =
-                    clause2 + " = " + (solution ? "<span class='"+solution.colour+"'>" + solution.meaning + "</span>" : "_ ");
+                    clause2 + " = <span id='solution1' class='" + (solution ? + solution.colour + "'>" + solution.meaning : "'>_") + "</span> ";
+                    
+                // colour next number and operator field
+                if (document.getElementById(this.nextNumberMove))
+                    document.getElementById(this.nextNumberMove).style.backgroundColor = '#f0fff0';
+                if (this.nextNumberMove !== 'solution1' && this.nextNumberMove !== 'solution2' && document.getElementById(this.nextOperatorMove))
+                    document.getElementById(this.nextOperatorMove).style.backgroundColor = '#fff0f0';
             };
             
             
@@ -1411,7 +1419,7 @@
         <div id="table" class="table">
             <div id="hint_player1" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:26vh; font-size:2.5vh;"></div>
             <div style="position: relative; float: left; width:50vw; height:28vh;">
-                <div id="equation" style="position: relative; float: left; width:50vw; height:14vh;font-size:10vh; text-align: center;"></div>
+                <div id="equation" style="position: relative; float: left; width:50vw; height:14vh;font-size:7vh; text-align: center; padding-top: 1vh"></div>
                 <div style="position: relative; float: left; width:50vw; height: 14vh; text-align: center;">
                     <button id="button_confirm" onClick="_gameHistory.confirm()" disabled>Ready</button>
                     <button id="button_pass" onClick="_gameHistory.pass()" disabled>Pass</button>
