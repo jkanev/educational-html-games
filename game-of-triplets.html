@@ -311,6 +311,11 @@
                 font-size: 4vmin;
             }
             
+            .equNumber {
+                position: relative;
+                z-index: 1;
+            }
+            
             .blue {
                 color: #00c;
             }
@@ -1113,7 +1118,7 @@
                         rightParen = ")";
                     }
                     // logs, mods and powers always get one
-                    if (operator1.operator=='log' || operator1.operator=='pow' || operator1.operator=='mod' || operator2.operator=='log' || operator2.operator=='mod') {
+                    if (operator1.operator=='log' || operator1.operator=='pow' || operator1.operator=='mod' || operator2.operator=='log' ||operator2.operator=='pow' || operator2.operator=='mod') {
                         leftParen = "(";
                         rightParen = ")";
                     }
@@ -1123,41 +1128,42 @@
                         rightParen = "";
                     }
                 }
-                
                 // assemble first clause of equation
                 var clause1 = "";
                 if (operator1) {
                     switch (operator1.operator) {
                         case "pow":
-                            clause1 = "<span id='number1' class='" + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>" 
-                                + "<span id='number2' class='super" + (number2 ? " " + number2.colour + "'>" + number2.meaning : "'>_") + "</span>";
+                            clause1 = leftParen
+                                + "<span id='number1' class='equNumber " + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>" 
+                                + "<span id='number2' class='equNumber super" + (number2 ? " " + number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
+                                + rightParen;
                             break;
                         case "root":
-                            clause1 = "<span id='number2' style='font-size: 0.5em; vertical-align: 1.5em;' class='" + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
+                            clause1 = "<span id='number2' style='font-size: 0.5em; vertical-align: 1.5em;' class='equNumber " + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
                                 + "<span id='operator1' style='position: relative; left: -0.5ch;'>&#8730;</span>"
-                                + "<span id='number1' style='border-top: solid black 0.1ch; padding-top: 0; position: relative; left: -0.6ch;' class='" + (number1 ? number1.colour + "'> " + number1.meaning : "'>_") + "</span>";
+                                + "<span id='number1' style='border-top: solid black 0.1ch; padding-top: 0; position: relative; left: -0.6ch;' class='equNumber " + (number1 ? number1.colour + "'> " + number1.meaning : "'>_") + "</span>";
                             break;
                         case "mod":
                         case "log":
                             clause1 = leftParen
                                 + " <span id='operator1'>" + operator1.operator + "</span>"
-                                + "<span id='number2' class='" + (number2 ? number2.colour + " sub'>" + number2.meaning : "'sub'>_") + "</span>"
+                                + "<span id='number2' class='equNumber " + (number2 ? number2.colour + " sub'>" + number2.meaning : "'sub'>_") + "</span>"
                                 + " "
-                                + "<span id='number1' class='" + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
+                                + "<span id='number1' class='equNumber " + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
                                 + rightParen;
                             break;
                         default:
                             clause1 = leftParen
-                                + "<span id='number1' class='" + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
+                                + "<span id='number1' class='equNumber " + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
                                 + " <span id='operator1'>" + operator1.operator + "</span> "
-                                + "<span id='number2' class='" + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
+                                + "<span id='number2' class='equNumber " + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
                                 + rightParen;
                     }
                 } else {
                     clause1 = leftParen
-                        + "<span id='number1' class='" + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
+                        + "<span id='number1' class='equNumber " + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
                         + " <span id='operator1' style='color:#ccc;'>_</span> "
-                        + "<span id='number2' class='" + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>";
+                        + "<span id='number2' class='equNumber " + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>";
                 }
 
                 // assemble second clause of equation
@@ -1166,29 +1172,29 @@
                     switch (operator2.operator) {
                         case "pow":
                             clause2 = clause1
-                                + "<span id='number3' class='super " + (number3 ? number3.colour + "'>" + number3.meaning : "'>_ ") + "</span>";
+                                + "<span id='number3' class='equNumber super " + (number3 ? number3.colour + "'>" + number3.meaning : "'>_ ") + "</span>";
                             break;
                         case "root":
-                            clause2 = "<span id='number3' style='font-size: 0.5em; vertical-align: 1.7em;' class='" + (number3 ? number3.colour + "' >" + number3.meaning : "_") + "</span>"
+                            clause2 = "<span id='number3' style='font-size: 0.5em; vertical-align: 1.7em;' class='equNumber " + (number3 ? number3.colour + "' >" + number3.meaning : "_") + "</span>"
                                 + "<span id='operator2' style='position: relative; left: -0.5ch; font-size: 1.4em;'>&#8730;</span>"
                                 + "<span style='border-top: solid black 0.1ch; padding-top: 0; font-size: 1.4em; position: relative; left: -0.6ch;'> <span style='font-size:0.7em;'>" + clause1 + "</span></span>";
                             break;
                         case "log":
                         case "mod":
                             clause2 = " <span id='operator2'>" + operator2.operator + "</span> "
-                                + "<span id='number3' class='sub " + (number3 ? number3.colour + "'>" + number3.meaning : "'>_") + "</span>"
+                                + "<span id='number3' class='equNumber sub " + (number3 ? number3.colour + "'>" + number3.meaning : "'>_") + "</span>"
                                 + " "
                                 + clause1;
                             break;
                         default:
                             clause2 = clause1
                                 + " <span id='operator2'>" + operator2.operator + "</span> "
-                                + "<span id='number3' class='" + (number3 ? number3.colour + "'>" + number3.meaning : "'>_") + "</span>";
+                                + "<span id='number3' class='equNumber " + (number3 ? number3.colour + "'>" + number3.meaning : "'>_") + "</span>";
                     }
                 } else {
                     clause2 = clause1
                         + " <span id='operator2' style='color:#ccc;'>_</span> "
-                        + "<span id='number3' class='" + (number3 ? number3.colour+ "'>" + number3.meaning : "'>_") + "</span>";
+                        + "<span id='number3' class='equNumber " + (number3 ? number3.colour+ "'>" + number3.meaning : "'>_") + "</span>";
                 }
                 // assemble and write equation
                 document.getElementById("equation").innerHTML =
@@ -1228,6 +1234,8 @@
                 if (name2==="") {
                     document.getElementById("table_player1").style.width = "70vw";
                     document.getElementById("table_player1").style.left = "10vw";
+                    document.getElementById("table_player2").innerHTML = "";
+                    document.getElementById("operators_player2").innerHTML = "";
                 } else
                     player2 = new Player(name2, colour2, "player2", max2, amount2, operators2);
                 
