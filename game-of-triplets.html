@@ -442,8 +442,8 @@
                             + "Your current score is now " + this.points.toString() + ".<br/>&nbsp;<br/>&nbsp;";
                     if (_language == "de")
                         message = pointString + "<br/>"
-                            + "Gl&uuml;ckwunsch, " + this.name + ", Du bekommst " + points.toString() + "Punkte! <br/>" 
-                            + "Dein aktueller Stand ist jetzt " + this.points.toString() + "Punkte.";
+                            + "Gl&uuml;ckwunsch, " + this.name + ", Du bekommst " + points.toString() + " Punkte! <br/>" 
+                            + "Dein aktueller Stand ist jetzt " + this.points.toString() + " Punkte.";
                 }
                 else {
                     // display time is longer for error messages
@@ -451,8 +451,7 @@
                     if (_language == "en")
                         message = "Sorry " + this.name + ", your suggestion results in <br/><span style='font-size:2em;'>" + Math.round(10000.0*hypothesis.toString())/10000.0 + "</span><br/> instead of <br/><span style='font-size:1.5em;'>" + solution.toString() + "</span>.<br/>&nbsp;<br/>&nbsp;"; 
                     if (_language == "de")
-                        message = pointString + "<br/>"
-                            + "Sorry, " + this.name + ", your suggestion results in " + hypothesis.toString() + " instead of " + solution.toString() + "."; 
+                        message = "Tut mir leid " + this.name + ", dein Vorschlag ergibt leider<br/><span style='font-size:2em;'>" + Math.round(10000.0*hypothesis.toString())/10000.0 + "</span><br/> anstatt <br/><span style='font-size:1.5em;'>" + solution.toString() + "</span>.<br/>&nbsp;<br/>&nbsp;"; 
                 }
                 
                 // start time out for hiding message
@@ -488,9 +487,14 @@
                     switch (what) {
                         case 'number1':
                         case 'number2':
-                            if (_language==="en") this.hint("Choose numbers and operators so the equation on the left has the solution on the right, or press <i>Pass</i>.");
-                            if (_language==="de") this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
-                            this.nextPlayer.hint("Wait for " + this.name + ".");
+                            if (_language==="en") {
+                                this.nextPlayer.hint("Wait for " + this.name + ".");
+                                this.hint("Choose numbers and operators so the equation on the left has the solution on the right, or press <i>Pass</i>.");
+                            }
+                            if (_language==="de") {
+                                this.nextPlayer.hint("Warten auf " + this.name + ".");
+                                this.hint("W&auml;hle zwei Zahlen sodass die Zahl rechts stimmt und dr&uuml;cke <i>Fertig</i>, oder dr&uuml;cke <i>Passe</i>.");
+                            }
                             for (var i=0; i<this.numbers.length; i++)
                                 this.numbers[i].enable();
                             for (var i=0; i<this.operators.length; i++)
@@ -920,7 +924,7 @@
                             this.currentPlayer.addPoints(hypothesis, solution, [operator1.operator, operator2.operator]);
                             
                             // either finish game
-                            if (this.currentPlayer.points >= 10 || this.nextPlayer.points >= 20)
+                            if (this.currentPlayer.points >= 20 || this.nextPlayer.points >= 20)
                                 this.finishGame();
                                 
                             // prepare next move
