@@ -308,7 +308,7 @@
             span.stars {
                 text-shadow: 0px 0px 1px #400;
                 color: #fb0;
-                font-size: 5vmin;
+                font-size: 4vmin;
             }
             
             .blue {
@@ -1192,8 +1192,8 @@
                 }
                 // assemble and write equation
                 document.getElementById("equation").innerHTML =
-                    clause2 + " = <span id='solution1' class='" + (solution ? + solution.colour + "'>" + solution.meaning : "'>_") + "</span> ";
-                    
+                    clause2 + " = <span id='solution1' class='" + (solution ? solution.colour + "'>" + solution.meaning : "'>_") + "</span> ";
+                
                 // colour next number and operator field
                 if (document.getElementById(this.nextNumberMove))
                     document.getElementById(this.nextNumberMove).style.backgroundColor = '#f0fff0';
@@ -1421,15 +1421,15 @@
 
         <!-- Number table -->
         <div id="table" class="table">
-            <div id="hint_player1" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:26vh; font-size:2.5vh;"></div>
+            <div id="hint_player1" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:26vh; font-size:2vmin;"></div>
             <div style="position: relative; float: left; width:50vw; height:28vh;">
-                <div id="equation" style="position: relative; float: left; width:50vw; height:14vh;font-size:7vh; text-align: center; padding-top: 1vh"></div>
+                <div id="equation" style="position: relative; float: left; width:50vw; height:14vh;font-size:7vmin; text-align: center; padding-top: 1vh"></div>
                 <div style="position: relative; float: left; width:50vw; height: 14vh; text-align: center;">
                     <button id="button_confirm" onClick="_gameHistory.confirm()" disabled>Ready</button>
                     <button id="button_pass" onClick="_gameHistory.pass()" disabled>Pass</button>
                 </div>
             </div>
-            <div id="hint_player2" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:26vh;font-size:2.5vh;"></div>
+            <div id="hint_player2" style="position: relative; float: left; width:20vw; padding: 2vh 2vw 0 2vw; height:26vh;font-size:2vmin;"></div>
             <div id="operators_player1" style="position: relative; float: left; width:48vw; height: 20vh; display: none;"></div>
             <div id="operators_player2" style="position: relative; float: left; width:48vw; height: 20vh; display: none;"></div>
             <div id="table_player1" style="position: relative; float: left; width:48vw; height: 50vh; display: none;"></div>
