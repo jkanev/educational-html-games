@@ -1247,8 +1247,16 @@
                 var player1 = false, player2 = false;
                 player1 = new Player(name1, colour1, "player1", max1, amount1, operators1);
                 if (name2==="") {
-                    document.getElementById("table_player1").style.width = "70vw";
-                    document.getElementById("table_player1").style.left = "10vw";
+                    document.getElementById("operators_player1").style.width = "50vw";
+                    document.getElementById("operators_player1").style.left = "25vw";
+                    document.getElementById("operators_player1").style.position = "relative";
+                    document.getElementById("operators_player1").style.float = "left";
+                    document.getElementById("operators_player1").style.clear = "left";
+                    document.getElementById("table_player1").style.width = "50vw";
+                    document.getElementById("table_player1").style.left = "20vw";
+                    document.getElementById("table_player1").style.position = "relative";
+                    document.getElementById("table_player1").style.float = "left";
+                    document.getElementById("table_player1").style.clear = "left";
                     document.getElementById("table_player2").innerHTML = "";
                     document.getElementById("operators_player2").innerHTML = "";
                 } else
