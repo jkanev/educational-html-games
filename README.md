@@ -8,6 +8,7 @@ English
 - [Set Sizes](#id-sets-en)
 - [Triple Number Memory](#id-triple-number-memory-en)
 - [Game of Sums and Differences](#id-game-of-sums-en)
+- [Game of Triplets](#id-game-of-triplets-en)
 
 Deutsch
 
@@ -15,6 +16,7 @@ Deutsch
 - [Mengengr&ouml;&szlig;en](#id-sets-de)
 - [Dreifach-Zahlenmemory](#id-triple-number-memory-de)
 - [Additions- und Subtraktionsduell](#id-game-of-sums-de)
+- [Tripel-Spiel](#id-game-of-triplets-de)
 
 
 # English #
@@ -88,7 +90,7 @@ cards without having to pass once.
 [Download .zip with all games](https://github.com/jkanev/educational-html-games/archive/master.zip)  
 
 
-<div id='id-game-of-sums-en'/>
+<div id='id-game-of-triplets-en'/>
 
 ## Game of Triplets ##
 __Math, English | Key Stage 1 and later__  
@@ -182,7 +184,7 @@ aufbrauchst ohne zu passen.
 
 <div id='id-game-of-triplets-de'/>
 
-##Tripel-Spiel ##
+## Tripel-Spiel ##
 __Mathematik | Klasse 1-10__  
 Trainiert Grundrechenarten, Potenzen, Logarithmen auf ganzen Zahlen, Zahlenraum 0-20.
 
