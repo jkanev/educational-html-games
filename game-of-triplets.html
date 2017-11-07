@@ -422,10 +422,8 @@
                             case "-":
                                 points += 1.5;
                                 break;
-                            case "&middot;":
-                            case "&times;":
+                            case "*":
                             case "/":
-                            case ":":
                             case "mod":
                                 points += 2.5;
                                 break;
@@ -647,30 +645,45 @@
                 this.index = operatorIndex;
                 this.operatorId = operatorIndex.toString() + "_" + playerId + "_operator_box";     // the respective div id for the number, e.g. "2_operator_box"
                 this.playerId = playerId;
-                this.operator = operator;     // +, -, *, /, mod, ...
+                this.operator = operator;
+                this.text = operator;
                 this.function = false;
                 this.state = "enabled";
                 if (operator=='+')
-                    this.function = function(a,b) {var c = NaN; try {c = a + b;}                     catch(err) { alert(err); } return c;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = a + b;}                     catch(err) { alert(err); } return c;};
                 if (operator=='-')
-                    this.function = function(a,b) {var c = NaN; try {c = a - b;}                     catch(err) { alert(err); } return c;}; 
-                if (operator=='&times;')
-                    this.function = function(a,b) {var c = NaN; try {c = a * b;}                     catch(err) { alert(err); } return c;}; 
-                if (operator=='&middot;')
-                    this.function = function(a,b) {var c = NaN; try {c = a * b;}                     catch(err) { alert(err); } return c;}; 
+                    this.function = function(a,b) {var c = NaN; try {c = a - b;}                     catch(err) { alert(err); } return c;};
+                if (operator=='&times;') {
+                    this.operator = '*';
+                    this.function = function(a,b) {var c = NaN; try {c = a * b;}                     catch(err) { alert(err); } return c;};
+                }
+                if (operator=='&middot;') {
+                    this.operator = '*';
+                    this.function = function(a,b) {var c = NaN; try {c = a * b;}                     catch(err) { alert(err); } return c;};
+                }
                 if (operator=='/')
                     this.function = function(a,b) {var c = NaN; try {c = a / b;}                     catch(err) { alert(err); } return c;}; 
-                if (operator==':')
-                    this.function = function(a,b) {var c = NaN; try {c = a / b;}                     catch(err) { alert(err); } return c;}; 
-                if (operator=='mod')
-                    this.function = function(a,b) {var c = NaN; try {c = a % b;}                     catch(err) { alert(err); } return c;}; 
-                if (operator=='pow')
-                    this.function = function(a,b) {var c = NaN; try {c = Math.pow(a, b);}            catch(err) { alert(err); } return c;}; 
-                if (operator=='root')
-                    this.function = function(a,b) {var c = NaN; try {c = Math.pow(a, 1/b);}          catch(err) { alert(err); } return c;}; 
-                if (operator=='log')
+                if (operator==':') {
+                    this.operator = '/';
+                    this.function = function(a,b) {var c = NaN; try {c = a / b;}                     catch(err) { alert(err); } return c;};
+                }
+                if (operator=='mod') {
+                    this.text = "<span style='font-size: 0.8em;'>mod<span class='sub'>b</span>a</span>";
+                    this.function = function(a,b) {var c = NaN; try {c = a % b;}                     catch(err) { alert(err); } return c;};
+                }
+                if (operator=='pow') {
+                    this.text = "a<span class='super'>b</span>";
+                    this.function = function(a,b) {var c = NaN; try {c = Math.pow(a, b);}            catch(err) { alert(err); } return c;};
+                }
+                if (operator=='root') {
+                    this.text = "<span class='super'>b</span>&#8730;<span style='text-decoration: overline;'>a</span>";
+                    this.function = function(a,b) {var c = NaN; try {c = Math.pow(a, 1/b);}          catch(err) { alert(err); } return c;};
+                }
+                if (operator=='log') {
+                    this.text = "<span style='font-size: 0.8em;'>log<span class='sub'>b</span>a</span>";
                     this.function = function(a,b) {var c = NaN; try {c = Math.log(a) / Math.log(b);} catch(err) { alert(err); } return c;}; 
-                
+                }
+
                 // determine sizes for width, left, top and height
                 this.width = Math.floor(38.0 / cols); 
                 this.left = (50.0 - cols*(this.width+0.7)) / 2.0; 
@@ -688,7 +701,7 @@
                 // and create initial html string
                 this.html = "<div class=\"number\" id=\"" + this.operatorId + "\" style=\"width:" + this.width.toString() + "vw; height:" + this.height.toString() + "vh; left:" + this.left.toString() + "vw;\" onClick=\"_gameHistory.suggestOperator('" + this.playerId + "', " + this.index.toString() + ");\">"
                     +     "<div class=\"digits\" id=\"" + this.faceId + "\" style=\"font-size:" + this.fontSize.toString() + "vw; line-height:" + this.lineHeight.toString() + "vh;\">"
-                    +         this.operator
+                    +         this.text
                     +     "</div>"
                     + "</div>";
             }
@@ -1455,8 +1468,8 @@
             <b>Game of Triplets</b> <br>
             Who can find more equations? Game for two players, both players play in turns. The game starts, each player can choose from a set of numbers and mathematical operations. The top part of the playing field shows an empty equation, _&nbsp;_&nbsp;_&nbsp;_&nbsp;_&nbsp;=&nbsp;.
             <ul>
-            <li>The first player chooses a number for the right part of an equation, e.g. <i>_&nbsp;_&nbsp;_&nbsp;_&nbsp;_&nbsp;=&nbsp;6</i>, and presses <i>Ready</i>. </li>
-            <li>The second player chooses three numbers and two mathematical operations for the left part of the equation, e.g. <i>(1&nbsp;+&nbsp;2)&nbsp;&times;&nbsp;3</i>) and presses <i>Ready</i>. If the equation is correct the second Player scores points. </li>
+            <li>The first player chooses a number for the right part of an equation, e.g. <i>_&nbsp;_&nbsp;_&nbsp;_&nbsp;_&nbsp;=&nbsp;9</i>, and presses <i>Ready</i>. </li>
+            <li>The second player chooses three numbers and two mathematical operations for the left part of the equation, e.g. <i>(1&nbsp;+&nbsp;2)&nbsp;&times;&nbsp;3&nbsp;=&nbsp;9</i> and presses <i>Ready</i>. If the equation is correct the second Player scores points. </li>
             <li>The second player chooses a number and presses <i>Ready</i>, then the first player completes the equation.
             <li>If a player cannot complete an equation using the numbers they've got, they can press <i>Pass</i>.</li>
             <li>The winner is the player who has scored 20 points first.</li>
@@ -1480,9 +1493,9 @@
                 <input type="checkbox" id="multm1_en">Multiply (a &middot; b)</input> <br/>
                 <input type="checkbox" id="divo1_en" checked="checked">Divide (a / b)</input> 
                 <input type="checkbox" id="divr1_en">Divide (a : b)</input> <br/>
-                <input type="checkbox" id="mod1_en">Modulo (a mod b)</input> <br/>
+                <input type="checkbox" id="mod1_en">Modulo (mod<span class="sub">b</span>a)</input> <br/>
                 <input type="checkbox" id="pow1_en">Power (a<span class="super">b</span>)</input> <br/>
-                <input type="checkbox" id="root1_en">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b</span>)</input> <br/>
+                <input type="checkbox" id="root1_en">Root (<span class="super">b</span>&#8730;<span style="text-decoration: overline;">a</span>)</input> <br/>
                 <input type="checkbox" id="log1_en">Logarithm (log<span class="sub">a</span>b)</span></input>
             </div>
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
@@ -1512,10 +1525,10 @@
                 <input type="checkbox" id="multm2_en" checked="checked">Multiply (a &middot; b)</input> <br/>
                 <input type="checkbox" id="divo2_en">Divide (a / b)</input>
                 <input type="checkbox" id="divr2_en" checked="checked">Divide (a : b)</input> <br/>
-                <input type="checkbox" id="mod2_en" checked="checked">Modulo (a mod b)</input> <br/>
+                <input type="checkbox" id="mod2_en" checked="checked">Modulo (mod<span class="sub">b</span>a)</input> <br/>
                 <input type="checkbox" id="pow2_en" checked="checked">Power (a<span class="super">b</span>)</input> <br/>
-                <input type="checkbox" id="root2_en" checked="checked">Root (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b</span>)</input> <br/>
-                <input type="checkbox" id="log2_en" checked="checked">Logarithm (log<span class="sub">a</span>b)</span></input>
+                <input type="checkbox" id="root2_en" checked="checked">Root (<span class="super">b</span>&#8730;<span style="text-decoration: overline;">a</span>)</input> <br/>
+                <input type="checkbox" id="log2_en" checked="checked">Logarithm (log<span class="sub">b</span>a)</span></input>
             </div>
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
                 Amount of available Numbers:
@@ -1571,10 +1584,10 @@
                 <input type="checkbox" id="multm1_de" checked="checked">Multiplizieren (a &middot; b)</input> <br/>
                 <input type="checkbox" id="divo1_de">Dividieren (a / b)</input> 
                 <input type="checkbox" id="divr1_de" checked="checked">Dividieren (a : b)</input> <br/>
-                <input type="checkbox" id="mod1_de">Modulo (a mod b)</input> <br/>
+                <input type="checkbox" id="mod1_de">Modulo (mod<span class="sub">b</span>a)</input> <br/>
                 <input type="checkbox" id="pow1_de">Potenz bilden (a<span class="super">b</span>)</input> <br/>
-                <input type="checkbox" id="root1_de">Wurzel ziehen (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b</span>)</input> <br/>
-                <input type="checkbox" id="log1_de">Logarithmus bilen (log<span class="sub">a</span>b)</span></input>
+                <input type="checkbox" id="root1_de">Wurzel ziehen (<span class="super">b</span>&#8730;<span style="text-decoration: overline;">a</span>)</input> <br/>
+                <input type="checkbox" id="log1_de">Logarithmus bilen (log<span class="sub">b</span>a)</span></input>
             </div>
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
                 Anzahl Zahlen:
@@ -1603,10 +1616,10 @@
                 <input type="checkbox" id="multm2_de" checked="checked">Multiplizieren (a &middot; b)</input> <br/>
                 <input type="checkbox" id="divo2_de">Dividieren (a / b)</input>
                 <input type="checkbox" id="divr2_de" checked="checked">Dividieren (a : b)</input> <br/>
-                <input type="checkbox" id="mod2_de" checked="checked">Modulo (a mod b)</input> <br/>
+                <input type="checkbox" id="mod2_de" checked="checked">Modulo (mod<span class="sub">b</span>a)</input> <br/>
                 <input type="checkbox" id="pow2_de" checked="checked">Potenzieren (a<span class="super">b</span>)</input> <br/>
-                <input type="checkbox" id="root2_de" checked="checked">Wurzel ziehen (<span class="super">a</span>&#8730;<span style="text-decoration: overline;">b</span>)</input> <br/>
-                <input type="checkbox" id="log2_de" checked="checked">Logarithm (log<span class="sub">a</span>b)</span></input>
+                <input type="checkbox" id="root2_de" checked="checked">Wurzel ziehen (<span class="super">b</span>&#8730;<span style="text-decoration: overline;">a</span>)</input> <br/>
+                <input type="checkbox" id="log2_de" checked="checked">Logarithm (log<span class="sub">b</span>a)</span></input>
             </div>
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
                 Anzahl Zahlen:
