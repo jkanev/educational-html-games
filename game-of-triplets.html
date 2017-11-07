@@ -1131,7 +1131,7 @@
                         rightParen = ")";
                     }
                     // logs, mods and powers always get one
-                    if (operator1.operator=='log' || operator1.operator=='pow' || operator1.operator=='mod' || operator2.operator=='log' ||operator2.operator=='pow' || operator2.operator=='mod') {
+                    if (operator1.operator=='log' || operator1.operator=='pow' || operator1.operator=='mod' || operator2.operator=='log' || operator2.operator=='pow' || operator2.operator=='mod') {
                         leftParen = "(";
                         rightParen = ")";
                     }
@@ -1152,14 +1152,16 @@
                                 + rightParen;
                             break;
                         case "root":
-                            clause1 = "<span id='number2' style='font-size: 0.5em; vertical-align: 1.5em;' class='equNumber " + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
+                            clause1 = leftParen
+                                + "<span id='number2' style='font-size: 0.5em; vertical-align: 1.5em;' class='equNumber " + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
                                 + "<span id='operator1' style='position: relative; left: -0.5ch;'>&#8730;</span>"
-                                + "<span id='number1' style='border-top: solid black 0.1ch; padding-top: 0; position: relative; left: -0.6ch;' class='equNumber " + (number1 ? number1.colour + "'> " + number1.meaning : "'>_") + "</span>";
+                                + "<span id='number1' style='border-top: solid black 0.1ch; padding-top: 0; position: relative; left: -0.6ch;' class='equNumber " + (number1 ? number1.colour + "'> " + number1.meaning : "'>_") + "</span>"
+                                + rightParen;
                             break;
                         case "mod":
                         case "log":
                             clause1 = leftParen
-                                + " <span id='operator1'>" + operator1.operator + "</span>"
+                                + "<span id='operator1'>" + operator1.operator + "</span>"
                                 + "<span id='number2' class='equNumber " + (number2 ? number2.colour + " sub'>" + number2.meaning : "'sub'>_") + "</span>"
                                 + " "
                                 + "<span id='number1' class='equNumber " + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
@@ -1168,7 +1170,7 @@
                         default:
                             clause1 = leftParen
                                 + "<span id='number1' class='equNumber " + (number1 ? number1.colour + "'>" + number1.meaning : "'>_") + "</span>"
-                                + " <span id='operator1'>" + operator1.operator + "</span> "
+                                + " <span id='operator1'>" + operator1.text + "</span> "
                                 + "<span id='number2' class='equNumber " + (number2 ? number2.colour + "'>" + number2.meaning : "'>_") + "</span>"
                                 + rightParen;
                     }
@@ -1194,14 +1196,14 @@
                             break;
                         case "log":
                         case "mod":
-                            clause2 = " <span id='operator2'>" + operator2.operator + "</span> "
+                            clause2 = "<span id='operator2'>" + operator2.operator + "</span>"
                                 + "<span id='number3' class='equNumber sub " + (number3 ? number3.colour + "'>" + number3.meaning : "'>_") + "</span>"
                                 + " "
                                 + clause1;
                             break;
                         default:
                             clause2 = clause1
-                                + " <span id='operator2'>" + operator2.operator + "</span> "
+                                + " <span id='operator2'>" + operator2.text + "</span> "
                                 + "<span id='number3' class='equNumber " + (number3 ? number3.colour + "'>" + number3.meaning : "'>_") + "</span>";
                     }
                 } else {
@@ -1521,10 +1523,10 @@
                 Available Operators:<br/><br/>
                 <input type="checkbox" id="plus2_en" checked="checked">Add (a + b)</input> <br/>
                 <input type="checkbox" id="minus2_en" checked="checked">Subtract (a - b)</input> <br/>
-                <input type="checkbox" id="multt2_en">Multiply (a &times; b)</input>
-                <input type="checkbox" id="multm2_en" checked="checked">Multiply (a &middot; b)</input> <br/>
-                <input type="checkbox" id="divo2_en">Divide (a / b)</input>
-                <input type="checkbox" id="divr2_en" checked="checked">Divide (a : b)</input> <br/>
+                <input type="checkbox" id="multt2_en" checked="checked">Multiply (a &times; b)</input>
+                <input type="checkbox" id="multm2_en">Multiply (a &middot; b)</input> <br/>
+                <input type="checkbox" id="divo2_en" checked="checked">Divide (a / b)</input>
+                <input type="checkbox" id="divr2_en">Divide (a : b)</input> <br/>
                 <input type="checkbox" id="mod2_en" checked="checked">Modulo (mod<span class="sub">b</span>a)</input> <br/>
                 <input type="checkbox" id="pow2_en" checked="checked">Power (a<span class="super">b</span>)</input> <br/>
                 <input type="checkbox" id="root2_en" checked="checked">Root (<span class="super">b</span>&#8730;<span style="text-decoration: overline;">a</span>)</input> <br/>
@@ -1609,7 +1611,7 @@
                 Name des zweiten Spielers:&nbsp;<input id="name2_de" type="text" class="text" style="background-color: #b0fff0"></input>
             </div>
             <div style="position: relative; float: left; padding: 1em 1em; color: inherit;">
-                Available Operators:<br/><br/>
+                M&ouml;gliche Rechenoperationen:<br/><br/>
                 <input type="checkbox" id="plus2_de" checked="checked">Addieren (a + b)</input> <br/>
                 <input type="checkbox" id="minus2_de" checked="checked">Subtrahieren (a - b)</input> <br/>
                 <input type="checkbox" id="multt2_de">Multiplizieren (a &times; b)</input>
