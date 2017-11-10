@@ -488,6 +488,7 @@
                     switch (what) {
                         case 'number1':
                         case 'number2':
+                        case 'number3':
                             if (_language==="en") {
                                 this.nextPlayer.hint("Wait for " + this.name + ".");
                                 this.hint("Choose numbers and operators so the equation on the left has the solution on the right, or press <i>Pass</i>.");
@@ -593,7 +594,7 @@
                         document.getElementById("button_confirm").disabled = false;
                         document.getElementById("button_pass").disabled = true;
                 }
-                return this.numbers[numberId].suggest(this);
+                return this.numbers[numberId].suggest(this.id);
             };
             
             
@@ -787,7 +788,7 @@
             Number.prototype.remove = function(activeAfterRecovery)
             {
                 if (_debugMode)
-                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").remove(activeAfterRecovery=" + activeAfterRecovery.toString() + ")\n";
+                    _log += "Number(playerId=" + this.playerId + ", index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").remove(activeAfterRecovery=" + activeAfterRecovery.toString() + ")\n";
                 this.state = "removed";
                 document.getElementById(this.numberId).style.visibility = "hidden";
                 setTimeout(this.recover.bind(this, activeAfterRecovery), 1000+Math.random()*1000);
@@ -799,7 +800,7 @@
             Number.prototype.recover = function(enable)
             {
                 if (_debugMode)
-                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").recover(enable=" + enable.toString() + ")\n";
+                    _log += "Number(playerId=" + this.playerId + ", index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").recover(enable=" + enable.toString() + ")\n";
                     
                 // give it a new meaning
                 this.meaning = Math.floor(Math.random()*(this.max+1));
@@ -822,7 +823,7 @@
             Number.prototype.disable = function()
             {
                 if (_debugMode)
-                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").disable()\n";
+                    _log += "Number(playerId=" + this.playerId + ", index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").disable()\n";
                 if (this.state !== 'suggested')
                     this.state = "disabled";
                 document.getElementById(this.faceId).style.color = "#bbb";
@@ -834,7 +835,7 @@
             Number.prototype.enable = function()
             {
                 if (_debugMode)
-                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").enable()\n";
+                    _log += "Number(playerId=" + this.playerId + ", index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").enable()\n";
                 if (this.state === "disabled" || this.state === "removed") { // don't set suggested numbers back to open
                     this.state = "open";
                     if (this.colour==="red")
@@ -854,7 +855,7 @@
             Number.prototype.suggest = function(player)
             {
                 if (_debugMode)
-                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").suggest(player=" + player.toString() + ")\n";
+                    _log += "Number(playerId=" + this.playerId + ", index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").suggest(player=" + player.toString() + ")\n";
                 index = false;
                 colour = false;
                 if (player===false && this.state==="suggested") {
@@ -921,7 +922,7 @@
             GameHistory.prototype.confirm = function()
             {
                 if (_debugMode)
-                    _log += "GameHistory.confirm()\n";
+                    _log += "GameHistory.confirm(), nextNumberMove=" + this.nextNumberMove + ", nextOperatorMove=" + this.nextOperatorMove + "\n";
                 try {
                     switch (this.nextNumberMove) {
                         case 'solution1':
@@ -935,13 +936,25 @@
                             break;
                         case 'number1':
                         case 'number2':
+                        case 'number3':
                             // calculating points for current player
-                            number1 = this.currentPlayer.numbers[this.number1].meaning;
-                            number2 = this.currentPlayer.numbers[this.number2].meaning;
-                            number3 = this.currentPlayer.numbers[this.number3].meaning;
-                            operator1 = this.currentPlayer.operators[this.operator1];
-                            operator2 = this.currentPlayer.operators[this.operator2];
-                            solution = this.nextPlayer.numbers[this.solution].meaning;
+                            var number1 = this.currentPlayer.numbers[this.number1].meaning;
+                            var number2 = this.currentPlayer.numbers[this.number2].meaning;
+                            var number3 = this.currentPlayer.numbers[this.number3].meaning;
+                            var operator1 = this.currentPlayer.operators[this.operator1];
+                            var operator2 = this.currentPlayer.operators[this.operator2];
+                            var solution = this.nextPlayer.numbers[this.solution].meaning;
+                            if (_debugMode) {
+                                try {
+                                    _log += "calculating equation: ";
+                                    _log += "(" + number1.toString() + " " + operator1.operator + " " + number2.toString() + ") " + operator2.operator + " " + number3.toString() + " = ";
+                                    _log += operator1.function(number1, number2).toString() + " ";
+                                    _log += operator2.operator.toString() + " " + number3.toString() + " = ";
+                                    _log += operator2.function(operator1.function(number1, number2), number3).toString() + "\n";
+                                } catch (e) {
+                                    _log += e.message;
+                                }
+                            }
                             hypothesis = operator2.function(operator1.function(number1, number2), number3);
                             
                             // show dialog
@@ -1115,7 +1128,7 @@
             GameHistory.prototype.updateGui = function()
             {
                 if (_debugMode)
-                    _log += "GameHistory.updateGui()\n";
+                    _log += "GameHistory.updateGui(), nextOperatorMove=" + this.nextOperatorMove + ", nextNumberMove=" + this.nextNumberMove + "\n";
                 
                 // find parts
                 var number1 = this.number1!==false ? this.currentPlayer.numbers[this.number1] : false;
@@ -1125,7 +1138,7 @@
                 var operator2 = this.operator2!==false ? this.currentPlayer.operators[this.operator2] : false;
                 var solution = false;
                 if (this.solution !== false) {
-                    if (this.nextNumberMove === 'solution1' || this.nextNumberMove === 'solution2') {
+                    if (this.nextOperatorMove === "wait" && this.nextNumberMove ==="solution2") {
                         solution = this.currentPlayer.numbers[this.solution];
                     } else {
                         solution = this.nextPlayer.numbers[this.solution];
