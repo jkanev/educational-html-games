@@ -344,7 +344,7 @@
             <!--
             
             // debug mode
-            var _debugMode = true;
+            var _debugMode = false;
             var _log = "";
 
             // global gameHistory object
@@ -394,7 +394,6 @@
                 document.getElementById(this.id).style.backgroundColor = this.colour;
                 this.hint("");
             }
-            
             
             
             //______________________________
@@ -449,7 +448,7 @@
                 }
                 else {
                     // display time is longer for error messages
-                    displayTime = 3500;
+                    displayTime = 2500;
                     if (_language == "en")
                         message = "Sorry " + this.name + ", your suggestion results in <br/><span style='font-size:2em;'>" + Math.round(10000.0*hypothesis.toString())/10000.0 + "</span><br/> instead of <br/><span style='font-size:1.5em;'>" + solution.toString() + "</span>.<br/>&nbsp;<br/>&nbsp;"; 
                     if (_language == "de")
@@ -558,7 +557,6 @@
             };
             
             
-            
             //______________________________
             // Player writes a number into the next part of the equation
             // numberId1 - the number that was suggested
@@ -599,7 +597,6 @@
             };
             
             
-            
             //______________________________
             // Player writes an operator into the equation
             // operatorId - the operator that was suggested
@@ -626,6 +623,7 @@
                         break;
                 }
             };
+            
             
             
             
@@ -716,7 +714,7 @@
                 document.getElementById(this.faceId).style.color = "#bbb";
             };
             
-
+            
             //______________________________
             // enable an operator
             Operator.prototype.enable = function()
@@ -729,7 +727,7 @@
                 }
             };
             
-
+            
             
             
             //______________________________
@@ -901,7 +899,7 @@
                 this.operator2 = false;
                 this.solution = false;
                 this.nextNumberMove = 'solution1';
-                this.nextOperatorMove = 'operator1';
+                this.nextOperatorMove = "wait";
                 this.currentPlayer.confirm('solution1');
                 this.updateGui();
                 this.locked = false;
@@ -956,6 +954,7 @@
                             // prepare next move
                             else {
                                 this.nextNumberMove = 'solution1';
+                                this.nextOperatorMove = "wait";
                                 this.currentPlayer.confirm(this.nextNumberMove);
                                 this.updateGui();
                             }
@@ -976,6 +975,7 @@
                 this.number2 = false;
                 this.solution = false;
                 this.nextNumberMove = "solution1";
+                this.nextOperatorMove = "wait";
                 this.currentPlayer.pass();
                 this.currentPlayer.confirm(this.nextNumberMove);
                 this.currentPlayer.hasPassed = true;
@@ -1088,17 +1088,21 @@
                                 this.operator1 = operatorIndex;
                                 this.nextOperatorMove = 'operator2';
                                 this.updateGui();
+                                what = "incomplete";
+                                if (this.number1!==false && this.number3!==false && this.operator1!==false && this.operator2!==false) 
+                                    what = "complete";
+                                this.currentPlayer.suggestOperator(what);
                                 break;
                             case 'operator2':
                                 this.operator2 = operatorIndex;
                                 this.nextOperatorMove = 'operator1';
                                 this.updateGui();
+                                what = "incomplete";
+                                if (this.number1!==false && this.number3!==false && this.operator1!==false && this.operator2!==false) 
+                                    what = "complete";
+                                this.currentPlayer.suggestOperator(what);
                                 break;
                         }
-                        what = "incomplete";
-                        if (this.number1!==false && this.number3!==false && this.operator1!==false && this.operator2!==false) 
-                            what = "complete";
-                        this.currentPlayer.suggestOperator(what);
                         this.lock(false);
                     }
                 }
@@ -1492,7 +1496,7 @@
             <li>The winner is the player who has scored 20 points first.</li>
             </ul>
             For every <i>plus</i> and <i>minus</i> there are 1.5 points, for every <i>times</i>, <i>over</i> and <i>modulo</i> there are 2.5 points, and for every <i>log</i>, <i>power</i> and <i>root</i>there are 3.5 points. The amount of numbers and the mathematical operators a player can choose from can be set individually for each player before the start of the game.<br/>
-            <br/><br/>
+            <br/>
             If you enter just a single player's name, the game will be run in single-player mode.
             <div>
                 <button onClick="proceed('intro_en', 'settings1_en');">Next</button> or <button onClick="proceed('intro_en', 'language');">Go Back</button>

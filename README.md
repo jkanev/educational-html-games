@@ -96,7 +96,7 @@ cards without having to pass once.
 __Math, English | Key Stage 1 and later__  
 Teaches and trains adding, sums and differences, mental math.
 
-Who can find more equations? Game for two players, both players play in turns. The game starts, each player can choose from a set of numbers and mathematical operations. The top part of the playing field shows an empty equation, _&nbsp;_&nbsp;_&nbsp;_&nbsp;_&nbsp;=&nbsp;.
+Who can find more equations? Game for two players, both players play in turns. The game starts, each player can choose from a set of numbers and mathematical operations. The top part of the playing field shows an empty equation, \_&nbsp;\_&nbsp;\_&nbsp;\_&nbsp;\_&nbsp;=&nbsp;\_.
 * The first player chooses a number for the right part of an equation, e.g. _\_&nbsp;\_&nbsp;\_&nbsp;\_&nbsp;\_&nbsp;=&nbsp;9_, and presses _Ready_. 
 * The second player chooses three numbers and two mathematical operations for the left part of the equation, e.g. _(1&nbsp;+&nbsp;2)&nbsp;&times;&nbsp;3&nbsp;=&nbsp;9_ and presses _Ready_. If the equation is correct the second Player scores points. 
 * The second player chooses a number and presses _Ready_, then the first player completes the equation.
@@ -188,7 +188,7 @@ aufbrauchst ohne zu passen.
 __Mathematik | Klasse 1-10__  
 Trainiert Grundrechenarten, Potenzen, Logarithmen auf ganzen Zahlen, Zahlenraum 0-20.
 
-Wer kann mehr Gleichungen finden? Spiel f&uuml;r zwei Spieler, die Spieler spielen abwechselnd. Das Spiel beginnt, jeder Spieler hat eine Anzahl an Zahlen und Rechenoperationen zur Auswahl, im oberen Spielfeld ist eine leere Gleichung, _&nbsp;_&nbsp;_&nbsp;_&nbsp;_&nbsp;=&nbsp;_, zu sehen.
+Wer kann mehr Gleichungen finden? Spiel f&uuml;r zwei Spieler, die Spieler spielen abwechselnd. Das Spiel beginnt, jeder Spieler hat eine Anzahl an Zahlen und Rechenoperationen zur Auswahl, im oberen Spielfeld ist eine leere Gleichung, \_&nbsp;\_&nbsp;\_&nbsp;\_&nbsp;\_&nbsp;=&nbsp;\_, zu sehen.
 * Der erste Spieler w&auml;hlt eine Zahl f&uuml;r den rechten Teil einer Gleichung, z.B. _\_&nbsp;\_&nbsp;\_&nbsp;\_&nbsp;\_&nbsp;=&nbsp;9_, und dr&uuml;ckt _Fertig_.
 * Der zweite Spiele w&auml;hlt drei Zahlen und zwei Rechenoperationen f&uuml;r den linken Teil einer Gleichung, z.B. _(1&nbsp;+&nbsp;2)&nbsp;&middot;&nbsp;3&nbsp;=&nbsp;9_, und dr&uuml;ckt _Fertig_. Wenn die Gleichung korrekt ist, bekommt der Spieler Punkte.
 * Der zweite Spieler w&auml;hlt eine Zahl und dr&uuml;ckt _Fertig_, dann vervollst&auml;ndigt der erste Spieler die Gleichung.
