@@ -344,13 +344,12 @@
             <!--
             
             // debug mode
-            var _debugMode = false;
+            var _debugMode = true;
             var _log = "";
 
             // global gameHistory object
             var _gameHistory = null;
             var _equation = null;
-            var _globalLock = false;
             var _quitFullScreen = false;
             var _language = "en";
             
@@ -460,20 +459,20 @@
                 // start time out for hiding message
                 document.getElementById(this.id).innerHTML = message;
                 document.getElementById(this.id).style.display = "block";
-                setTimeout( function(id) {document.getElementById(id).style.display = "none";  _globalLock = false;}.bind(0, this.id), displayTime );
+                setTimeout( function(id) {document.getElementById(id).style.display = "none";  _gameHistory.lock(false);}.bind(0, this.id), displayTime );
             };
             
             
             //______________________________
             // Remove all numbers that are covered
-            Player.prototype.clearUp = function()
+            Player.prototype.clearUp = function(activeAfterRecovery)
             {
                 if (_debugMode)
-                    _log += this.name + ".clearUp()\n";
+                    _log += this.name + ".clearUp(activeAfterRecovery=" + activeAfterRecovery.toString() + ")\n";
 
                 for (i=0; i<this.numbers.length; i++) {
                     if (this.numbers[i].state === 'suggested') {
-                        this.numbers[i].remove();
+                        this.numbers[i].remove(activeAfterRecovery);
                     }
                 }
             };
@@ -547,16 +546,16 @@
                 // update all numbers
                 this.hasPassed = true;
                 for (var i=0; i<this.numbers.length; i++) {
-                    this.numbers[i].remove();
+                    this.numbers[i].remove(true);
                 }
                 
                 // remove suggested number from other player
-                this.nextPlayer.clearUp();
+                this.nextPlayer.clearUp(false);
                 
                 // disable the pass and confirm buttons
                 document.getElementById("button_confirm").disabled = true;
                 document.getElementById("button_pass").disabled = true;
-            }
+            };
             
             
             
@@ -787,15 +786,15 @@
             
             //______________________________
             // remove the number from the table
-            Number.prototype.remove = function()
+            Number.prototype.remove = function(activeAfterRecovery)
             {
                 if (_debugMode)
-                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").remove()\n";
-                var activeAfterRecovery = this.state === 'open';
+                    _log += "Number(index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").remove(activeAfterRecovery=" + activeAfterRecovery.toString() + ")\n";
                 this.state = "removed";
                 document.getElementById(this.numberId).style.visibility = "hidden";
                 setTimeout(this.recover.bind(this, activeAfterRecovery), 1000+Math.random()*1000);
             };
+            
             
             //______________________________
             // recover the number - give it a new number and make it visible again
@@ -818,8 +817,6 @@
                 if (!enable)
                     this.disable();
             };
-            
-            
             
             
             //______________________________
@@ -907,7 +904,18 @@
                 this.nextOperatorMove = 'operator1';
                 this.currentPlayer.confirm('solution1');
                 this.updateGui();
+                this.locked = false;
             }
+            
+            
+            //______________________________
+            // lock (or unlock) the GUI to prevent endless writing cascades
+            GameHistory.prototype.lock = function(locked)
+            {
+                if (_debugMode)
+                    _log += "GameHistory.lock(" + locked.toString() + ")\n";
+                this.locked = locked;
+            };
             
             
             //______________________________
@@ -951,9 +959,8 @@
                                 this.currentPlayer.confirm(this.nextNumberMove);
                                 this.updateGui();
                             }
-                        this.player1.clearUp();
-                        if (this.player2)
-                            this.player2.clearUp();
+                            this.nextPlayer.clearUp(false);
+                            this.currentPlayer.clearUp(true);
                     }
                 } catch(err) {alert(err);}
             };
@@ -973,7 +980,7 @@
                 this.currentPlayer.confirm(this.nextNumberMove);
                 this.currentPlayer.hasPassed = true;
                 this.updateGui();
-            }
+            };
             
             
             
@@ -984,8 +991,8 @@
                 if (_debugMode)
                     _log += "GameHistory.suggestNumber(player=" + player.toString() + ", numberIndex=" + numberIndex.toString() + ")\n";
                 if (this.currentPlayer.id == player) {
-                    if (!_globalLock) {
-                        _globalLock = true;
+                    if (!this.locked) {
+                        this.lock(true);
                         var what = "incomplete";
                         switch (this.nextNumberMove) {
                             case 'number1':
@@ -1061,7 +1068,7 @@
                                 this.updateGui();
                                 break;
                         }
-                        _globalLock = false;
+                        this.lock(false);
                     }
                 }
             };
@@ -1074,8 +1081,8 @@
                 if (_debugMode)
                     _log += "GameHistory.suggestOperator(player=" + player.toString() + ", operatorIndex=" + operatorIndex.toString() + ")\n";
                 if (this.currentPlayer.id == player) {
-                    if (!_globalLock) {
-                        _globalLock = true;
+                    if (!this.locked) {
+                        this.lock(true);
                         switch (this.nextOperatorMove) {
                             case 'operator1':
                                 this.operator1 = operatorIndex;
@@ -1092,7 +1099,7 @@
                         if (this.number1!==false && this.number3!==false && this.operator1!==false && this.operator2!==false) 
                             what = "complete";
                         this.currentPlayer.suggestOperator(what);
-                        _globalLock = false;
+                        this.lock(false);
                     }
                 }
             };
