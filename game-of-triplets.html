@@ -594,7 +594,7 @@
                         document.getElementById("button_confirm").disabled = false;
                         document.getElementById("button_pass").disabled = true;
                 }
-                return this.numbers[numberId].suggest(this.id);
+                return this.numbers[numberId].suggest(this);
             };
             
             
@@ -855,7 +855,7 @@
             Number.prototype.suggest = function(player)
             {
                 if (_debugMode)
-                    _log += "Number(playerId=" + this.playerId + ", index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ").suggest(player=" + player.toString() + ")\n";
+                    _log += "Number(playerId=" + this.playerId + ", index=" + this.index.toString() + ", meaning=" + this.meaning.toString() + ", state=" + this.state.toString() + ").suggest(player=" + player.toString() + ")\n";
                 index = false;
                 colour = false;
                 if (player===false && this.state==="suggested") {
